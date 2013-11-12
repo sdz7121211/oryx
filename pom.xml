@@ -750,7 +750,7 @@
   <repositories>
     <repository>
       <id>oryx.repo</id>
-      <url>https://repository.cloudera.com/artifactory/libs-release-local</url>
+      <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
       <name>Cloudera Repositories</name>
       <releases>
         <enabled>true</enabled>
@@ -761,7 +761,7 @@
     </repository>
     <repository>
       <id>oryx.snapshots.repo</id>
-      <url>https://repository.cloudera.com/artifactory/libs-snapshot-local</url>
+      <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
       <name>Cloudera Snapshots Repository</name>
       <snapshots>
         <enabled>true</enabled>
