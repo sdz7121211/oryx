@@ -1,0 +1,12 @@
+com.cloudera.oryx.computation.common
+com.cloudera.oryx.computation.common.crossfold
+com.cloudera.oryx.computation.common.fn
+com.cloudera.oryx.computation.common.json
+com.cloudera.oryx.computation.common.records
+com.cloudera.oryx.computation.common.records.avro
+com.cloudera.oryx.computation.common.records.csv
+com.cloudera.oryx.computation.common.records.vectors
+com.cloudera.oryx.computation.common.sample
+com.cloudera.oryx.computation.common.summary
+com.cloudera.oryx.computation.common.types
+com.cloudera.oryx.computation.common.writable
