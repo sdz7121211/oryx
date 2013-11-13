@@ -14,85 +14,12 @@
   License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.cloudera.oryx</groupId>
   <artifactId>oryx</artifactId>
-  <packaging>pom</packaging>
-  <name>Oryx</name>
-  <description>The Oryx open source project provides simple, real-time large-scale machine learning infrastructure.</description>
   <version>0.3.0-SNAPSHOT</version>
-
-  <url>https://github.com/cloudera/oryx</url>
-  <inceptionYear>2013</inceptionYear>
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <developers>
-    <developer>
-      <id>cloudera</id>
-      <organization>Cloudera</organization>
-      <organizationUrl>http://cloudera.com/</organizationUrl>
-    </developer>
-  </developers>
-  <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/cloudera/oryx/issues</url>
-  </issueManagement>
-  <mailingLists>
-    <mailingList>
-      <name>Cloudera Community: Data Science and Machine Learning</name>
-      <archive>https://community.cloudera.com/t5/Data-Science-and-Machine/bd-p/Mahout</archive>
-    </mailingList>
-  </mailingLists>
-  <scm>
-    <connection>scm:git:http://github.com/cloudera/oryx.git</connection>
-    <url>scm:git:http://github.com/cloudera/oryx.git</url>
-    <developerConnection>scm:git:http://github.com/cloudera/oryx.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
-
-  <properties>
-    <!-- Maven settings -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <dependency.locations.enabled>false</dependency.locations.enabled>
-    <dependency.details.enabled>false</dependency.details.enabled>
-    <!-- Dependency versions -->
-    <slf4j.version>1.7.5</slf4j.version>
-    <tomcat.version>7.0.47</tomcat.version>
-    <!-- Don't update to 1.7.5+ until Hadoop uses Jackson 1.9+ -->
-    <avro.version>1.7.4</avro.version>
-    <hadoop.version>2.0.0-cdh4.4.1</hadoop.version>
-    <!-- our custom props -->
-    <module.jspx.package>override-me</module.jspx.package>
-  </properties>
-  
-  <prerequisites>
-    <maven>3.0</maven>
-  </prerequisites>
-
-  <modules>
-    <module>common</module>
-    <module>common-servcomp</module>
-    <module>als-common</module>
-    <module>als-serving</module>
-    <module>als-computation</module>
-    <module>kmeans-common</module>
-    <module>kmeans-serving</module>
-    <module>kmeans-computation</module>
-    <module>rdf-common</module>
-    <module>rdf-serving</module>
-    <module>rdf-computation</module>
-    <module>computation-common</module>
-    <module>computation</module>
-    <module>serving-common</module>
-    <module>serving</module>
-  </modules>
+  <packaging>pom</packaging>
 
   <dependencyManagement>
     <dependencies>
@@ -334,7 +261,7 @@
         </exclusions>
       </dependency>
 
-     <dependency>
+      <dependency>
         <groupId>org.apache.solr</groupId>
         <artifactId>solr-commons-csv</artifactId>
         <version>3.5.0</version>
@@ -396,6 +323,40 @@
     </dependencies>
   </dependencyManagement>
 
+  <modules>
+    <module>common</module>
+    <module>common-servcomp</module>
+    <module>als-common</module>
+    <module>als-serving</module>
+    <module>als-computation</module>
+    <module>kmeans-common</module>
+    <module>kmeans-serving</module>
+    <module>kmeans-computation</module>
+    <module>rdf-common</module>
+    <module>rdf-serving</module>
+    <module>rdf-computation</module>
+    <module>computation-common</module>
+    <module>computation</module>
+    <module>serving-common</module>
+    <module>serving</module>
+  </modules>
+
+  <properties>
+    <!-- Maven settings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <dependency.locations.enabled>false</dependency.locations.enabled>
+    <dependency.details.enabled>false</dependency.details.enabled>
+    <!-- Dependency versions -->
+    <slf4j.version>1.7.5</slf4j.version>
+    <tomcat.version>7.0.47</tomcat.version>
+    <!-- Don't update to 1.7.5+ until Hadoop uses Jackson 1.9+ -->
+    <avro.version>1.7.4</avro.version>
+    <hadoop.version>2.0.0-cdh4.4.1</hadoop.version>
+    <!-- our custom props -->
+    <module.jspx.package>override-me</module.jspx.package>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -407,7 +368,7 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>1.3</version>
         </plugin>
@@ -425,7 +386,7 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
           <version>2.5</version>
         </plugin>
@@ -493,17 +454,22 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
           <version>2.5.1</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <version>2.6</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>2.8.1</version>
         </plugin>
@@ -513,12 +479,12 @@
           <version>1.8.1</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.3</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>2.7</version>
           <configuration>
@@ -528,12 +494,12 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <version>2.8</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>        
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.4</version>
           <configuration>
@@ -747,6 +713,46 @@
     </plugins>
   </reporting>
 
+  <name>Oryx</name>
+  <description>The Oryx open source project provides simple, real-time large-scale machine learning infrastructure.</description>
+  <url>https://github.com/cloudera/oryx</url>
+  <inceptionYear>2013</inceptionYear>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>cloudera</id>
+      <organization>Cloudera</organization>
+      <organizationUrl>http://cloudera.com/</organizationUrl>
+    </developer>
+  </developers>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/cloudera/oryx/issues</url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList>
+      <name>Cloudera Community: Data Science and Machine Learning</name>
+      <archive>https://community.cloudera.com/t5/Data-Science-and-Machine/bd-p/Mahout</archive>
+    </mailingList>
+  </mailingLists>
+  <scm>
+    <connection>scm:git:http://github.com/cloudera/oryx.git</connection>
+    <url>scm:git:http://github.com/cloudera/oryx.git</url>
+    <developerConnection>scm:git:http://github.com/cloudera/oryx.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+  
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
   <repositories>
     <repository>
       <id>oryx.repo</id>
@@ -783,8 +789,8 @@
     </snapshotRepository>
     <site>
       <id>oryx.website</id>
-      <name>CDK documentation</name>
-      <url>file:///tmp/oryx-site/</url> <!-- to make site:staging happy -->
+      <name>Oryx documentation</name>
+      <url>file:///tmp/oryx-site/</url> <!-- to make site:stage happy -->
     </site>
   </distributionManagement>
 
