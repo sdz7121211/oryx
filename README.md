@@ -113,8 +113,9 @@ This will build the following binaries:
 ## Requirements
 
 * Java 6 or later
-* Hadoop 2.0 or later distribution, such as [CDH 4.x](http://www.cloudera.com/content/cloudera/en/products/cdh.html)
-  (Note that "MR2" is required.)
+* Hadoop 2.0 or later distribution, such as [CDH 4.3](http://www.cloudera.com/content/cloudera/en/products/cdh.html)
+  or later (Note that "MR2" is required.) Hadoop 2.2, and distributions like CDH5, are supported but with a
+  recompile, which is necessary to match client / server library versions.
 
 ## Installing
 
@@ -281,14 +282,33 @@ Coming later.
 
 # API Reference
 
+See project [javadoc](http://cloudera.github.io/oryx/apidocs/index.html).
+
 ## Collaborative filtering / Recommendation
 
-Coming soon.
+* [`/recommend`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/RecommendServlet.html)
+* [`/recommendToMany`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/RecommendToManyServlet.html)
+* [`/recommendToAnonymous`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/RecommendToAnonymousServlet.html)
+* [`/similarity`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/SimilarityServlet.html)
+* [`/similarityToItem`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/SimilarityToItemServlet.html)
+* [`/estimate`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/EstimateServlet.html)
+* [`/estimateForAnonymous`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/EstimateForAnonymousServlet.html)
+* [`/because`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/BecauseServlet.html)
+* [`/ready`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/ReadyServlet.html)
+* [`/mostPopularItems`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/MostPopularItemsServlet.html)
+* [`/pref`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/PreferenceServlet.html)
+* [`/ingest`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/IngestServlet.html)
+* [`/refresh`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/RefreshServlet.html)
 
 ## Classification / Regression
 
-Coming soon.
+* [`/classify`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/rdf/serving/web/ClassifyServlet.html)
+* [`/train`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/rdf/serving/web/TrainServlet.html)
+* [`/refresh`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/rdf/serving/web/RefreshServlet.html)
 
 ## Clustering
 
-Coming later.
+* [`/assign`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/kmeans/serving/web/AssignServlet.html)
+* [`/distanceToNearest`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/kmeans/serving/web/DistanceToNearestServlet.html)
+* [`/add`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/kmeans/serving/web/AddServlet.html)
+* [`/refresh`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/kmeans/serving/web/RefreshServlet.html)
