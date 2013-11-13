@@ -280,6 +280,11 @@ and the result should be `2`, but will depend a bit on the way the trees build.
 
 Coming later.
 
+# Configuration Reference
+
+Refer to the default configuration file for a list and explanation of configuration parameters:
+[`reference.conf`](https://github.com/cloudera/oryx/blob/master/common/src/main/resources/reference.conf)
+
 # API Reference
 
 See project [javadoc](http://cloudera.github.io/oryx/apidocs/index.html).
