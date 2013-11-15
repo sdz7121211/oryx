@@ -1,14 +1,15 @@
 # Summary
 
-The Oryx open source project provides simple, real-time large-scale machine learning infrastructure.
-It implements a few classes of algorithm commonly used in business applications:
+The Oryx open source project provides simple, real-time large-scale machine learning /
+predictive analytics infrastructure. It implements a few classes of algorithm commonly used in business applications:
 *collaborative filtering / recommendation*, *classification / regression*, and *clustering*.
 It can continuously build models from a stream of data at large scale using
-[Apache Hadoop](http://hadoop.apache.org/)'s [MapReduce](http://en.wikipedia.org/wiki/MapReduce). It
-also serves queries of those models in real-time via an HTTP
+[Apache Hadoop](http://hadoop.apache.org/). It also serves queries of those models in real-time via an HTTP
 [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) API, and can update
-models approximately in response to new data. Models are exchanged in
-[PMML](http://www.dmg.org/v4-1/GeneralStructure.html) format.
+models approximately in response to streaming new data. This two-tier design, comprised of the
+Computation Layer and Serving Layer, respectively, implement a
+[lambda architecture](http://jameskinley.tumblr.com/post/37398560534/the-lambda-architecture-principles-for-architecting).
+Models are exchanged in [PMML](http://www.dmg.org/v4-1/GeneralStructure.html) format.
 
 It is not a library, visualization tool, exploratory analytics tool, or environment.
 Oryx represents a unified continuation of the [Myrrix](http://myrrix.com) and
@@ -31,14 +32,16 @@ The Computation Layer is a long-running Java-based server process. It can be use
 Serving Layer to just build models, or even "score" models offline (e.g. produce recommendations for users
 offline).
 
-Input arrives on HDFS and models are written to HDFS as PMML files. Input data can be collected by the
+Input arrives on [HDFS](http://wiki.apache.org/hadoop/HDFS) and models are written to HDFS as PMML files.
+Input data can be collected by the
 Serving Layer, which records input into HDFS, or can be added by other processes directly to HDFS. The
 Serving Layer automatically loads new models from HDFS as they become available.
 
 ### Distributed
 
 The Computation Layer is primarily intended to use Hadoop's computation environment for computation, which
-for the moment means MapReduce. In this "distributed" context, the Computation Layer process is minding a
+for the moment means [MapReduce](http://en.wikipedia.org/wiki/MapReduce).
+In this "distributed" context, the Computation Layer process is minding a
 series of jobs that execute on the cluster. The server process configures, launches and monitors the jobs.
 Input, intermediate outputs, and model output are all on HDFS.
 
@@ -100,6 +103,11 @@ learning, which seeks to find structure in its input in the form of natural grou
 | Computation Layer (dist.) | beta                    | alpha                     | alpha      |
 | Computation Layer (local) | beta                    | alpha                     | alpha      |
 
+# Download
+
+Releases of the compiled binaries, as well as source snapshots, are available from the
+[Releases page](https://github.com/cloudera/oryx/releases).
+
 # Building from Source
 
 Clone the repository from github.com. Run `mvn -DskipTests clean install` from the top level.
@@ -130,9 +138,9 @@ command line utilities, but rather long-running server processes.
 
 ## Setting up CDH
 
-A CDH 4.3+ cluster with the `hdfs` service enabled, is required to run the Computation Layer.
+A CDH 4.3+ cluster, with the `hdfs` service enabled, is required to run the Computation Layer in distributed mode.
 The distributed Computation Layer further requires the `yarn` service, which enables "MapReduce v2". That is,
-it requires the normal "MR2" version of CDH, and not the "MR1" version.
+it requires the normal version of CDH, and not the `mr1` version.
 
 If a cluster is not available, a simple single-node cluster can be set up:
 [Installing CDH4 with YARN on a Single Linux Node in Pseudo-distributed mode](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Quick-Start/cdh4qs_topic_3_3.html)
@@ -151,7 +159,7 @@ To run the Serving Layer or the Computation Layer, you must point to a configura
 The complete set of configuration options is defined and documented in `common/src/main/resources/reference.conf`
 
 A configuration file is simply a text file using [HOCON](https://github.com/typesafehub/config/blob/master/HOCON.md)
-syntax (roughly, a combination of JSON and simple properties file syntax).
+syntax (roughly, a combination of [JSON](http://www.json.org/) and simple properties file syntax).
 
 Oryx obtains its configuration from four top-level objects:
 
@@ -170,8 +178,8 @@ serving-layer.api.port=8091
 computation-layer.api.port=8092
 ```
 
-(Ports 8091/8092 are desirable instead of defaults of 80 and 8080, since these require root acces,
-and YARN daemons use 8080, respectively.)
+_The default ports are 80 and 8080 respectively, but, 80 requires `root` access to use, and 8080 is used by
+Hadoop YARN daemon processes. So the config here specifies diffeent ports._
 
 ## Running
 
@@ -211,8 +219,8 @@ and can be for example simple rating information.
 User and item IDs must be escaped using CSV conventions if necessary: double-quote a field containing comma,
 and use two double-quotes to escape a double-quote within a quoted value.
 
-For a demo, try downloading a sample of the
-[Audioscrobbler data set](http://s3.amazonaws.com/srowen-oryx/audioscrobbler-sample.csv.gz)
+For a demo, try downloading a [sample of the
+Audioscrobbler data set](http://s3.amazonaws.com/srowen-oryx/audioscrobbler-sample.csv.gz).
 
 Example configuration, which will run computation locally:
 
