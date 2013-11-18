@@ -17,6 +17,10 @@ package com.cloudera.oryx.kmeans.common;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Defines a decision rule for choosing which clustering solution(s) to keep based on the performance
+ * statistics from a set of clustering runs.
+ */
 public interface KMeansEvalStrategy extends Serializable {
   List<ClusterValidityStatistics> evaluate(List<ClusterValidityStatistics> stats);
 }

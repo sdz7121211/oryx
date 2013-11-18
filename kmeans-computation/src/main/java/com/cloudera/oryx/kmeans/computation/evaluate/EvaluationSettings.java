@@ -18,6 +18,7 @@ package com.cloudera.oryx.kmeans.computation.evaluate;
 import com.cloudera.oryx.kmeans.common.FixedKEvalStrategy;
 import com.cloudera.oryx.kmeans.common.KMeansEvalStrategy;
 import com.cloudera.oryx.kmeans.common.LowCostStableEvalStrategy;
+import com.cloudera.oryx.kmeans.common.MostStableEvalStrategy;
 import com.typesafe.config.Config;
 
 import com.cloudera.oryx.kmeans.common.KMeansInitStrategy;
@@ -64,9 +65,13 @@ public final class EvaluationSettings implements Serializable {
       } else if ("THRESHOLD".equalsIgnoreCase(evalStrategyName)) {
         boolean varOfInfo = !eval.hasPath("criterion") || "vi".equalsIgnoreCase(config.getString("criterion"));
         evalStrategy = new LowCostStableEvalStrategy(eval.getDouble("threshold"), varOfInfo);
+      } else if ("STABLE".equalsIgnoreCase(evalStrategyName)) {
+        boolean median = !eval.hasPath("use") || "median".equalsIgnoreCase(eval.getString("median"));
+        boolean varOfInfo = !eval.hasPath("criterion") || "vi".equalsIgnoreCase(config.getString("criterion"));
+        evalStrategy = new MostStableEvalStrategy(median, varOfInfo);
       } else {
         throw new IllegalArgumentException(String.format(
-            "Unknown eval strategy: '%s' (valid options are FIXED and THRESHOLD)",
+            "Unknown eval strategy: '%s' (valid options are FIXED, THRESHOLD, and STABLE)",
             evalStrategyName));
       }
     }

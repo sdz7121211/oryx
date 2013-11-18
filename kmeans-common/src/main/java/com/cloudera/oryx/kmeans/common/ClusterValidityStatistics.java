@@ -24,6 +24,9 @@ import java.io.Serializable;
 
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 
+/**
+ * Statistics related to the cost and stability of the clusters found during a particular clustering run.
+ */
 public final class ClusterValidityStatistics implements Serializable {
 
   private final int k;

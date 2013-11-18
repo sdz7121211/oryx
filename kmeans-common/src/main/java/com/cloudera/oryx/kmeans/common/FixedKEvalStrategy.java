@@ -19,6 +19,9 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
+/**
+ * For a given set of runs, choose the lowest cost solution for a fixed value of K.
+ */
 public final class FixedKEvalStrategy implements KMeansEvalStrategy {
 
   private final int k;
