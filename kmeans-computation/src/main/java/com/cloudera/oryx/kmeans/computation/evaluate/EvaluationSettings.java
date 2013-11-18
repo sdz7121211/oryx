@@ -63,11 +63,11 @@ public final class EvaluationSettings implements Serializable {
       if ("FIXED".equalsIgnoreCase(evalStrategyName)) {
         evalStrategy = new FixedKEvalStrategy(config.getInt("k"));
       } else if ("THRESHOLD".equalsIgnoreCase(evalStrategyName)) {
-        boolean varOfInfo = !eval.hasPath("criterion") || "vi".equalsIgnoreCase(config.getString("criterion"));
+        boolean varOfInfo = !eval.hasPath("criterion") || "vi".equalsIgnoreCase(eval.getString("criterion"));
         evalStrategy = new LowCostStableEvalStrategy(eval.getDouble("threshold"), varOfInfo);
       } else if ("STABLE".equalsIgnoreCase(evalStrategyName)) {
-        boolean median = !eval.hasPath("use") || "median".equalsIgnoreCase(eval.getString("median"));
-        boolean varOfInfo = !eval.hasPath("criterion") || "vi".equalsIgnoreCase(config.getString("criterion"));
+        boolean median = !eval.hasPath("use") || "median".equalsIgnoreCase(eval.getString("use"));
+        boolean varOfInfo = !eval.hasPath("criterion") || "vi".equalsIgnoreCase(eval.getString("criterion"));
         evalStrategy = new MostStableEvalStrategy(median, varOfInfo);
       } else {
         throw new IllegalArgumentException(String.format(

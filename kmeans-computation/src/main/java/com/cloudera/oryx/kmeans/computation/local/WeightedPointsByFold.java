@@ -26,6 +26,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.random.RandomGenerator;
@@ -58,7 +59,8 @@ public final class WeightedPointsByFold implements Callable<List<List<WeightedRe
     RandomGenerator random = RandomManager.getRandom();
 
     ListeningExecutorService exec = MoreExecutors.listeningDecorator(
-        Executors.newFixedThreadPool(config.getInt("model.parallelism")));
+        Executors.newFixedThreadPool(config.getInt("model.parallelism"),
+            new ThreadFactoryBuilder().setNameFormat("KSKETCH-%d").setDaemon(true).build()));
     for (int iter = 0; iter < cluster.getSketchIterations(); iter++) {
       log.info("Starting sketch iteration {}", iter + 1);
       List<ListenableFuture<Collection<RealVector>>> futures = Lists.newArrayList();

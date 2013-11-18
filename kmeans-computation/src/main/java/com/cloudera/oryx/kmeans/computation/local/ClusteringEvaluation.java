@@ -29,6 +29,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.typesafe.config.Config;
 
 import java.util.List;
@@ -50,7 +51,8 @@ public final class ClusteringEvaluation implements Callable<List<KMeansEvaluatio
     EvaluationSettings settings = EvaluationSettings.create(config);
 
     ListeningExecutorService exec = MoreExecutors.listeningDecorator(
-        Executors.newFixedThreadPool(config.getInt("model.parallelism")));
+        Executors.newFixedThreadPool(config.getInt("model.parallelism"),
+            new ThreadFactoryBuilder().setNameFormat("KMEANS-%d").setDaemon(true).build()));
     List<ListenableFuture<KMeansEvaluationData>> futures = Lists.newArrayList();
     for (Integer nc : settings.getKValues()) {
       int loops = nc == 1 ? 1 : settings.getReplications();
