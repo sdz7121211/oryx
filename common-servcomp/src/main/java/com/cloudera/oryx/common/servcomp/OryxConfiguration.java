@@ -44,7 +44,7 @@ public final class OryxConfiguration extends Configuration {
   private static final String DEFAULT_HADOOP_CONF_DIR = "/etc/hadoop/conf";
 
   public OryxConfiguration() {
-    init();
+    this(new Configuration());
   }
 
   public OryxConfiguration(Configuration configuration) {
