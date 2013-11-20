@@ -179,7 +179,7 @@ computation-layer.api.port=8092
 ```
 
 _The default ports are 80 and 8080 respectively, but, 80 requires `root` access to use, and 8080 is used by
-Hadoop YARN daemon processes. So the config here specifies diffeent ports._
+Hadoop YARN daemon processes. So the config here specifies different ports._
 
 ## Running
 
