@@ -19,6 +19,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
@@ -31,6 +33,8 @@ import com.cloudera.oryx.common.settings.ConfigUtils;
  */
 public final class Namespaces {
 
+  private static final Logger log = LoggerFactory.getLogger(Namespaces.class);
+
   private static final Namespaces instance = new Namespaces();
 
   private final String prefix;
@@ -41,6 +45,7 @@ public final class Namespaces {
     } else {
       URI defaultURI = FileSystem.getDefaultUri(new OryxConfiguration());
       String host = defaultURI.getHost();
+      Preconditions.checkNotNull(host, "No host?");
       int port = defaultURI.getPort();
       if (port > 0) {
         prefix = "hdfs://" + host + ':' + port;
@@ -48,6 +53,7 @@ public final class Namespaces {
         prefix = "hdfs://" + host;
       }
     }
+    log.info("Namespace prefix: {}", prefix);
   }
 
   /**
