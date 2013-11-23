@@ -30,6 +30,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro-mapred</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.cloudera.oryx</groupId>
       <artifactId>oryx-kmeans-common</artifactId>
     </dependency>
