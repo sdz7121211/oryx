@@ -21,4 +21,9 @@ package com.cloudera.oryx.als.common;
  * @author Sean Owen
  */
 public final class NotReadyException extends Exception {
+
+  public NotReadyException() {
+    super("API method unavailable until model has been built and loaded");
+  }
+
 }

@@ -59,7 +59,8 @@ public final class ClassifyServlet extends AbstractRDFServlet {
 
     Generation generation = getGenerationManager().getCurrentGeneration();
     if (generation == null) {
-      response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+      response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                         "API method unavailable until model has been built and loaded");
       return;
     }
 

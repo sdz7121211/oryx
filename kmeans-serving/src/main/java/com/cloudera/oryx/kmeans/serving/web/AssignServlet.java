@@ -34,22 +34,20 @@ public final class AssignServlet extends AbstractKMeansServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     CharSequence pathInfo = request.getPathInfo();
-    //System.out.println("PATH INFO = " + pathInfo);
     if (pathInfo == null) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No path");
       return;
     }
     String line = pathInfo.subSequence(1, pathInfo.length()).toString();
-    //System.out.println("LINE = " + line);
     Generation generation = getGenerationManager().getCurrentGeneration();
     if (generation == null) {
-      response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+      response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                         "API method unavailable until model has been built and loaded");
       return;
     }
 
     RealVector vec = generation.toVector(DelimitedDataUtils.decode(line));
     if (vec == null) {
-      //System.out.println("Bad column count");
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wrong column count");
       return;
     }

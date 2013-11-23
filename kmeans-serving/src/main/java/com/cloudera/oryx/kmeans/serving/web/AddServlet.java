@@ -41,7 +41,8 @@ public final class AddServlet extends AbstractKMeansServlet {
     KMeansGenerationManager generationManager = getGenerationManager();
     Generation generation = generationManager.getCurrentGeneration();
     if (generation == null) {
-      response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+      response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                         "API method unavailable until model has been built and loaded");
       return;
     }
 
