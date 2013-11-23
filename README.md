@@ -1,8 +1,6 @@
 # Summary
 
-<div style="float:right">
-![Logo](https://raw.github.com/wiki/cloudera/oryx/OryxLogoSmall.png)
-</div>
+<img align="right" src="https://raw.github.com/wiki/cloudera/oryx/OryxLogoSmall.png"/>
 
 The Oryx open source project provides simple, real-time large-scale machine learning /
 predictive analytics infrastructure. It implements a few classes of algorithm commonly used in business applications:
