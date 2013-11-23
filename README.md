@@ -293,35 +293,4 @@ Coming later.
 Refer to the default configuration file for a list and explanation of configuration parameters:
 [`reference.conf`](https://github.com/cloudera/oryx/blob/master/common/src/main/resources/reference.conf)
 
-# API Reference
-
-See project [javadoc](http://cloudera.github.io/oryx/apidocs/index.html).
-
-## Collaborative filtering / Recommendation
-
-* [`/recommend`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/RecommendServlet.html)
-* [`/recommendToMany`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/RecommendToManyServlet.html)
-* [`/recommendToAnonymous`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/RecommendToAnonymousServlet.html)
-* [`/similarity`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/SimilarityServlet.html)
-* [`/similarityToItem`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/SimilarityToItemServlet.html)
-* [`/estimate`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/EstimateServlet.html)
-* [`/estimateForAnonymous`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/EstimateForAnonymousServlet.html)
-* [`/because`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/BecauseServlet.html)
-* [`/ready`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/ReadyServlet.html)
-* [`/mostPopularItems`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/MostPopularItemsServlet.html)
-* [`/pref`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/PreferenceServlet.html)
-* [`/ingest`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/IngestServlet.html)
-* [`/refresh`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/als/serving/web/RefreshServlet.html)
-
-## Classification / Regression
-
-* [`/classify`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/rdf/serving/web/ClassifyServlet.html)
-* [`/train`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/rdf/serving/web/TrainServlet.html)
-* [`/refresh`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/rdf/serving/web/RefreshServlet.html)
-
-## Clustering
-
-* [`/assign`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/kmeans/serving/web/AssignServlet.html)
-* [`/distanceToNearest`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/kmeans/serving/web/DistanceToNearestServlet.html)
-* [`/add`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/kmeans/serving/web/AddServlet.html)
-* [`/refresh`](http://cloudera.github.io/oryx/apidocs/com/cloudera/oryx/kmeans/serving/web/RefreshServlet.html)
+# [API Endpoint Reference](wiki/API-Endpoint-Reference)
