@@ -23,12 +23,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServlet;
 
+import com.typesafe.config.Config;
 import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cloudera.oryx.als.common.OryxRecommender;
+import com.cloudera.oryx.als.serving.AbstractRescorerProvider;
+import com.cloudera.oryx.als.serving.RescorerProvider;
 import com.cloudera.oryx.als.serving.ServerRecommender;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.serving.web.AbstractOryxServingInitListener;
@@ -47,6 +50,7 @@ public final class ALSServingInitListener extends AbstractOryxServingInitListene
   public void contextInitialized(ServletContextEvent event) {
     super.contextInitialized(event);
     ServletContext context = event.getServletContext();
+
     File localInputDir = getLocalInputDir();
     ServerRecommender recommender;
     try {
@@ -55,6 +59,15 @@ public final class ALSServingInitListener extends AbstractOryxServingInitListene
       throw new IllegalStateException(ioe);
     }
     context.setAttribute(AbstractALSServlet.RECOMMENDER_KEY, recommender);
+
+    Config config = ConfigUtils.getDefaultConfig();
+    if (config.hasPath("serving-layer.rescorer-provider-class")) {
+      String rescorerProviderClassNames = config.getString("serving-layer.rescorer-provider-class");
+      RescorerProvider rescorerProvider = AbstractRescorerProvider.loadRescorerProviders(rescorerProviderClassNames);
+      if (rescorerProvider != null) {
+        context.setAttribute(AbstractALSServlet.RESCORER_PROVIDER_KEY, rescorerProvider);
+      }
+    }
   }
 
   @Override

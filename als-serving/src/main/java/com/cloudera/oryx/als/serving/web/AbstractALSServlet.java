@@ -45,7 +45,7 @@ public abstract class AbstractALSServlet extends AbstractOryxServlet {
 
   private static final String KEY_PREFIX = AbstractALSServlet.class.getName();
   public static final String RECOMMENDER_KEY = KEY_PREFIX + ".RECOMMENDER";
-  private static final String RESCORER_PROVIDER_KEY = KEY_PREFIX + ".RESCORER_PROVIDER";
+  public static final String RESCORER_PROVIDER_KEY = KEY_PREFIX + ".RESCORER_PROVIDER";
   private static final String[] NO_PARAMS = new String[0];
 
   private OryxRecommender recommender;
