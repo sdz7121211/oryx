@@ -1,5 +1,9 @@
 # Summary
 
+<div style="float:right">
+![Logo](https://raw.github.com/wiki/cloudera/oryx/OryxLogoSmall.png)
+</div>
+
 The Oryx open source project provides simple, real-time large-scale machine learning /
 predictive analytics infrastructure. It implements a few classes of algorithm commonly used in business applications:
 *collaborative filtering / recommendation*, *classification / regression*, and *clustering*.
