@@ -288,9 +288,8 @@ and the result should be `2`, but will depend a bit on the way the trees build.
 
 Coming later.
 
-# Configuration Reference
+# [Javadoc](http://cloudera.github.io/oryx/apidocs/index.html)
 
-Refer to the default configuration file for a list and explanation of configuration parameters:
-[`reference.conf`](https://github.com/cloudera/oryx/blob/master/common/src/main/resources/reference.conf)
+# [Configuration Reference](wiki/Configuration-Reference)
 
 # [API Endpoint Reference](wiki/API-Endpoint-Reference)
