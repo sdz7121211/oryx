@@ -290,6 +290,8 @@ and the result should be `2`, but will depend a bit on the way the trees build.
 
 Coming later.
 
+# [FAQ and Troubleshooting](wiki/FAQ-and-Troubleshooting)
+
 # [Javadoc](http://cloudera.github.io/oryx/apidocs/index.html)
 
 # [Configuration Reference](wiki/Configuration-Reference)
