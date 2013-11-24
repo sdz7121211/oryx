@@ -400,7 +400,6 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.1</version>
           <configuration>
-            <fork>true</fork>
             <optimize>true</optimize>
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
@@ -505,13 +504,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.3</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.maven.doxia</groupId>
-              <artifactId>doxia-module-markdown</artifactId>
-              <version>1.4</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -521,6 +513,7 @@
             <!-- Try to reduce impact of ERROR: Unabel to determine if... plugin bug -->
             <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
             <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+            <remoteRepositories>https://repository.cloudera.com/artifactory/cloudera-repos</remoteRepositories>
           </configuration>
         </plugin>
         <plugin>
@@ -693,6 +686,7 @@
             <threshold>Normal</threshold>
             <effort>Max</effort>
             <xmlOutput>true</xmlOutput>
+            <xmlOutputDirectory>target/site</xmlOutputDirectory>
           </configuration>
         </plugin>
         <plugin>
@@ -727,25 +721,41 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <!--
         <reportSets>
           <reportSet>
             <reports>
-              <report>dependencies</report>
-              <report>project-team</report>
-              <report>mailing-list</report>
-              <report>cim</report>
+              <!-- <report>cim</report> -->
+              <!-- <report>dependencies</report> -->
+              <report>dependency-convergence</report>
+              <report>dependency-info</report>
+              <report>dependency-management</report>
+              <report>distribution-management</report>
+              <report>index</report>
               <report>issue-tracking</report>
               <report>license</report>
+              <report>mailing-list</report>
+              <!-- <report>modules</report> -->
+              <!-- <report>plugin-management</report> -->
+              <!-- <report>plugins</report> -->
+              <!-- <report>project-team</report> -->
               <report>scm</report>
+              <report>summary</report>
             </reports>
           </reportSet>
         </reportSets>
-        -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <id>aggregate</id>
+            <reports>
+              <report>aggregate</report>
+              <report>test-aggregate</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -754,12 +764,22 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <id>aggregate</id>
+            <reports>
+              <report>aggregate</report>
+              <report>test-aggregate</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>emma-maven-plugin</artifactId>
       </plugin>
     </plugins>
+    <excludeDefaults>true</excludeDefaults>
   </reporting>
 
   <name>Oryx</name>
@@ -839,7 +859,7 @@
     <site>
       <id>oryx.website</id>
       <name>Oryx documentation</name>
-      <url>file:///tmp/oryx-site/</url> <!-- to make site:stage happy -->
+      <url>http://cloudera.github.io/oryx/</url>
     </site>
   </distributionManagement>
 
