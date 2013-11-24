@@ -107,7 +107,11 @@ public final class Runner implements Callable<Object>, Closeable {
    * Starts the main loop, which runs indefinitely.
    */
   @Override
-  public Object call() throws IOException {
+  public synchronized Object call() throws IOException {
+
+    if (closed) {
+      return Boolean.FALSE;
+    }
 
     MemoryHandler.setSensibleLogFormat();
     java.util.logging.Logger.getLogger("").addHandler(new MemoryHandler());
@@ -146,7 +150,15 @@ public final class Runner implements Callable<Object>, Closeable {
    * Blocks and waits until the server shuts down.
    */
   void await() {
-    tomcat.getServer().await();
+    Server server = null;
+    synchronized (this) {
+      if (tomcat != null) {
+        server = tomcat.getServer();
+      }
+    }
+    if (server != null) {
+      server.await();
+    }
   }
 
   @Override
@@ -170,19 +182,19 @@ public final class Runner implements Callable<Object>, Closeable {
   }
 
   public static void main(String[] args) throws Exception {
-
     final Runner runner = new Runner();
-    runner.call();
-
     SignalManager.register(new Runnable() {
-        @Override
-        public void run() {
-          runner.close();
-        }
-      }, SignalType.INT, SignalType.TERM);
-
-    runner.await();
-    runner.close();
+      @Override
+      public void run() {
+        runner.close();
+      }
+    }, SignalType.INT, SignalType.TERM);
+    try {
+      runner.call();
+      runner.await();
+    } finally {
+      runner.close();
+    }
   }
 
   private void configureTomcat(Tomcat tomcat, Connector connector) {

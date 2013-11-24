@@ -98,7 +98,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sean Owen
  */
-public final class Runner implements Callable<Boolean>, Closeable {
+public final class Runner implements Callable<Object>, Closeable {
 
   private static final Logger log = LoggerFactory.getLogger(Runner.class);
 
@@ -134,23 +134,27 @@ public final class Runner implements Callable<Boolean>, Closeable {
   }
 
   public static void main(String[] args) throws Exception {
-
     final Runner runner = new Runner();
-    runner.call();
-
     SignalManager.register(new Runnable() {
-        @Override
-        public void run() {
-          runner.close();
-        }
-      }, SignalType.INT, SignalType.TERM);
-
-    runner.await();
-    runner.close();
+      @Override
+      public void run() {
+        runner.close();
+      }
+    }, SignalType.INT, SignalType.TERM);
+    try {
+      runner.call();
+      runner.await();
+    } finally {
+      runner.close();
+    }
   }
 
   @Override
-  public Boolean call() throws IOException {
+  public synchronized Object call() throws IOException {
+
+    if (closed) {
+      return Boolean.FALSE;
+    }
 
     MemoryHandler.setSensibleLogFormat();
     java.util.logging.Logger.getLogger("").addHandler(new MemoryHandler());
@@ -187,8 +191,16 @@ public final class Runner implements Callable<Boolean>, Closeable {
   /**
    * Blocks and waits until the server shuts down.
    */
-  public void await() {
-    tomcat.getServer().await();
+  void await() {
+    Server server = null;
+    synchronized (this) {
+      if (tomcat != null) {
+        server = tomcat.getServer();
+      }
+    }
+    if (server != null) {
+      server.await();
+    }
   }
 
   @Override
