@@ -60,7 +60,7 @@ public final class Store {
   private Store() {
     try {
       Configuration conf = new OryxConfiguration();
-      if (ConfigUtils.getDefaultConfig().getBoolean("model.local")) {
+      if (ConfigUtils.getDefaultConfig().getBoolean("model.local-data")) {
         fs = FileSystem.getLocal(conf);
       } else {
         fs = FileSystem.get(URI.create(Namespaces.get().getPrefix()), conf);

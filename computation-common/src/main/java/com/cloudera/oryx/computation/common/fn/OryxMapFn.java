@@ -19,8 +19,6 @@ import com.cloudera.oryx.common.servcomp.OryxConfiguration;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.computation.common.JobStep;
 
-import com.google.common.base.Preconditions;
-import org.apache.crunch.Emitter;
 import org.apache.crunch.MapFn;
 import org.apache.hadoop.conf.Configuration;
 import org.slf4j.Logger;
@@ -43,14 +41,6 @@ public abstract class OryxMapFn<S, T> extends MapFn<S, T> {
     log.info("Setup of {} with config {}", this, rawConfiguration);
     this.configuration = new OryxConfiguration(rawConfiguration);
     ConfigUtils.overlayConfigOnDefault(configuration.get(JobStep.CONFIG_SERIALIZATION_KEY));
-    Preconditions.checkState(!ConfigUtils.getDefaultConfig().getBoolean("model.local"),
-                             "Config didn't load; model.local=true");
-  }
-
-  @Override
-  public void cleanup(Emitter<T> emitter) {
-    log.info("Cleanup of {}", this);
-    super.cleanup(emitter);
   }
 
   @Override

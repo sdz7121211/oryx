@@ -174,7 +174,8 @@ A simple, sound `oryx.conf` file:
 
 ```
 model=${als-model}
-model.local=false
+model.local-computation=false
+model.local-data=false
 model.instance-dir=/user/oryx/example
 serving-layer.api.port=8091
 computation-layer.api.port=8092
@@ -228,7 +229,6 @@ Example configuration, which will run computation locally:
 
 ```
 model=${als-model}
-model.local=true
 model.instance-dir=/tmp/oryx/example
 ```
 
@@ -257,7 +257,6 @@ The following example configuration file works with this input:
 
 ```
 model=${rdf-model}
-model.local=true
 model.instance-dir=/tmp/oryx/example
 inbound.numeric-columns=[0,1,2,3,4,5,6,7,8,9]
 inbound.target-column=54

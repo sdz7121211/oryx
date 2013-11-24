@@ -53,7 +53,7 @@ public final class OryxConfiguration extends Configuration {
    */
   public OryxConfiguration(Configuration configuration) {
     super(configuration);
-    if (!ConfigUtils.getDefaultConfig().getBoolean("model.local")) {
+    if (!ConfigUtils.getDefaultConfig().getBoolean("model.local-computation")) {
       File hadoopConfDir = findHadoopConfDir();
       addResource(hadoopConfDir, "core-site.xml");
       addResource(hadoopConfDir, "core-default.xml");

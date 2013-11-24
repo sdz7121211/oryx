@@ -40,7 +40,7 @@ public final class Namespaces {
   private final String prefix;
 
   private Namespaces() {
-    if (ConfigUtils.getDefaultConfig().getBoolean("model.local")) {
+    if (ConfigUtils.getDefaultConfig().getBoolean("model.local-data")) {
       prefix = "file:";
     } else {
       URI defaultURI = FileSystem.getDefaultUri(new OryxConfiguration());

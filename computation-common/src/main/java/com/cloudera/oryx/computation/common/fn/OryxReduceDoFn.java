@@ -46,8 +46,6 @@ public abstract class OryxReduceDoFn<K, V, T> extends DoFn<Pair<K, V>, T> {
     this.configuration = new OryxConfiguration(getContext().getConfiguration());
 
     ConfigUtils.overlayConfigOnDefault(configuration.get(JobStep.CONFIG_SERIALIZATION_KEY));
-    Preconditions.checkState(!ConfigUtils.getDefaultConfig().getBoolean("model.local"),
-                             "Config didn't load; model.local=true");
 
     numPartitions = getContext().getNumReduceTasks();
     partition = configuration.getInt(MRJobConfig.TASK_PARTITION, -1);
@@ -70,12 +68,6 @@ public abstract class OryxReduceDoFn<K, V, T> extends DoFn<Pair<K, V>, T> {
    */
   protected final int getNumPartitions() {
     return numPartitions;
-  }
-
-  @Override
-  public void cleanup(Emitter<T> emitter)  {
-    log.info("Cleanup of {}", this);
-    super.cleanup(emitter);
   }
 
   @Override

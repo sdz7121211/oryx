@@ -272,7 +272,7 @@ public final class PeriodicRunner implements Runnable, Closeable {
     Preconditions.checkNotNull(localDistributed,
                                "Unspecified or unsupported model type: %s",
                                config.getString("model.type"));
-    boolean local = config.getBoolean("model.local");
+    boolean local = config.getBoolean("model.local-computation");
     Class<? extends GenerationRunner> runnerClass = local ? localDistributed.get(0) : localDistributed.get(1);
     return ClassUtils.loadInstanceOf(runnerClass);
   }
