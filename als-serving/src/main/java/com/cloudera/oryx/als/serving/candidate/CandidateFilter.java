@@ -29,10 +29,13 @@ import com.cloudera.oryx.common.collection.LongObjectMap;
  * to be excluded. It could pre-compute which items are eligible and </p>
  * 
  * <p>This is a form of filtering, but, differs from the filtering provided by 
- * {@link com.cloudera.oryx.als.serving.RescorerProvider}. That is a run-time, per-request filter; this class represents
- * a more global, precomputed filtering that is not parameterized by the request.</p>
+ * {@link com.cloudera.oryx.als.serving.RescorerProvider}. That is a run-time, per-request filter;
+ * this class represents a more global, precomputed filtering that is not parameterized by the request.</p>
  *
- * <p>Implementations should define a constructor that accepts a parameter of type {@link com.cloudera.oryx.common.collection.LongObjectMap}.
+ * <p><em>This is quite a low-level API and should be considered "advanced" usage; use a
+ * {@link com.cloudera.oryx.als.serving.RescorerProvider} unless it's clear that it is not fast enough.</em></p>
+ *
+ * <p>Implementations should define a constructor that accepts a parameter of type {@link LongObjectMap}.
  * This is a reference to the "Y" matrix in the model -- item-feature matrix.
  * Access to Y is protected by a lock, but, the implementation can assume that it is locked for
  * reading (not writing) during the constructor call, and is locked for reading (not writing) during
@@ -54,10 +57,11 @@ public interface CandidateFilter {
 
   /**
    * @param userVectors user feature vector(s) for which recommendations are being made. This may or may not
-   *  influence which items are returned.
+   *  influence which items are returned. Use {@link com.cloudera.oryx.als.common.StringLongMapping#toLong(String)}
+   *  to find the numeric internal ID for a given string ID.
    * @return a set of items most likely to be a good recommendation for the given users. These are returned
-   *  as item ID / vector pairs ({@link com.cloudera.oryx.common.collection.LongObjectMap}'s {@code MapEntry}). They are returned as an {@link Iterator} --
-   *  and not just one, but potentially many. If several are returned, then the caller will process the
+   *  as item ID / vector pairs ({@link LongObjectMap}'s {@code MapEntry}). They are returned as an {@link Iterator},
+   *  and not just one, but potentially many. If several are returned, then the caller can process the
    *  {@link Iterator}s in parallel for speed.
    */
   Collection<Iterator<LongObjectMap.MapEntry<float[]>>> getCandidateIterator(float[][] userVectors);

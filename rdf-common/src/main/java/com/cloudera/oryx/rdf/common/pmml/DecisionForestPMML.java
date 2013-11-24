@@ -18,9 +18,7 @@ package com.cloudera.oryx.rdf.common.pmml;
 import com.cloudera.oryx.common.pmml.PMMLUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.math3.util.Pair;
 import org.dmg.pmml.Array;
 import org.dmg.pmml.DataDictionary;
@@ -42,8 +40,6 @@ import org.dmg.pmml.SimplePredicate;
 import org.dmg.pmml.SimpleSetPredicate;
 import org.dmg.pmml.TreeModel;
 import org.dmg.pmml.True;
-import org.dmg.pmml.TypeDefinitionField;
-import org.dmg.pmml.Value;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;

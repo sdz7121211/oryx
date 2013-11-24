@@ -36,7 +36,6 @@ import org.dmg.pmml.MiningSchema;
 import org.dmg.pmml.NormContinuous;
 import org.dmg.pmml.NormDiscrete;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -132,8 +131,8 @@ public final class VectorFactory {
     void update(RealVector v, String value);
   }
 
-  private static class CategoricalUpdate implements Update {
-    private Map<String, Update> updates;
+  private static final class CategoricalUpdate implements Update {
+    private final Map<String, Update> updates;
 
     CategoricalUpdate(Map<String, Update> updates) {
       this.updates = updates;
@@ -145,10 +144,10 @@ public final class VectorFactory {
     }
   }
 
-  private static class NumericUpdate implements Update {
-    private ConvertFunction c;
-    private int offset;
-    private double scale;
+  private static final class NumericUpdate implements Update {
+    private final ConvertFunction c;
+    private final int offset;
+    private final double scale;
 
     NumericUpdate(ConvertFunction c, int offset, double scale) {
       this.c = c;
@@ -192,7 +191,7 @@ public final class VectorFactory {
     }
   };
 
-  private static class InterpolateFunction implements ConvertFunction {
+  private static final class InterpolateFunction implements ConvertFunction {
     private final double a1;
     private final double b1;
     private final double a2;

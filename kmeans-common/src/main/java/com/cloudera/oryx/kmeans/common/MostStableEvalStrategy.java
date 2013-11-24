@@ -27,7 +27,7 @@ import java.util.Map;
  * the stability of K is determined by taking the mean or the median of one of the main cluster stability metric
  * (either Van Dongen or the Variation of Information.)
  */
-public class MostStableEvalStrategy implements KMeansEvalStrategy {
+public final class MostStableEvalStrategy implements KMeansEvalStrategy {
 
   private final boolean useMedian;
   private final boolean useVariationOfInformation;

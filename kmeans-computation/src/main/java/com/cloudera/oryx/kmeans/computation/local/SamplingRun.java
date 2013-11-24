@@ -34,7 +34,7 @@ public final class SamplingRun implements Callable<Collection<RealVector>> {
   private final int foldId;
   private final List<RealVector> vecs;
   private final int sampleCount;
-  private List<RealVector> sample;
+  //private List<RealVector> sample;
 
   public SamplingRun(KSketchIndex index, RandomGenerator random, int foldId, List<RealVector> vecs, int sampleCount) {
     this.index = index;

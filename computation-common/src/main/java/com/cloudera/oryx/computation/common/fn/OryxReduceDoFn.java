@@ -21,7 +21,6 @@ import com.cloudera.oryx.computation.common.JobStep;
 
 import com.google.common.base.Preconditions;
 import org.apache.crunch.DoFn;
-import org.apache.crunch.Emitter;
 import org.apache.crunch.Pair;
 import org.apache.hadoop.mapreduce.MRJobConfig;
 import org.slf4j.Logger;

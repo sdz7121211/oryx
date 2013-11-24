@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Cloudera, Inc. All Rights Reserved.
  *
  * Cloudera, Inc. licenses this file to you under the Apache License,
@@ -12,6 +12,7 @@
  * the specific language governing permissions and limitations under the
  * License.
  */
+
 package com.cloudera.oryx.kmeans.common;
 
 import com.google.common.collect.ImmutableList;
@@ -20,14 +21,19 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import com.cloudera.oryx.common.OryxTest;
 
-public class KMeansEvalStrategyTest {
+/**
+ * Tests implementations of {@link KMeansEvalStrategy}.
+ */
+public final class KMeansEvalStrategyTest extends OryxTest {
 
-  List<ClusterValidityStatistics> stats;
+  private List<ClusterValidityStatistics> stats;
 
+  @Override
   @Before
   public void setUp() throws Exception {
+    super.setUp();
     // k,replica,testCost,trainCost,varInfo,vanDongen
     stats = ImmutableList.of(
         ClusterValidityStatistics.parse("1,0,10,20,0.5,0.2"),

@@ -18,7 +18,6 @@ import com.cloudera.oryx.kmeans.common.WeightedRealVector;
 import com.cloudera.oryx.kmeans.computation.cluster.KSketchIndex;
 import org.apache.commons.math3.linear.RealVector;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -37,7 +36,7 @@ public final class AssignmentRun implements Callable<List<WeightedRealVector>> {
   }
 
   @Override
-  public List<WeightedRealVector> call() throws IOException {
+  public List<WeightedRealVector> call() {
     long[] cnts = new long[index.getPointCounts()[foldId]];
     for (RealVector v : vecs) {
       cnts[index.getDistance(v, foldId, true).getClosestCenterId()]++;

@@ -48,7 +48,7 @@ import org.dmg.pmml.SquaredEuclidean;
 
 import java.util.List;
 
-public class ClusteringModelBuilder {
+public final class ClusteringModelBuilder {
 
   private final MiningSchema miningSchema;
   private final DataDictionary dictionary;

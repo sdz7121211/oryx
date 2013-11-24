@@ -39,6 +39,9 @@ import java.util.Map;
 
 public final class PMMLUtils {
 
+  private PMMLUtils() {
+  }
+
   public static DataDictionary buildDataDictionaryFromLevels(InboundSettings inboundSettings,
       Map<Integer, List<String>> columnToCategoryLevels) {
     Map<Integer, BiMap<String, Integer>> m = Maps.transformValues(columnToCategoryLevels,

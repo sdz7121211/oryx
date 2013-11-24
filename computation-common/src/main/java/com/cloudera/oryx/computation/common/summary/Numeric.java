@@ -24,7 +24,7 @@ public final class Numeric implements Serializable {
   private double mean;
   private double stdDev;
   private Long missing;
-  private String transform;
+  //private String transform;
   
   // For serialization
   private Numeric() { }
@@ -64,7 +64,9 @@ public final class Numeric implements Serializable {
   }
   
   public String getTransform() {
-    return transform;
+    //return transform;
+    // This field was never set?
+    return null;
   }
   
   public long getMissing() {
