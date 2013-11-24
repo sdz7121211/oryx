@@ -30,6 +30,7 @@ import java.util.zip.ZipInputStream;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.typesafe.config.Config;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -58,9 +59,17 @@ public final class Store {
   private final FileSystem fs;
 
   private Store() {
+    Config config = ConfigUtils.getDefaultConfig();
+    boolean localData;
+    if (config.hasPath("model.local-data")) {
+      localData = config.getBoolean("model.local-data");
+    } else {
+      log.warn("model.local is deprecated; use model.local-data and model.local-computation");
+      localData = config.getBoolean("model.local");
+    }
     try {
       Configuration conf = new OryxConfiguration();
-      if (ConfigUtils.getDefaultConfig().getBoolean("model.local-data")) {
+      if (localData) {
         fs = FileSystem.getLocal(conf);
       } else {
         fs = FileSystem.get(URI.create(Namespaces.get().getPrefix()), conf);

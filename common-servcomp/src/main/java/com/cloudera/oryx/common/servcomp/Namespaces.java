@@ -17,6 +17,7 @@ package com.cloudera.oryx.common.servcomp;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.typesafe.config.Config;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
@@ -40,7 +41,15 @@ public final class Namespaces {
   private final String prefix;
 
   private Namespaces() {
-    if (ConfigUtils.getDefaultConfig().getBoolean("model.local-data")) {
+    Config config = ConfigUtils.getDefaultConfig();
+    boolean localData;
+    if (config.hasPath("model.local-data")) {
+      localData = config.getBoolean("model.local-data");
+    } else {
+      log.warn("model.local is deprecated; use model.local-data and model.local-computation");
+      localData = config.getBoolean("model.local");
+    }
+    if (localData) {
       prefix = "file:";
     } else {
       URI defaultURI = FileSystem.getDefaultUri(new OryxConfiguration());

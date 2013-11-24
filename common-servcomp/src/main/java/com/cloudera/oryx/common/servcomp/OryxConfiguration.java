@@ -24,6 +24,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.typesafe.config.Config;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.slf4j.Logger;
@@ -53,7 +54,15 @@ public final class OryxConfiguration extends Configuration {
    */
   public OryxConfiguration(Configuration configuration) {
     super(configuration);
-    if (!ConfigUtils.getDefaultConfig().getBoolean("model.local-computation")) {
+    Config config = ConfigUtils.getDefaultConfig();
+    boolean localComputation;
+    if (config.hasPath("model.local-computation")) {
+      localComputation = config.getBoolean("model.local-computation");
+    } else {
+      log.warn("model.local is deprecated; use model.local-data and model.local-computation");
+      localComputation = config.getBoolean("model.local");
+    }
+    if (!localComputation) {
       File hadoopConfDir = findHadoopConfDir();
       addResource(hadoopConfDir, "core-site.xml");
       addResource(hadoopConfDir, "core-default.xml");
