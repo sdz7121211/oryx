@@ -21,6 +21,8 @@ _Oryx should be considered alpha software; it may have bugs and will change in i
 
 # Architecture
 
+<img align="right" src="https://raw.github.com/wiki/cloudera/oryx/OryxArchitecture.png" width="481" height="286"/>
+
 Oryx does two things at heart: *builds models*, and *serves models*. These are the responsibilities of two
 separate components, the Computation Layer and Serving Layer, respectively.
 
