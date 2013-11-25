@@ -192,7 +192,7 @@ public final class Store {
       log.error("Permissions problem; is {} writable in HDFS?", parent);
       throw ace;
     }
-    if (!success) {
+    if (!success && !fs.exists(parent)) {
       throw new IOException("Can't make " + parent);
     }
   }
@@ -235,7 +235,8 @@ public final class Store {
         if (status.isFile()) {
           download(fromKey, toLocal);
         } else {
-          if (!toLocal.mkdir()) {
+          boolean success = toLocal.mkdir();
+          if (!success && !toLocal.exists()) {
             throw new IOException("Can't make " + toLocal);
           }
           downloadDirectory(fromKey, toLocal);
@@ -351,7 +352,7 @@ public final class Store {
       log.error("Permissions problem; is {} writable in HDFS?", path);
       throw ace;
     }
-    if (!success) {
+    if (!success && !fs.exists(path)) {
       throw new IOException("Can't mkdirs for " + path);
     }
   }
