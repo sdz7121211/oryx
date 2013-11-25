@@ -107,16 +107,12 @@ learning, which seeks to find structure in its input in the form of natural grou
 
 # Download
 
-Releases of the compiled binaries, as well as source snapshots, are available from the
-[Releases page](https://github.com/cloudera/oryx/releases).
+Releases of the compiled binaries are available from the [Releases page](https://github.com/cloudera/oryx/releases).
 
-# Building from Source
+You can always download a current [snapshot of `master` branch](https://github.com/cloudera/oryx/archive/master.zip)
+as a `.zip` file.
 
-Clone the repository from github.com. Run `mvn -DskipTests clean install` from the top level.
-This will build the following binaries:
-
-* Serving Layer: `serving/target/oryx-serving-x.y.z.jar`
-* Computation Layer: `computation/target/oryx-computation-x.y.z.jar`
+# [Building from Source](/cloudera/oryx/wiki/Building-from-Source)
 
 # Installation
 
@@ -124,8 +120,9 @@ This will build the following binaries:
 
 * Java 6 or later
 * Hadoop 2.0 or later distribution, such as [CDH 4.3](http://www.cloudera.com/content/cloudera/en/products/cdh.html)
-  or later (Note that "MR2" is required.) Hadoop 2.2, and distributions like CDH5, are supported but with a
-  recompile, which is necessary to match client / server library versions.
+  or later (Note that "MR2" is required.) Hadoop 2.2, and distributions like [CDH5](http://www.cloudera.com/content/support/en/downloads.html),
+  are supported but with a recompile, which is necessary to match client / server library versions (`protobuf`,
+  for the interested).
 
 ## Installing
 
@@ -135,8 +132,8 @@ and/or `oryx-computation-x.y.z.jar` files must simply be present on the machine 
 and/or Computation Layer, respectively. Ensure that the `java` command
 is executable on the command line.
 
-Note that these are *not* the type of `.jar` file that is run with the `hadoop jar` command. These are also not
-command line utilities, but rather long-running server processes.
+Note that these are *not* the type of `.jar` file that is run with the `hadoop jar` command. These are also *not*
+command line programs or shells, but rather long-running server processes.
 
 ## Setting up CDH
 
@@ -289,10 +286,10 @@ and the result should be `2`, but will depend a bit on the way the trees build.
 
 Coming later.
 
-# [FAQ and Troubleshooting](wiki/FAQ-and-Troubleshooting)
+# [FAQ and Troubleshooting](/cloudera/oryx/wiki/FAQ-and-Troubleshooting)
 
 # [Javadoc](http://cloudera.github.io/oryx/apidocs/index.html)
 
-# [Configuration Reference](wiki/Configuration-Reference)
+# [Configuration Reference](/cloudera/oryx/wiki/Configuration-Reference)
 
-# [API Endpoint Reference](wiki/API-Endpoint-Reference)
+# [API Endpoint Reference](/cloudera/oryx/wiki/API-Endpoint-Reference)
