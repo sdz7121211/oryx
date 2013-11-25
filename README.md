@@ -112,7 +112,7 @@ Releases of the compiled binaries are available from the [Releases page](https:/
 You can always download a current [snapshot of `master` branch](https://github.com/cloudera/oryx/archive/master.zip)
 as a `.zip` file.
 
-# [Building from Source](/cloudera/oryx/wiki/Building-from-Source)
+# [[Building from Source]]
 
 # Installation
 
@@ -286,10 +286,10 @@ and the result should be `2`, but will depend a bit on the way the trees build.
 
 Coming later.
 
-# [FAQ and Troubleshooting](/cloudera/oryx/wiki/FAQ-and-Troubleshooting)
+# [[FAQ and Troubleshooting]]
 
 # [Javadoc](http://cloudera.github.io/oryx/apidocs/index.html)
 
-# [Configuration Reference](/cloudera/oryx/wiki/Configuration-Reference)
+# [[Configuration Reference]]
 
-# [API Endpoint Reference](/cloudera/oryx/wiki/API-Endpoint-Reference)
+# [[API Endpoint Reference]]
