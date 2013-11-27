@@ -116,41 +116,7 @@ as a `.zip` file.
 
 # [Building from Source](https://github.com/cloudera/oryx/wiki/Building-from-Source)
 
-# Installation
-
-## Requirements
-
-* Java 6 or later
-* Hadoop 2.0 or later distribution, such as [CDH 4.3](http://www.cloudera.com/content/cloudera/en/products/cdh.html)
-  or later (Note that "MR2" is required.) Hadoop 2.2, and distributions like [CDH5](http://www.cloudera.com/content/support/en/downloads.html),
-  are supported but with a recompile, which is necessary to match client / server library versions (`protobuf`,
-  for the interested).
-
-## Installing
-
-The Serving Layer and Computation Layer are single, self-contained runnable Java `.jar` files.
-At this point, there is no package provided or package installation required. The `oryx-serving-x.y.z.jar`
-and/or `oryx-computation-x.y.z.jar` files must simply be present on the machine that is to run the Serving
-and/or Computation Layer, respectively. Ensure that the `java` command
-is executable on the command line.
-
-Note that these are *not* the type of `.jar` file that is run with the `hadoop jar` command. These are also *not*
-command line programs or shells, but rather long-running server processes.
-
-## Setting up CDH
-
-A CDH 4.3+ cluster, with the `hdfs` service enabled, is required to run the Computation Layer in distributed mode.
-The distributed Computation Layer further requires the `yarn` service, which enables "MapReduce v2". That is,
-it requires the normal version of CDH, and not the `mr1` version.
-
-If a cluster is not available, a simple single-node cluster can be set up:
-[Installing CDH4 with YARN on a Single Linux Node in Pseudo-distributed mode](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Quick-Start/cdh4qs_topic_3_3.html)
-
-Hadoop configuration should be available on the machine(s) used to run Oryx binaries. It should be at the standard
-location, `/etc/hadoop/conf`, or another location defined by `$HADOOP_CONF_DIR`.
-
-Choose a directory to work in on HDFS, like `/user/oryx`. Make sure this directory exists and is readable/writable
-to the user that will run the Computation and Serving Layer binaries.
+# [Installation](https://github.com/cloudera/oryx/wiki/Installation)
 
 # Running
 
