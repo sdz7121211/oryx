@@ -33,7 +33,6 @@
   </properties>
 
   <dependencies>
-
     <dependency>
       <groupId>com.cloudera.oryx</groupId>
       <artifactId>oryx-als-serving</artifactId>
@@ -46,12 +45,6 @@
       <groupId>com.cloudera.oryx</groupId>
       <artifactId>oryx-rdf-serving</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>com.lexicalscope.jewelcli</groupId>
-      <artifactId>jewelcli</artifactId>
-    </dependency>
-
   </dependencies>
 
   <build>

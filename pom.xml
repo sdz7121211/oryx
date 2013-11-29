@@ -205,12 +205,6 @@
       </dependency>
 
       <dependency>
-        <groupId>com.lexicalscope.jewelcli</groupId>
-        <artifactId>jewelcli</artifactId>
-        <version>0.8.3</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <!-- Don't update to 12+ until Hadoop uses 12+ -->
