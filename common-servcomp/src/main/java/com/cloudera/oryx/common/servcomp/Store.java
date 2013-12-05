@@ -185,6 +185,10 @@ public final class Store {
   private void makeParentDirs(Path path) throws IOException {
     Preconditions.checkNotNull(path);
     Path parent = path.getParent();
+    if (fs.exists(parent)) {
+      // Can't be a file
+      return;
+    }
     boolean success;
     try {
       success = fs.mkdirs(parent);
@@ -345,6 +349,13 @@ public final class Store {
   public void mkdir(String key) throws IOException {
     Preconditions.checkNotNull(key);
     Path path = Namespaces.toPath(key);
+    if (fs.exists(path)) {
+      if (fs.isDirectory(path)) {
+        // OK
+        return;
+      }
+      throw new IOException("Already exists as file: " + path);
+    }
     boolean success;
     try {
       success = fs.mkdirs(path);
