@@ -96,7 +96,7 @@ and regression tasks -- predicting a numeric value like salary.
 
 ## Clustering
 
-Oryx implements [k-means++](http://en.wikipedia.org/wiki/K-means++) for clustering. This is a type of unsupervised
+Oryx implements [scalable k-means++](http://arxiv.org/abs/1203.6402) for clustering. This is a type of unsupervised
 learning, which seeks to find structure in its input in the form of natural groupings.
 
 ## Availability
@@ -252,7 +252,43 @@ and the result should be `2`, but will depend a bit on the way the trees build.
 
 ### Clustering example
 
-Coming later.
+Like classification and regression, the clustering algorithm takes as input a CSV file with named columns that
+have their type (numeric or categorical) specified. An input row may also have an optional identifier column
+that can be used for training and evaluation purposes, but is not used to assign points to clusters.
+
+For demonstration purposes, we will use a dataset from the KDD99 Cup Challenge; obtain a copy of `kddcup.data_10_percent.gz` from
+the [UCI KDD99 homepage](http://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html).
+
+```
+model=${kmeans-model}
+model.instance-dir=/tmp/oryx/example
+model.sketch-points=50
+model.k=[1, 5, 10]
+model.replications=2
+inbound.column-names=[duration, protocol_type, service, flag, src_bytes, dst_bytes,
+  land, wrong_fragment, urgent, hot, num_failed_logins, logged_in, num_compromised,
+  root_shell, su_attempted, num_root, num_file_creations, num_shells, num_access_files,
+  num_outbound_cmds, is_host_login, is_guest_login, count, srv_count, serror_rate,
+  srv_serror_rate, rerror_rate, srv_rerror_rate, same_srv_rate, diff_srv_rate,
+  srv_diff_host_rate, dst_host_count, dst_host_srv_count, dst_host_same_srv_rate,
+  dst_host_diff_srv_rate, dst_host_same_src_port_rate, dst_host_srv_diff_host_rate,
+  dst_host_serror_rate, dst_host_srv_serror_rate, dst_host_rerror_rate,
+  dst_host_srv_rerror_rate, category]
+inbound.categorical-columns=[protocol_type, service, flag, logged_in, is_host_login,
+  is_guest_login, category]
+inbound.id-columns=[category]
+```
+
+Copy the data in manually, and start the servers, as above.
+The Computation Layer should start computing immediately. The Serving Layer will load its output
+shortly after it finishes.
+
+Use the endpoint interface in the console to test by calling `/assign` or `/distanceToNearest` with
+a new line of CSV data that does not contain a value for the identifier column. For example, send:
+
+```
+0,tcp,http,SF,259,14420,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,1,0.00,0.00,0.00,0.00,1.00,0.00,0.00,11,97,1.00,0.00,0.09,0.08,0.00,0.00,0.00,0.00
+```
 
 # [FAQ and Troubleshooting](https://github.com/cloudera/oryx/wiki/FAQ-and-Troubleshooting)
 

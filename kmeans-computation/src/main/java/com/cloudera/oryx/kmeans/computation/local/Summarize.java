@@ -46,7 +46,7 @@ public final class Summarize implements Callable<Summary> {
   public Summary call() throws IOException {
     File[] inputFiles = inputDir.listFiles(IOUtils.CSV_COMPRESSED_FILTER);
     if (inputFiles == null || inputFiles.length == 0) {
-      log.info("No .csv input files in {}", inputDir);
+      log.warn("No .csv or .gz input files found in input directory");
       return null;
     }
 
