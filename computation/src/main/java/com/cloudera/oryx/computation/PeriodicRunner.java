@@ -274,11 +274,11 @@ public final class PeriodicRunner implements Runnable, Closeable {
                                config.getString("model.type"));
     Config config = ConfigUtils.getDefaultConfig();
     boolean localComputation;
-    if (config.hasPath("model.local-computation")) {
-      localComputation = config.getBoolean("model.local-computation");
-    } else {
-      log.warn("model.local is deprecated; use model.local-data and model.local-computation");
+    if (config.hasPath("model.local")) {
+      log.warn("model.local is deprecated; use model.local-computation");
       localComputation = config.getBoolean("model.local");
+    } else {
+      localComputation = config.getBoolean("model.local-computation");
     }
     Class<? extends GenerationRunner> runnerClass =
         localComputation ? localDistributed.get(0) : localDistributed.get(1);

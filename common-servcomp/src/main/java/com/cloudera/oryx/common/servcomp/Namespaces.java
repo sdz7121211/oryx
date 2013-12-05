@@ -43,11 +43,11 @@ public final class Namespaces {
   private Namespaces() {
     Config config = ConfigUtils.getDefaultConfig();
     boolean localData;
-    if (config.hasPath("model.local-data")) {
-      localData = config.getBoolean("model.local-data");
-    } else {
-      log.warn("model.local is deprecated; use model.local-data and model.local-computation");
+    if (config.hasPath("model.local")) {
+      log.warn("model.local is deprecated; use model.local-data");
       localData = config.getBoolean("model.local");
+    } else {
+      localData = config.getBoolean("model.local-data");
     }
     if (localData) {
       prefix = "file:";
