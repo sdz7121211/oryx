@@ -15,6 +15,7 @@
 
 package com.cloudera.oryx.rdf.computation.build;
 
+import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.util.FastMath;
@@ -49,16 +50,12 @@ public final class DistributeExampleFn extends OryxDoFn<String,Pair<Integer,Stri
     while ((numTrees % numReducers) != 0) {
       numTrees++;
     }
-
-    int foldsPerReducer = numTrees / numReducers;
-    log.info("{} folds per reducer", foldsPerReducer);
+    log.info("Building {} trees", numTrees);
 
     double sampleRate = config.getDouble("model.sample-rate");
-    reducersPerDatum = 1;
-    while ((double) (reducersPerDatum * foldsPerReducer - 1) / numTrees < sampleRate) {
-      reducersPerDatum++;
-    }
-
+    Preconditions.checkArgument(sampleRate > 0.0 && sampleRate <= 1.0);
+    reducersPerDatum = FastMath.max(1, (int) FastMath.ceil(numReducers * sampleRate));
+    Preconditions.checkArgument(reducersPerDatum >= 1 && reducersPerDatum <= numReducers);
     log.info("{} reducers per datum", reducersPerDatum);
   }
 
@@ -66,7 +63,7 @@ public final class DistributeExampleFn extends OryxDoFn<String,Pair<Integer,Stri
   public void process(String input, Emitter<Pair<Integer,String>> emitter) {
     // Similar to:
     // http://blog.cloudera.com/blog/2013/02/how-to-resample-from-a-large-data-set-in-parallel-with-r-on-hadoop/
-    // Here, KM > N; let K = S*(M/N). We don't know N. We know S = reducersPerDatum and we have M = numReducers.
+    // Here, KM > N; let K = S*(N/M) = (S/M)*N. We don't know N. S = reducersPerDatum and M = numReducers.
     // Each data point can be sent to S reducers chosen uniformly at random. Expected # of data points at each
     // reducer has a binomial distribution with mean K, as desired. For large N this is virtually the same distribution
     // as in the link above, which is Poisson with mean K.
