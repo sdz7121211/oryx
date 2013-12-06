@@ -99,7 +99,11 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
     Arrays.fill(weights, 1.0);
     evaluations = new double[numTrees];
     Arrays.fill(evaluations, Double.NaN);
-    final int folds = FastMath.min(numTrees - 1, FastMath.max(1, (int) (sampleRate * numTrees)));
+    // Going to set an arbitrary upper bound on the training size of about 90%
+    int maxFolds = FastMath.min(numTrees - 1, (int) (0.9 * numTrees));
+    // Going to set an arbitrary lower bound on the CV size of about 10%
+    int minFolds = FastMath.max(1, (int) (0.1 * numTrees));
+    final int folds = FastMath.min(maxFolds, FastMath.max(minFolds, (int) (sampleRate * numTrees)));
 
     trees = new DecisionTree[numTrees];
 
@@ -124,6 +128,10 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
                 cvExamples.add(example);
               }
             }
+
+            Preconditions.checkState(!trainingExamples.isEmpty(), "No training examples sampled?");
+            Preconditions.checkState(!cvExamples.isEmpty(), "No CV examples sampled?");
+
             trees[treeID] = new DecisionTree(numFeatures,
                                              featuresToTry,
                                              minNodeSize,

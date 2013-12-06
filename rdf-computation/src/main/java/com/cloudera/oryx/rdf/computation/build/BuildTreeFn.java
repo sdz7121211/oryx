@@ -21,8 +21,8 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
+import com.google.common.math.IntMath;
 import com.typesafe.config.Config;
-import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.crunch.Emitter;
 import org.apache.crunch.Pair;
@@ -38,7 +38,6 @@ import java.util.Map;
 
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 import com.cloudera.oryx.common.io.IOUtils;
-import com.cloudera.oryx.common.random.RandomManager;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.common.settings.InboundSettings;
 import com.cloudera.oryx.computation.common.fn.OryxReduceDoFn;
@@ -60,9 +59,8 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
 
   private static final Logger log = LoggerFactory.getLogger(BuildTreeFn.class);
 
-  private int numTreesToBuild;
-  private int totalFoldsPerTree;
-  private final RandomGenerator random = RandomManager.getRandom();
+  private int numLocalTrees;
+  private int trainingFoldsPerTree;
 
   @Override
   public void initialize() {
@@ -80,25 +78,21 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
     }
     log.info("{} total trees", numTrees);
 
-    // Base assumption is 1 fold per tree
-    // Going to build this many trees per reducer -- therefore will send this many folds to each reducer.
-    // This is the minimum amount of data each tree gets to use:
-    int foldsPerReducer = numTrees / numReducers;
-    numTreesToBuild = foldsPerReducer;
-    log.info("Building {} trees locally", numTreesToBuild);
+    Preconditions.checkArgument(numTrees % numReducers == 0, "numLocalTrees not a multiples of numReducers");
+    numLocalTrees = numTrees / numReducers;
+    Preconditions.checkArgument(numLocalTrees > 1, "Not building multiple trees per reducer");
+    log.info("Building {} trees locally", numLocalTrees);
 
-    // Sending each datum to multiple reducers means trees see more data. Keep increasing it until the desired
-    // sample rate is met or exceeded.
     double sampleRate = config.getDouble("model.sample-rate");
-    int reducersPerDatum = 1;
-    // -1 here because one fold is used for validation
-    while ((double) (reducersPerDatum * foldsPerReducer - 1) / numTrees < sampleRate) {
-      reducersPerDatum++;
-    }
+    Preconditions.checkArgument(sampleRate > 0.0 && sampleRate <= 1.0);
 
-    // Handle case of 100% sampling, where this would run over. Can't send more than all folds to all reducers:
-    totalFoldsPerTree = FastMath.min(numTrees, reducersPerDatum * foldsPerReducer);
-    log.info("{} folds per tree", totalFoldsPerTree);
+    // Going to set an arbitrary upper bound on the training size of about 90%
+    int maxFolds = FastMath.min(numLocalTrees - 1, (int) (0.9 * numLocalTrees));
+    // Going to set an arbitrary lower bound on the CV size of about 10%
+    int minFolds = FastMath.max(1, (int) (0.1 * numLocalTrees));
+    trainingFoldsPerTree = FastMath.min(maxFolds, FastMath.max(minFolds, (int) (sampleRate * numLocalTrees)));
+
+    log.info("{} training folds per tree", trainingFoldsPerTree);
   }
 
   @Override
@@ -109,8 +103,7 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
     Integer targetColumn = inboundSettings.getTargetColumn();
     Preconditions.checkNotNull(targetColumn, "No target-column specified");
 
-    List<Example> training = Lists.newArrayList();
-    List<Example> cvSet = Lists.newArrayList();
+    List<Example> allExamples = Lists.newArrayList();
     Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping = Maps.newHashMap();
 
     log.info("Reading input");
@@ -127,31 +120,43 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
         }
       }
       Preconditions.checkNotNull(target);
-      Example example = new Example(target, features);
-      if (random.nextInt(totalFoldsPerTree) == 0) {
-        cvSet.add(example);
-      } else {
-        training.add(example);
-      }
+      allExamples.add(new Example(target, features));
     }
 
-    if (cvSet.isEmpty() && training.isEmpty()) {
+    if (allExamples.isEmpty()) {
       return;
     }
 
-    ExampleSet cvExampleSet = new ExampleSet(cvSet);
-    DecisionTree[] trees = new DecisionTree[numTreesToBuild];
+    log.info("Read {} examples", allExamples.size());
+
+    DecisionTree[] trees = new DecisionTree[numLocalTrees];
     double[] weights = new double[trees.length];
     Arrays.fill(weights, 1.0);
 
-    for (int i = 0; i < numTreesToBuild; i++) {
-      trees[i] = DecisionTree.fromExamplesWithDefault(training);
+    for (int treeID = 0; treeID < numLocalTrees; treeID++) {
+      List<Example> trainingExamples = Lists.newArrayList();
+      List<Example> cvExamples = Lists.newArrayList();
+      for (Example example : allExamples) {
+        if (IntMath.mod(IntMath.mod(example.hashCode(), numLocalTrees) - treeID, numLocalTrees) <
+            trainingFoldsPerTree) {
+          trainingExamples.add(example);
+        } else {
+          cvExamples.add(example);
+        }
+      }
+
+      log.info("Tree {}: {} training examples", treeID, trainingExamples.size());
+      log.info("Tree {}: {} CV examples", treeID, cvExamples.size());
+      Preconditions.checkState(!trainingExamples.isEmpty(), "No training examples sampled?");
+      Preconditions.checkState(!cvExamples.isEmpty(), "No CV examples sampled?");
+
+      trees[treeID] = DecisionTree.fromExamplesWithDefault(trainingExamples);
       progress(); // Helps prevent timeouts
-      log.info("Built tree {}", i);
-      double[] weightEval = Evaluation.evaluateToWeight(trees[i], cvExampleSet);
-      weights[i] = weightEval[0];
+      log.info("Built tree {}", treeID);
+      double[] weightEval = Evaluation.evaluateToWeight(trees[treeID], new ExampleSet(cvExamples));
+      weights[treeID] = weightEval[0];
       progress(); // Helps prevent timeouts
-      log.info("Evaluated tree {}", i);
+      log.info("Evaluated tree {}", treeID);
     }
 
     DecisionForest forest = new DecisionForest(trees, weights);
