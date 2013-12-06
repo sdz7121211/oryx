@@ -86,7 +86,7 @@ public final class DoubleWeightedMean extends AbstractStorelessUnivariateStatist
     Preconditions.checkArgument(weight >= 0.0);
     if (count == 0) {
       count = 1;
-    	mean = datum;
+      mean = datum;
       totalWeight = weight;
     } else {
       count++;

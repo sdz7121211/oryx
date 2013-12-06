@@ -187,32 +187,32 @@ public final class DelimitedDataUtils {
 
         if (c == QUOTE) {
           if (i < line.length() - 1 && line.charAt(i + 1) == QUOTE) {
-						/*
-						 * An escaped quote (""). Add a single quote, then move the cursor so the next iteration of the
-						 * loop will read the character following the escaped quote.
-						 */
+            /*
+             * An escaped quote (""). Add a single quote, then move the cursor so the next iteration of the
+             * loop will read the character following the escaped quote.
+             */
             currentColumn.append(QUOTE);
             i++;
           } else {
-						/*
-						 * A single quote ("). Update to NORMAL (but don't save quote), then continue to next character.
-						 */
+            /*
+             * A single quote ("). Update to NORMAL (but don't save quote), then continue to next character.
+             */
             inQuoteMode = false;
           }
         } else {
-					/*
-					 * Just a normal character, delimiter (they don't count in QUOTESCOPE) or space. Add the character,
-					 * then continue to next character.
-					 */
+          /*
+           * Just a normal character, delimiter (they don't count in QUOTESCOPE) or space. Add the character,
+           * then continue to next character.
+           */
           currentColumn.append(c);
         }
 
       } else {
 
         if (c == delim) {
-					/*
-					 * Delimiter. Save the column then continue to next character.
-					 */
+          /*
+           * Delimiter. Save the column then continue to next character.
+           */
           if (currentColumn.length() > 0) {
             columns.add(currentColumn.toString());
             currentColumn.setLength(0);
@@ -221,14 +221,14 @@ public final class DelimitedDataUtils {
           }
 
         } else if (c == QUOTE) {
-					/*
-					 * A single quote ("). Update (but don't save quote), then continue to next character.
-					 */
+          /*
+           * A single quote ("). Update (but don't save quote), then continue to next character.
+           */
           inQuoteMode = true;
         } else {
-					/*
-					 * Just a normal character. Add  the character, then continue to next character.
-					 */
+          /*
+           * Just a normal character. Add  the character, then continue to next character.
+           */
           currentColumn.append(c);
         }
 

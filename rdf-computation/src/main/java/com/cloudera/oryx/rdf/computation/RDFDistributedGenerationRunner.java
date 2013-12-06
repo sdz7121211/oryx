@@ -18,6 +18,8 @@ package com.cloudera.oryx.rdf.computation;
 import org.dmg.pmml.IOUtil;
 import org.dmg.pmml.MiningModel;
 import org.dmg.pmml.PMML;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -43,6 +45,8 @@ import com.cloudera.oryx.rdf.computation.build.MergeNewOldStep;
  * @author Sean Owen
  */
 public final class RDFDistributedGenerationRunner extends DistributedGenerationRunner {
+
+  private static final Logger log = LoggerFactory.getLogger(RDFDistributedGenerationRunner.class);
 
   @Override
   protected List<DependsOn<Class<? extends JobStep>>> getPreDependencies() {
@@ -80,6 +84,8 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     for (String treePrefix : store.list(outputPathKey, true)) {
 
       File treeTempFile = File.createTempFile("model-", ".pmml.gz");
+      log.info("Joining mode file {}", treeTempFile);
+
       treeTempFile.deleteOnExit();
       store.download(treePrefix, treeTempFile);
 

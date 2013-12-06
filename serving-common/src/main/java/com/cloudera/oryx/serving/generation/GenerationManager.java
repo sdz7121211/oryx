@@ -119,7 +119,7 @@ public abstract class GenerationManager implements Closeable {
       try {
         appender.close();
       } catch (IOException ioe) {
-        log.warn("Unable to close {} ({}); aborting and deleting file", appenderTempFile, ioe.toString());
+        log.warn("Unable to close {} ({}); aborting and deleting file", appenderTempFile, ioe.getMessage());
         appender = null;
         try {
           IOUtils.delete(appenderTempFile);
