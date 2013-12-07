@@ -86,11 +86,8 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
     double sampleRate = config.getDouble("model.sample-rate");
     Preconditions.checkArgument(sampleRate > 0.0 && sampleRate <= 1.0);
 
-    // Going to set an arbitrary upper bound on the training size of about 90%
-    int maxFolds = FastMath.min(numLocalTrees - 1, (int) (0.9 * numLocalTrees));
-    // Going to set an arbitrary lower bound on the CV size of about 10%
-    int minFolds = FastMath.max(1, (int) (0.1 * numLocalTrees));
-    trainingFoldsPerTree = FastMath.min(maxFolds, FastMath.max(minFolds, (int) (sampleRate * numLocalTrees)));
+    // Arbitrarily use about 90% for training, locally
+    trainingFoldsPerTree = FastMath.min(numLocalTrees - 1, (int) (0.9 * numLocalTrees));
 
     log.info("{} training folds per tree", trainingFoldsPerTree);
   }
