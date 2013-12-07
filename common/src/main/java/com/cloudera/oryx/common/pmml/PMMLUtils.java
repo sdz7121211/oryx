@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Cloudera, Inc. All Rights Reserved.
  *
  * Cloudera, Inc. licenses this file to you under the Apache License,
@@ -12,11 +12,11 @@
  * the specific language governing permissions and limitations under the
  * License.
  */
+
 package com.cloudera.oryx.common.pmml;
 
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.common.settings.InboundSettings;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -42,6 +42,7 @@ public final class PMMLUtils {
   private PMMLUtils() {
   }
 
+  /*
   public static DataDictionary buildDataDictionaryFromLevels(InboundSettings inboundSettings,
       Map<Integer, List<String>> columnToCategoryLevels) {
     Map<Integer, BiMap<String, Integer>> m = Maps.transformValues(columnToCategoryLevels,
@@ -57,6 +58,7 @@ public final class PMMLUtils {
         });
     return buildDataDictionary(inboundSettings, m);
   }
+   */
 
   public static DataDictionary buildDataDictionary(
       InboundSettings inboundSettings,
@@ -125,13 +127,17 @@ public final class PMMLUtils {
     for (int categoricalColumn : inboundSettings.getCategoricalColumns()) {
       MiningField field = new MiningField(new FieldName(columnNames.get(categoricalColumn)));
       field.setOptype(OpType.CATEGORICAL);
-      field.setUsageType(categoricalColumn == targetColumn ? FieldUsageType.PREDICTED : FieldUsageType.ACTIVE);
+      if (categoricalColumn == targetColumn) {
+        field.setUsageType(FieldUsageType.PREDICTED);
+      }
       miningFields.add(field);
     }
     for (int numericColumn : inboundSettings.getNumericColumns()) {
       MiningField field = new MiningField(new FieldName(columnNames.get(numericColumn)));
       field.setOptype(OpType.CONTINUOUS);
-      field.setUsageType(numericColumn == targetColumn ? FieldUsageType.PREDICTED : FieldUsageType.ACTIVE);
+      if (numericColumn == targetColumn) {
+        field.setUsageType(FieldUsageType.PREDICTED);
+      }
       miningFields.add(field);
     }
     return new MiningSchema().withMiningFields(miningFields);
