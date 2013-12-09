@@ -24,18 +24,18 @@ package com.cloudera.oryx.als.common;
 public interface PairRescorer {
 
   /**
-   * @param a ID of first item in pair to rescore
-   * @param b ID of second item in pair to rescore
+   * @param fromID ID of first item in pair to rescore
+   * @param toID ID of second item in pair to rescore, usually the 'candidate' item under consideration
    * @param originalScore original score from the recommender
    * @return new score; return {@link Double#NaN} to exclude the pair from recommendation
    */
-  double rescore(String a, String b, double originalScore);
+  double rescore(String fromID, String toID, double originalScore);
 
   /**
-   * @param a ID of first item in pair to rescore
-   * @param b ID of second item in pair to rescore
+   * @param fromID ID of first item in pair to rescore
+   * @param toID ID of second item in pair to rescore, usually the 'candidate' item under consideration
    * @return true iff the pair should be removed from consideration
    */
-  boolean isFiltered(String a, String b);
+  boolean isFiltered(String fromID, String toID);
 
 }
