@@ -44,7 +44,6 @@ import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.JobStatus;
 import org.apache.hadoop.mapred.RunningJob;
-import org.apache.hadoop.mapreduce.Cluster;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.JobID;
@@ -381,7 +380,7 @@ public abstract class JobStep extends Configured implements Tool, HasState {
   protected final Target compressedTextOutput(Configuration conf, String outputPathKey) {
     // The way this is used, it doesn't seem like we can just set the object in getConf(). Need
     // to set the copy in the MRPipeline directly?
-    conf.setClass("mapred.output.fileoutputformat.compress.codec", GzipCodec.class, CompressionCodec.class);
+    conf.setClass("mapred.output.compression.codec", GzipCodec.class, CompressionCodec.class);
     conf.setClass("mapred.map.output.compress.codec", SnappyCodec.class, CompressionCodec.class);
     return To.textFile(Namespaces.toPath(outputPathKey));
   }
