@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 import com.cloudera.oryx.common.io.IOUtils;
@@ -58,6 +58,8 @@ import com.cloudera.oryx.rdf.common.tree.DecisionTree;
 public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>, String> {
 
   private static final Logger log = LoggerFactory.getLogger(BuildTreeFn.class);
+
+  private static final Pattern NEWLINES = Pattern.compile("[\\r\\n]+");
 
   private int numLocalTrees;
   private int trainingFoldsPerTree;
@@ -126,10 +128,6 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
 
     log.info("Read {} examples", allExamples.size());
 
-    DecisionTree[] trees = new DecisionTree[numLocalTrees];
-    double[] weights = new double[trees.length];
-    Arrays.fill(weights, 1.0);
-
     for (int treeID = 0; treeID < numLocalTrees; treeID++) {
       List<Example> trainingExamples = Lists.newArrayList();
       List<Example> cvExamples = Lists.newArrayList();
@@ -147,36 +145,37 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
       Preconditions.checkState(!trainingExamples.isEmpty(), "No training examples sampled?");
       Preconditions.checkState(!cvExamples.isEmpty(), "No CV examples sampled?");
 
-      trees[treeID] = DecisionTree.fromExamplesWithDefault(trainingExamples);
+      DecisionTree tree = DecisionTree.fromExamplesWithDefault(trainingExamples);
       progress(); // Helps prevent timeouts
       log.info("Built tree {}", treeID);
-      double[] weightEval = Evaluation.evaluateToWeight(trees[treeID], new ExampleSet(cvExamples));
-      weights[treeID] = weightEval[0];
+      double[] weightEval = Evaluation.evaluateToWeight(tree, new ExampleSet(cvExamples));
+      double weight = weightEval[0];
       progress(); // Helps prevent timeouts
       log.info("Evaluated tree {}", treeID);
-    }
 
-    DecisionForest forest = new DecisionForest(trees, weights);
+      DecisionForest singletonForest = new DecisionForest(new DecisionTree[] { tree }, new double[] { weight });
 
-    log.info("Writing forest to file");
-    String pmmlFileContents;
-    try  {
-      File tempFile = File.createTempFile("model-", ".pmml.gz");
-      tempFile.deleteOnExit();
-      DecisionForestPMML.write(tempFile, forest, columnToCategoryNameToIDMapping);
-      Reader in = IOUtils.openReaderMaybeDecompressing(tempFile);
-      try {
-        pmmlFileContents = CharStreams.toString(in);
-      } finally {
-        in.close();
+      log.info("Writing tree {} to file", treeID);
+      String pmmlFileContents;
+      try  {
+        File tempFile = File.createTempFile("model-" + treeID + '-', ".pmml.gz");
+        tempFile.deleteOnExit();
+        DecisionForestPMML.write(tempFile, singletonForest, columnToCategoryNameToIDMapping);
+        Reader in = IOUtils.openReaderMaybeDecompressing(tempFile);
+        try {
+          pmmlFileContents = NEWLINES.matcher(CharStreams.toString(in)).replaceAll("");
+        } finally {
+          in.close();
+        }
+        IOUtils.delete(tempFile);
+      } catch (IOException ioe) {
+        throw new IllegalStateException(ioe);
       }
-      IOUtils.delete(tempFile);
-    } catch (IOException ioe) {
-      throw new IllegalStateException(ioe);
+
+      log.info("Emitting tree {}", treeID);
+      emitter.emit(pmmlFileContents);
     }
 
-    log.info("Emitting forest");
-    emitter.emit(pmmlFileContents);
   }
 
   private static Feature buildFeature(int columnNumber,
