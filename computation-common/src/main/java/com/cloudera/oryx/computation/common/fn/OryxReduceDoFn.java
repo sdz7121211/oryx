@@ -22,7 +22,6 @@ import com.cloudera.oryx.computation.common.JobStep;
 import com.google.common.base.Preconditions;
 import org.apache.crunch.DoFn;
 import org.apache.crunch.Pair;
-import org.apache.hadoop.mapreduce.MRJobConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ public abstract class OryxReduceDoFn<K, V, T> extends DoFn<Pair<K, V>, T> {
     ConfigUtils.overlayConfigOnDefault(configuration.get(JobStep.CONFIG_SERIALIZATION_KEY));
 
     numPartitions = getContext().getNumReduceTasks();
-    partition = configuration.getInt(MRJobConfig.TASK_PARTITION, -1);
+    partition = configuration.getInt("mapred.task.partition", -1);
     log.info("Partition index {} ({} total)", partition, numPartitions);
     Preconditions.checkArgument(numPartitions > 0, "# partitions must be positive: %s", numPartitions);
     Preconditions.checkArgument(partition >= 0 && partition < numPartitions,

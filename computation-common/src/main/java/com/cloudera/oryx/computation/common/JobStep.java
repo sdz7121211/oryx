@@ -40,18 +40,19 @@ import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.GzipCodec;
 import org.apache.hadoop.io.compress.SnappyCodec;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobStatus;
+import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapreduce.Cluster;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.JobID;
-import org.apache.hadoop.mapreduce.JobStatus;
-import org.apache.hadoop.mapreduce.MRJobConfig;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner;
-import org.apache.hadoop.mapreduce.server.tasktracker.TTConfig;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
@@ -86,7 +87,7 @@ public abstract class JobStep extends Configured implements Tool, HasState {
   }
 
   @Override
-  public final Collection<StepState> getStepStates() throws IOException, InterruptedException {
+  public final Collection<StepState> getStepStates() throws IOException {
     String name = getCustomJobName();
     StepStatus status = determineStatus();
     StepState state = new StepState(startTime, endTime, name, status);
@@ -106,37 +107,42 @@ public abstract class JobStep extends Configured implements Tool, HasState {
     return Collections.singletonList(state);
   }
 
-  private StepStatus determineStatus() throws IOException, InterruptedException {
+  private StepStatus determineStatus() throws IOException {
     JobContext job = getJob();
     if (job == null) {
       return StepStatus.COMPLETED;
     }
-    Cluster cluster = new Cluster(getConf());
+    JobClient client = new JobClient(new JobConf(getConf()));
     try {
       JobID jobID = job.getJobID();
       if (jobID == null) {
         return StepStatus.PENDING;
       }
-      Job runningJob = cluster.getJob(jobID);
+      RunningJob runningJob =
+          client.getJob(new org.apache.hadoop.mapred.JobID(jobID.getJtIdentifier(), jobID.getId()));
       if (runningJob == null) {
         return StepStatus.PENDING;
       }
-      JobStatus.State state = runningJob.getJobState();
-      switch (state) {
-        case PREP:
-          return StepStatus.PENDING;
-        case RUNNING:
-          return StepStatus.RUNNING;
-        case SUCCEEDED:
-          return StepStatus.COMPLETED;
-        case FAILED:
-          return StepStatus.FAILED;
-        case KILLED:
-          return StepStatus.CANCELLED;
+      int state = runningJob.getJobState();
+      // Can't use switch since these are no longer compile-time constants in Hadoop 2.x
+      if (state == JobStatus.PREP) {
+        return StepStatus.PENDING;
+      }
+      if (state == JobStatus.RUNNING) {
+        return StepStatus.RUNNING;
+      }
+      if (state == JobStatus.FAILED) {
+        return StepStatus.FAILED;
+      }
+      if (state == JobStatus.KILLED) {
+        return StepStatus.CANCELLED;
+      }
+      if (state == JobStatus.SUCCEEDED) {
+        return StepStatus.COMPLETED;
       }
       throw new IllegalArgumentException("Unknown Hadoop job state " + state);
     } finally {
-      cluster.close();
+      client.close();
     }
   }
 
@@ -147,24 +153,25 @@ public abstract class JobStep extends Configured implements Tool, HasState {
   /**
    * @return three progress values, in [0,1], as a {@code float[]}, representing setup, mapper and reducer progress
    */
-  private float[] determineProgresses() throws IOException, InterruptedException {
+  private float[] determineProgresses() throws IOException {
     if (exec == null) {
       return null;
     }
-    Cluster cluster = new Cluster(getConf());
+    JobClient client = new JobClient(new JobConf(getConf()));
     try {
       JobID jobID = getJob().getJobID();
       if (jobID == null) {
         return null;
       }
-      Job runningJob = cluster.getJob(jobID);
+      RunningJob runningJob =
+          client.getJob(new org.apache.hadoop.mapred.JobID(jobID.getJtIdentifier(), jobID.getId()));
       if (runningJob == null) {
         return null;
       }
 
       return new float[] { runningJob.setupProgress(), runningJob.mapProgress(), runningJob.reduceProgress() };
     } finally {
-      cluster.close();
+      client.close();
     }
   }
 
@@ -250,8 +257,8 @@ public abstract class JobStep extends Configured implements Tool, HasState {
   protected final MRPipeline createBasicPipeline(Class<?> jarClass) throws IOException {
     Configuration conf = new OryxConfiguration(getConf());
 
-    conf.setBoolean(MRJobConfig.MAP_OUTPUT_COMPRESS, true);
-    conf.setClass(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, SnappyCodec.class, CompressionCodec.class);
+    conf.setBoolean("mapred.map.output.compress", true);
+    conf.setClass("mapred.map.output.compress.codec", SnappyCodec.class, CompressionCodec.class);
 
     conf.setBoolean("mapred.output.compress", true);
     conf.set("mapred.output.compression.type", "BLOCK");
@@ -259,10 +266,10 @@ public abstract class JobStep extends Configured implements Tool, HasState {
     // Set old-style equivalents for Avro/Crunch's benefit
     conf.set("avro.output.codec", "snappy");
 
-    conf.setBoolean(MRJobConfig.MAP_SPECULATIVE, true);
-    conf.setBoolean(MRJobConfig.REDUCE_SPECULATIVE, true);
-    conf.setBoolean(TTConfig.TT_OUTOFBAND_HEARBEAT, true);
-    conf.setInt(MRJobConfig.JVM_NUMTASKS_TORUN, -1);
+    conf.setBoolean("mapreduce.map.speculative", true);
+    conf.setBoolean("mapreduce.reduce.speculative", true);
+    conf.setBoolean("mapreduce.tasktracker.outofband.heartbeat", true);
+    conf.setInt("mapreduce.job.jvm.numtasks", -1);
 
     //conf.setBoolean("crunch.disable.deep.copy", true);
 
@@ -272,14 +279,14 @@ public abstract class JobStep extends Configured implements Tool, HasState {
     log.info("Mapper memory: {}", mapMemoryMB);
     int mapHeapMB = (int) (mapMemoryMB / 1.3); // Matches CDH's default
     log.info("Mappers have {}MB heap and can access {}MB RAM", mapHeapMB, mapMemoryMB);
-    if (conf.get(MRJobConfig.MAP_JAVA_OPTS) != null) {
+    if (conf.get("mapreduce.map.java.opts") != null) {
       log.info("Overriding previous setting of {}, which was '{}'",
-               MRJobConfig.MAP_JAVA_OPTS,
-               conf.get(MRJobConfig.MAP_JAVA_OPTS));
+               "mapreduce.map.java.opts",
+               conf.get("mapreduce.map.java.opts"));
     }
-    conf.set(MRJobConfig.MAP_JAVA_OPTS,
+    conf.set("mapreduce.map.java.opts",
              "-Xmx" + mapHeapMB + "m -XX:+UseCompressedOops -XX:+UseParallelGC -XX:+UseParallelOldGC");
-    log.info("Set {} to '{}'", MRJobConfig.MAP_JAVA_OPTS, conf.get(MRJobConfig.MAP_JAVA_OPTS));
+    log.info("Set {} to '{}'", "mapreduce.map.java.opts", conf.get("mapreduce.map.java.opts"));
     // See comment below on CM
     conf.setInt("mapreduce.map.java.opts.max.heap", mapHeapMB);
 
@@ -287,20 +294,20 @@ public abstract class JobStep extends Configured implements Tool, HasState {
     log.info("Reducer memory: {}", reduceMemoryMB);
     if (isHighMemoryStep()) {
       reduceMemoryMB *= appConfig.getInt("computation-layer.worker-high-memory-factor");
-      log.info("Increasing {} to {} for high-memory step", MRJobConfig.REDUCE_MEMORY_MB, reduceMemoryMB);
+      log.info("Increasing {} to {} for high-memory step", "mapreduce.reduce.memory.mb", reduceMemoryMB);
     }
-    conf.setInt(MRJobConfig.REDUCE_MEMORY_MB, reduceMemoryMB);
+    conf.setInt("mapreduce.reduce.memory.mb", reduceMemoryMB);
 
     int reduceHeapMB = (int) (reduceMemoryMB / 1.3); // Matches CDH's default
     log.info("Reducers have {}MB heap and can access {}MB RAM", reduceHeapMB, reduceMemoryMB);
-    if (conf.get(MRJobConfig.REDUCE_JAVA_OPTS) != null) {
+    if (conf.get("mapreduce.reduce.java.opts") != null) {
       log.info("Overriding previous setting of {}, which was '{}'",
-               MRJobConfig.REDUCE_JAVA_OPTS,
-               conf.get(MRJobConfig.REDUCE_JAVA_OPTS));
+               "mapreduce.reduce.java.opts",
+               conf.get("mapreduce.reduce.java.opts"));
     }
-    conf.set(MRJobConfig.REDUCE_JAVA_OPTS,
+    conf.set("mapreduce.reduce.java.opts",
              "-Xmx" + reduceHeapMB + "m -XX:+UseCompressedOops -XX:+UseParallelGC -XX:+UseParallelOldGC");
-    log.info("Set {} to '{}'", MRJobConfig.REDUCE_JAVA_OPTS, conf.get(MRJobConfig.REDUCE_JAVA_OPTS));
+    log.info("Set {} to '{}'", "mapreduce.reduce.java.opts", conf.get("mapreduce.reduce.java.opts"));
     // I see this in CM but not in Hadoop docs; probably won't hurt as it's supposed to result in
     // -Xmx appended to opts above, which is at worst redundant
     conf.setInt("mapreduce.reduce.java.opts.max.heap", reduceHeapMB);
@@ -374,8 +381,8 @@ public abstract class JobStep extends Configured implements Tool, HasState {
   protected final Target compressedTextOutput(Configuration conf, String outputPathKey) {
     // The way this is used, it doesn't seem like we can just set the object in getConf(). Need
     // to set the copy in the MRPipeline directly?
-    conf.setClass(FileOutputFormat.COMPRESS_CODEC, GzipCodec.class, CompressionCodec.class);
-    conf.setClass(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, SnappyCodec.class, CompressionCodec.class);
+    conf.setClass("mapred.output.fileoutputformat.compress.codec", GzipCodec.class, CompressionCodec.class);
+    conf.setClass("mapred.map.output.compress.codec", SnappyCodec.class, CompressionCodec.class);
     return To.textFile(Namespaces.toPath(outputPathKey));
   }
 

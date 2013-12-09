@@ -17,8 +17,9 @@ package com.cloudera.oryx.computation.common;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import org.apache.hadoop.mapreduce.Cluster;
-import org.apache.hadoop.mapreduce.JobStatus;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.util.Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,33 +52,22 @@ public abstract class DistributedGenerationRunner extends GenerationRunner {
     } while (!runningJobs.isEmpty());
   }
 
-  private static Collection<String> find(String instanceDir) throws IOException, InterruptedException {
+  public static Collection<String> find(String instanceID) throws IOException {
     Collection<String> result = Lists.newArrayList();
-    // This is where we will see Hadoop config problems first, so log extra info
-    Cluster cluster;
-    try {
-      cluster = new Cluster(new OryxConfiguration());
-    } catch (IOException ioe) {
-      log.error("Unable to init the Hadoop cluster. Check that an MR2, not MR1, cluster is configured.");
-      throw ioe;
-    }
-    try {
-      JobStatus[] statuses = cluster.getAllJobStatuses();
-      if (statuses != null) {
-        for (JobStatus jobStatus : statuses) {
-          JobStatus.State state = jobStatus.getState();
-          if (state == JobStatus.State.RUNNING || state ==  JobStatus.State.PREP) {
-            cluster.getJob(jobStatus.getJobID());
-            String jobName = cluster.getJob(jobStatus.getJobID()).getJobName();
-            log.info("Found running job {}", jobName);
-            if (jobName.startsWith("Oryx-" + instanceDir + '-')) {
-              result.add(jobName);
-            }
+    JobClient client = new JobClient(new JobConf(new OryxConfiguration()));
+    org.apache.hadoop.mapred.JobStatus[] statuses = client.getAllJobs();
+    if (statuses != null) {
+      for (org.apache.hadoop.mapred.JobStatus jobStatus : statuses) {
+        int state = jobStatus.getRunState();
+        if (state == org.apache.hadoop.mapred.JobStatus.RUNNING || state == org.apache.hadoop.mapred.JobStatus.PREP) {
+          RunningJob runningJob = client.getJob(jobStatus.getJobID());
+          String jobName = runningJob.getJobName();
+          log.info("Found running job {}", jobName);
+          if (jobName.startsWith("Oryx-" + instanceID)) {
+             result.add(jobName);
           }
         }
       }
-    } finally {
-      cluster.close();
     }
     return result;
   }
