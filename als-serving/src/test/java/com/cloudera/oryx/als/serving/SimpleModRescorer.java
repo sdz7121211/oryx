@@ -37,13 +37,13 @@ final class SimpleModRescorer implements Rescorer, PairRescorer {
   }
 
   @Override
-  public double rescore(String a, String b, double value) {
-    return isFiltered(a, b) ? Double.NaN : value;
+  public double rescore(String fromID, String toID, double value) {
+    return isFiltered(fromID, toID) ? Double.NaN : value;
   }
 
   @Override
-  public boolean isFiltered(String a, String b) {
-    return a.length() % modulus != 0 || b.length() % modulus != 0;
+  public boolean isFiltered(String fromID, String toID) {
+    return fromID.length() % modulus != 0 || toID.length() % modulus != 0;
   }
 
 }

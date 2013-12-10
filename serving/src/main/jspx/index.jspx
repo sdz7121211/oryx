@@ -44,7 +44,7 @@ function doQuery(endpoint, isGet, paramSuffixes, postBodyElement) {
     var paramPrefix = endpoint.replace("/", "");
     for (var i = 0; i < paramSuffixes.length; i++) {
         var elementValue = document.getElementById(paramPrefix + "-" + paramSuffixes[i]).value;
-        pathElements.push(elementValue);
+        pathElements.push(encodeURIComponent(elementValue));
     }
     var path = pathElements.join("/");
     var resultElement = document.getElementById("request-result");

@@ -315,33 +315,41 @@ public abstract class GenerationRunner implements Callable<Object> {
     String uploadingGenerationPrefix =
         Namespaces.getInstanceGenerationPrefix(instanceDir, generationToRun) + "inbound/";
 
-    boolean anyInProgress = true;
-    while (anyInProgress) {
-      log.info("Waiting for uploads to finish in {}...", uploadingGenerationPrefix);
-      anyInProgress = false;
-      for (String fileName : store.list(uploadingGenerationPrefix, true)) {
+    while (isUploadInProgress(uploadingGenerationPrefix)) {
+      log.info("Waiting for uploads to finish in {}", uploadingGenerationPrefix);
+      Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES));
+    }
+  }
+
+  private static boolean isUploadInProgress(String uploadingGenerationPrefix) throws IOException {
+    Store store = Store.get();
+    long now = System.currentTimeMillis();
+    for (String fileName : store.list(uploadingGenerationPrefix, true)) {
+      long lastModified = store.getLastModified(fileName);
+
+      if (fileName.endsWith(".inprogress") || fileName.endsWith("_COPYING_")) {
         // .inprogress is our marker for uploading files; _COPYING_ is Hadoop's
-        if (fileName.endsWith(".inprogress") || fileName.endsWith("_COPYING_")) {
-          long inProgressLastModified = store.getLastModified(fileName);
-          if (System.currentTimeMillis() < inProgressLastModified + 5 * GENERATION_WAIT) {
-            log.info("At least one upload is in progress ({})", fileName);
-            anyInProgress = true;
-            break;
-          } else {
-            log.warn("Stale upload to {}? Deleting and continuing", fileName);
-            try {
-              store.delete(fileName);
-            } catch (IOException ioe) {
-              log.info("Could not delete {}", fileName, ioe);
-            }
-          }
+        if (lastModified > now - 3 * GENERATION_WAIT) {
+          log.info("At least one upload is in progress ({})", fileName);
+          return true;
+        }
+        // Else, orphaned upload -- waited a long, long time with no progress
+        log.warn("Stale upload to {}? Deleting and continuing", fileName);
+        try {
+          store.delete(fileName);
+        } catch (IOException ioe) {
+          log.info("Could not delete {}", fileName, ioe);
+        }
+      } else {
+        // All other (data) files. Look for recent modification, but only quite recent.
+        // This accounts for possible side-loads of data from other processes.
+        if (lastModified > now - GENERATION_WAIT) {
+          log.info("At least one upload is in progress ({})", fileName);
+          return true;
         }
       }
-      if (anyInProgress) {
-        Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES));
-      }
     }
-
+    return false;
   }
 
   private boolean isAnyInputInGeneration(long generationID) throws IOException {

@@ -188,13 +188,15 @@ User and item IDs must be escaped using CSV conventions if necessary: double-quo
 and use two double-quotes to escape a double-quote within a quoted value.
 
 For a demo, try downloading a [sample of the
-Audioscrobbler data set](http://s3.amazonaws.com/srowen-oryx/audioscrobbler-sample.csv.gz).
+Audioscrobbler data set](http://raw.github.com/wiki/cloudera/oryx/datasets/audioscrobbler-sample.csv.gz).
 
 Example configuration, which will run computation locally:
 
 ```
 model=${als-model}
 model.instance-dir=/tmp/oryx/example
+model.features=25
+model.lambda=0.065
 ```
 
 The Computation Layer and Serving Layer consoles are available at `http://[host]:8080` and `http://[host]`
