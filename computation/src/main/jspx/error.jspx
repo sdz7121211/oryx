@@ -17,6 +17,8 @@
 <jsp:directive.page isErrorPage="true"/>
 <jsp:directive.page session="false"/>
 <jsp:directive.page import="java.io.PrintWriter"/>
+<jsp:directive.page import="java.io.StringWriter"/>
+<jsp:directive.page import="org.apache.catalina.manager.JspHelper"/>
 <jsp:directive.page isELIgnored="false"/>
 <jsp:text><![CDATA[<!DOCTYPE html>]]></jsp:text>
 <html>
@@ -25,15 +27,30 @@
 <style type="text/css">body{background-color:#01596e} body,p{font-family:monospace;color:white}</style>
 </head>
 <body>
+
 <p><strong>Error ${pageContext.errorData.statusCode}</strong> : ${pageContext.errorData.requestURI}</p>
-<p><pre>
+
+<jsp:scriptlet>
+if (request.getAttribute("javax.servlet.error.message") != null) {
+  String responseMessage = request.getAttribute("javax.servlet.error.message").toString();
+  pageContext.setAttribute("responseMessage", JspHelper.escapeXml(responseMessage));
+</jsp:scriptlet>
+<p><strong>${responseMessage}</strong></p>
+<jsp:scriptlet>
+}
+</jsp:scriptlet>
+
 <jsp:scriptlet>
 Throwable t = pageContext.getErrorData().getThrowable();
 if (t != null) {
-  t.printStackTrace(new PrintWriter(out));
+  StringWriter sw = new StringWriter();
+  t.printStackTrace(new PrintWriter(sw));
+  pageContext.setAttribute("stackTrace", JspHelper.escapeXml(sw.toString()));
+</jsp:scriptlet>
+<p><pre>${stackTrace}</pre></p>
+<jsp:scriptlet>
 }
 </jsp:scriptlet>
-</pre></p>
 </body>
 </html>
 </jsp:root>
