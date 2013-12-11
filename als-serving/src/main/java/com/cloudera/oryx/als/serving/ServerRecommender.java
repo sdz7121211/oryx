@@ -118,6 +118,9 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
   public void ingest(Reader reader) {
     for (CharSequence line : new FileLineIterable(reader)) {
       String[] columns = DelimitedDataUtils.decode(line);
+      if (columns.length < 2) {
+        throw new IllegalArgumentException("Bad line: [" + line + "]");
+      }
       String userID = columns[0];
       String itemID = columns[1];
       if (columns.length > 2) {

@@ -140,7 +140,6 @@ public interface OryxRecommender {
       throws NoSuchItemException, NotReadyException;
 
   /**
-   * Like {@code refresh(Collection)} from Mahout, but the need for the argument does not exist.
    * Triggers a rebuild of the object's internal state, particularly, the matrix model.
    */
   void refresh();
@@ -150,9 +149,8 @@ public interface OryxRecommender {
    * is determined is left to the implementation, but, generally this will return items that the user prefers
    * and that are similar to the given item.</p>
    *
-   * <p>This returns a {@link List} of {@link IDValue} which is a little misleading since it's returning
-   * recommend<strong>ing</strong> items, but, I thought it more natural to just reuse this class since it
-   * encapsulates an item and value. The value here does not necessarily have a consistent interpretation or
+   * <p>This returns a {@link List} of {@link IDValue}.
+   * The value here does not necessarily have a consistent interpretation or
    * expected range; it will be higher the more influential the item was in the recommendation.</p>
    *
    * @param userID ID of user who was recommended the item
