@@ -63,6 +63,8 @@ public final class RecommendServlet extends AbstractALSServlet {
       return;
     }
 
+    userID = unescapeSlashHack(userID);
+
     OryxRecommender recommender = getRecommender();
     RescorerProvider rescorerProvider = getRescorerProvider();
     try {

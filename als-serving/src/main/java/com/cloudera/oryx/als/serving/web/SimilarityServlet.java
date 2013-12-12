@@ -75,6 +75,7 @@ public final class SimilarityServlet extends AbstractALSServlet {
     }
 
     String[] itemIDs = itemIDSet.toArray(new String[itemIDSet.size()]);
+    unescapeSlashHack(itemIDs);
 
     OryxRecommender recommender = getRecommender();
     RescorerProvider rescorerProvider = getRescorerProvider();
