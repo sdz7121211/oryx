@@ -28,10 +28,10 @@ import org.slf4j.LoggerFactory;
 public abstract class OryxDoFn<S, T> extends DoFn<S, T> {
   private static final Logger log = LoggerFactory.getLogger(OryxDoFn.class);
 
-  private OryxConfiguration configuration;
+  private Configuration configuration;
 
   @Override
-  public final OryxConfiguration getConfiguration() {
+  public final Configuration getConfiguration() {
     return configuration;
   }
 
@@ -40,7 +40,7 @@ public abstract class OryxDoFn<S, T> extends DoFn<S, T> {
     super.initialize();
     Configuration rawConfiguration = super.getConfiguration();
     log.info("Setup of {} with config {}", this, rawConfiguration);
-    this.configuration = new OryxConfiguration(rawConfiguration);
+    this.configuration = OryxConfiguration.get(rawConfiguration);
     ConfigUtils.overlayConfigOnDefault(configuration.get(JobStep.CONFIG_SERIALIZATION_KEY));
   }
 

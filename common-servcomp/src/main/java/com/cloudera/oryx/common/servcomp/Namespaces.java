@@ -52,7 +52,7 @@ public final class Namespaces {
     if (localData) {
       prefix = "file:";
     } else {
-      URI defaultURI = FileSystem.getDefaultUri(new OryxConfiguration());
+      URI defaultURI = FileSystem.getDefaultUri(OryxConfiguration.get());
       String host = defaultURI.getHost();
       Preconditions.checkNotNull(host, "No host?");
       int port = defaultURI.getPort();

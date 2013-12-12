@@ -248,7 +248,7 @@ public abstract class JobStep extends Configured implements Tool, HasState {
    * @return a new {@link MRPipeline} instance, suitably configured
    */
   protected final MRPipeline createBasicPipeline(Class<?> jarClass) throws IOException {
-    Configuration conf = new OryxConfiguration(getConf());
+    Configuration conf = OryxConfiguration.get(getConf());
 
     conf.setBoolean(MRJobConfig.MAP_OUTPUT_COMPRESS, true);
     conf.setClass(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, SnappyCodec.class, CompressionCodec.class);
@@ -423,7 +423,7 @@ public abstract class JobStep extends Configured implements Tool, HasState {
   public static void run(Tool step, String[] args) throws IOException, InterruptedException, JobException {
     log.info("Running step {}", step.getClass().getSimpleName());
     try {
-      int result = ToolRunner.run(new OryxConfiguration(), step, args);
+      int result = ToolRunner.run(OryxConfiguration.get(), step, args);
       if (result != 0) {
         throw new JobException(step + " hasd bad exit status: " + result);
       }

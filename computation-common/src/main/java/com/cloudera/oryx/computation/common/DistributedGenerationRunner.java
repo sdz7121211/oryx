@@ -56,7 +56,7 @@ public abstract class DistributedGenerationRunner extends GenerationRunner {
     // This is where we will see Hadoop config problems first, so log extra info
     Cluster cluster;
     try {
-      cluster = new Cluster(new OryxConfiguration());
+      cluster = new Cluster(OryxConfiguration.get());
     } catch (IOException ioe) {
       log.error("Unable to init the Hadoop cluster. Check that an MR2, not MR1, cluster is configured.");
       throw ioe;
