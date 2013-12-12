@@ -17,6 +17,7 @@ com.cloudera.oryx.als.computation.similar
 com.cloudera.oryx.als.computation.types
 com.cloudera.oryx.als.serving
 com.cloudera.oryx.als.serving.candidate
+com.cloudera.oryx.als.serving.example
 com.cloudera.oryx.als.serving.generation
 com.cloudera.oryx.als.serving.web
 com.cloudera.oryx.common
@@ -45,7 +46,6 @@ com.cloudera.oryx.computation.common.records.vectors
 com.cloudera.oryx.computation.common.sample
 com.cloudera.oryx.computation.common.summary
 com.cloudera.oryx.computation.common.types
-com.cloudera.oryx.computation.common.writable
 com.cloudera.oryx.computation.web
 com.cloudera.oryx.kmeans.common
 com.cloudera.oryx.kmeans.common.pmml

@@ -258,7 +258,7 @@
 <a class="jxr_linenumber" name="248" href="#248">248</a> <em class="jxr_javadoccomment">   * @return a new {@link MRPipeline} instance, suitably configured</em>
 <a class="jxr_linenumber" name="249" href="#249">249</a> <em class="jxr_javadoccomment">   */</em>
 <a class="jxr_linenumber" name="250" href="#250">250</a>   <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> MRPipeline createBasicPipeline(Class&lt;?&gt; jarClass) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="251" href="#251">251</a>     Configuration conf = <strong class="jxr_keyword">new</strong> <a href="../../../../../com/cloudera/oryx/common/servcomp/OryxConfiguration.html">OryxConfiguration</a>(getConf());
+<a class="jxr_linenumber" name="251" href="#251">251</a>     Configuration conf = OryxConfiguration.get(getConf());
 <a class="jxr_linenumber" name="252" href="#252">252</a> 
 <a class="jxr_linenumber" name="253" href="#253">253</a>     conf.setBoolean(MRJobConfig.MAP_OUTPUT_COMPRESS, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="254" href="#254">254</a>     conf.setClass(MRJobConfig.MAP_OUTPUT_COMPRESS_CODEC, SnappyCodec.<strong class="jxr_keyword">class</strong>, CompressionCodec.<strong class="jxr_keyword">class</strong>);
@@ -433,7 +433,7 @@
 <a class="jxr_linenumber" name="423" href="#423">423</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> run(Tool step, String[] args) <strong class="jxr_keyword">throws</strong> IOException, InterruptedException, JobException {
 <a class="jxr_linenumber" name="424" href="#424">424</a>     log.info(<span class="jxr_string">"Running step {}"</span>, step.getClass().getSimpleName());
 <a class="jxr_linenumber" name="425" href="#425">425</a>     <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="426" href="#426">426</a>       <strong class="jxr_keyword">int</strong> result = ToolRunner.run(<strong class="jxr_keyword">new</strong> <a href="../../../../../com/cloudera/oryx/common/servcomp/OryxConfiguration.html">OryxConfiguration</a>(), step, args);
+<a class="jxr_linenumber" name="426" href="#426">426</a>       <strong class="jxr_keyword">int</strong> result = ToolRunner.run(OryxConfiguration.get(), step, args);
 <a class="jxr_linenumber" name="427" href="#427">427</a>       <strong class="jxr_keyword">if</strong> (result != 0) {
 <a class="jxr_linenumber" name="428" href="#428">428</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../com/cloudera/oryx/computation/common/JobException.html">JobException</a>(step + <span class="jxr_string">" hasd bad exit status: "</span> + result);
 <a class="jxr_linenumber" name="429" href="#429">429</a>       }

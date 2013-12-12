@@ -47,13 +47,13 @@
 <a class="jxr_linenumber" name="37" href="#37">37</a>    }
 <a class="jxr_linenumber" name="38" href="#38">38</a>  
 <a class="jxr_linenumber" name="39" href="#39">39</a>    @Override
-<a class="jxr_linenumber" name="40" href="#40">40</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> rescore(String a, String b, <strong class="jxr_keyword">double</strong> value) {
-<a class="jxr_linenumber" name="41" href="#41">41</a>      <strong class="jxr_keyword">return</strong> isFiltered(a, b) ? Double.NaN : value;
+<a class="jxr_linenumber" name="40" href="#40">40</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> rescore(String fromID, String toID, <strong class="jxr_keyword">double</strong> value) {
+<a class="jxr_linenumber" name="41" href="#41">41</a>      <strong class="jxr_keyword">return</strong> isFiltered(fromID, toID) ? Double.NaN : value;
 <a class="jxr_linenumber" name="42" href="#42">42</a>    }
 <a class="jxr_linenumber" name="43" href="#43">43</a>  
 <a class="jxr_linenumber" name="44" href="#44">44</a>    @Override
-<a class="jxr_linenumber" name="45" href="#45">45</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isFiltered(String a, String b) {
-<a class="jxr_linenumber" name="46" href="#46">46</a>      <strong class="jxr_keyword">return</strong> a.length() % modulus != 0 || b.length() % modulus != 0;
+<a class="jxr_linenumber" name="45" href="#45">45</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isFiltered(String fromID, String toID) {
+<a class="jxr_linenumber" name="46" href="#46">46</a>      <strong class="jxr_keyword">return</strong> fromID.length() % modulus != 0 || toID.length() % modulus != 0;
 <a class="jxr_linenumber" name="47" href="#47">47</a>    }
 <a class="jxr_linenumber" name="48" href="#48">48</a>  
 <a class="jxr_linenumber" name="49" href="#49">49</a>  }

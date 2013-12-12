@@ -66,7 +66,7 @@
 <a class="jxr_linenumber" name="56" href="#56">56</a>      <em class="jxr_comment">// This is where we will see Hadoop config problems first, so log extra info</em>
 <a class="jxr_linenumber" name="57" href="#57">57</a>      Cluster cluster;
 <a class="jxr_linenumber" name="58" href="#58">58</a>      <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="59" href="#59">59</a>        cluster = <strong class="jxr_keyword">new</strong> Cluster(<strong class="jxr_keyword">new</strong> <a href="../../../../../com/cloudera/oryx/common/servcomp/OryxConfiguration.html">OryxConfiguration</a>());
+<a class="jxr_linenumber" name="59" href="#59">59</a>        cluster = <strong class="jxr_keyword">new</strong> Cluster(OryxConfiguration.get());
 <a class="jxr_linenumber" name="60" href="#60">60</a>      } <strong class="jxr_keyword">catch</strong> (IOException ioe) {
 <a class="jxr_linenumber" name="61" href="#61">61</a>        log.error(<span class="jxr_string">"Unable to init the Hadoop cluster. Check that an MR2, not MR1, cluster is configured."</span>);
 <a class="jxr_linenumber" name="62" href="#62">62</a>        <strong class="jxr_keyword">throw</strong> ioe;

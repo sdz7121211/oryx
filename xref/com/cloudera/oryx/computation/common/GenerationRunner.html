@@ -325,64 +325,72 @@
 <a class="jxr_linenumber" name="315" href="#315">315</a>     String uploadingGenerationPrefix =
 <a class="jxr_linenumber" name="316" href="#316">316</a>         Namespaces.getInstanceGenerationPrefix(instanceDir, generationToRun) + <span class="jxr_string">"inbound/"</span>;
 <a class="jxr_linenumber" name="317" href="#317">317</a> 
-<a class="jxr_linenumber" name="318" href="#318">318</a>     <strong class="jxr_keyword">boolean</strong> anyInProgress = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="319" href="#319">319</a>     <strong class="jxr_keyword">while</strong> (anyInProgress) {
-<a class="jxr_linenumber" name="320" href="#320">320</a>       log.info(<span class="jxr_string">"Waiting for uploads to finish in {}..."</span>, uploadingGenerationPrefix);
-<a class="jxr_linenumber" name="321" href="#321">321</a>       anyInProgress = false;
-<a class="jxr_linenumber" name="322" href="#322">322</a>       <strong class="jxr_keyword">for</strong> (String fileName : store.list(uploadingGenerationPrefix, <strong class="jxr_keyword">true</strong>)) {
-<a class="jxr_linenumber" name="323" href="#323">323</a>         <em class="jxr_comment">// .inprogress is our marker for uploading files; _COPYING_ is Hadoop's</em>
-<a class="jxr_linenumber" name="324" href="#324">324</a>         <strong class="jxr_keyword">if</strong> (fileName.endsWith(<span class="jxr_string">".inprogress"</span>) || fileName.endsWith(<span class="jxr_string">"_COPYING_"</span>)) {
-<a class="jxr_linenumber" name="325" href="#325">325</a>           <strong class="jxr_keyword">long</strong> inProgressLastModified = store.getLastModified(fileName);
-<a class="jxr_linenumber" name="326" href="#326">326</a>           <strong class="jxr_keyword">if</strong> (System.currentTimeMillis() &lt; inProgressLastModified + 5 * GENERATION_WAIT) {
-<a class="jxr_linenumber" name="327" href="#327">327</a>             log.info(<span class="jxr_string">"At least one upload is in progress ({})"</span>, fileName);
-<a class="jxr_linenumber" name="328" href="#328">328</a>             anyInProgress = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="329" href="#329">329</a>             <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="330" href="#330">330</a>           } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="331" href="#331">331</a>             log.warn(<span class="jxr_string">"Stale upload to {}? Deleting and continuing"</span>, fileName);
-<a class="jxr_linenumber" name="332" href="#332">332</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="333" href="#333">333</a>               store.delete(fileName);
-<a class="jxr_linenumber" name="334" href="#334">334</a>             } <strong class="jxr_keyword">catch</strong> (IOException ioe) {
-<a class="jxr_linenumber" name="335" href="#335">335</a>               log.info(<span class="jxr_string">"Could not delete {}"</span>, fileName, ioe);
-<a class="jxr_linenumber" name="336" href="#336">336</a>             }
-<a class="jxr_linenumber" name="337" href="#337">337</a>           }
-<a class="jxr_linenumber" name="338" href="#338">338</a>         }
-<a class="jxr_linenumber" name="339" href="#339">339</a>       }
-<a class="jxr_linenumber" name="340" href="#340">340</a>       <strong class="jxr_keyword">if</strong> (anyInProgress) {
-<a class="jxr_linenumber" name="341" href="#341">341</a>         Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES));
-<a class="jxr_linenumber" name="342" href="#342">342</a>       }
-<a class="jxr_linenumber" name="343" href="#343">343</a>     }
-<a class="jxr_linenumber" name="344" href="#344">344</a> 
-<a class="jxr_linenumber" name="345" href="#345">345</a>   }
-<a class="jxr_linenumber" name="346" href="#346">346</a> 
-<a class="jxr_linenumber" name="347" href="#347">347</a>   <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isAnyInputInGeneration(<strong class="jxr_keyword">long</strong> generationID) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="348" href="#348">348</a>     <a href="../../../../../com/cloudera/oryx/common/servcomp/Store.html">Store</a> store = Store.get();
-<a class="jxr_linenumber" name="349" href="#349">349</a>     <strong class="jxr_keyword">for</strong> (String filePrefix :
-<a class="jxr_linenumber" name="350" href="#350">350</a>          store.list(Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + <span class="jxr_string">"inbound/"</span>, <strong class="jxr_keyword">true</strong>)) {
-<a class="jxr_linenumber" name="351" href="#351">351</a>       <strong class="jxr_keyword">if</strong> (store.getSize(filePrefix) &gt; 0) {
-<a class="jxr_linenumber" name="352" href="#352">352</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="353" href="#353">353</a>       }
-<a class="jxr_linenumber" name="354" href="#354">354</a>     }
-<a class="jxr_linenumber" name="355" href="#355">355</a>     <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="356" href="#356">356</a>   }
-<a class="jxr_linenumber" name="357" href="#357">357</a> 
-<a class="jxr_linenumber" name="358" href="#358">358</a>   <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> readLatestIterationInProgress() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="359" href="#359">359</a>     String iterationsPrefix = Namespaces.getIterationsPrefix(instanceDir,  getGenerationID());
-<a class="jxr_linenumber" name="360" href="#360">360</a>     List&lt;String&gt; iterationPaths = Store.get().list(iterationsPrefix, false);
-<a class="jxr_linenumber" name="361" href="#361">361</a>     <strong class="jxr_keyword">if</strong> (iterationPaths == <strong class="jxr_keyword">null</strong> || iterationPaths.isEmpty()) {
-<a class="jxr_linenumber" name="362" href="#362">362</a>       <strong class="jxr_keyword">return</strong> 1;
-<a class="jxr_linenumber" name="363" href="#363">363</a>     }
-<a class="jxr_linenumber" name="364" href="#364">364</a>     String iterationString = StoreUtils.lastNonEmptyDelimited(iterationPaths.get(iterationPaths.size() - 1));
-<a class="jxr_linenumber" name="365" href="#365">365</a>     <strong class="jxr_keyword">int</strong> iteration = Integer.parseInt(iterationString);
-<a class="jxr_linenumber" name="366" href="#366">366</a>     <strong class="jxr_keyword">if</strong> (iteration == 0) {
-<a class="jxr_linenumber" name="367" href="#367">367</a>       <em class="jxr_comment">// Iteration 0 is a fake iteration with initial Y; means we're really on 1</em>
-<a class="jxr_linenumber" name="368" href="#368">368</a>       iteration = 1;
-<a class="jxr_linenumber" name="369" href="#369">369</a>     }
-<a class="jxr_linenumber" name="370" href="#370">370</a>     <strong class="jxr_keyword">return</strong> iteration;
-<a class="jxr_linenumber" name="371" href="#371">371</a>   }
-<a class="jxr_linenumber" name="372" href="#372">372</a> 
-<a class="jxr_linenumber" name="373" href="#373">373</a>   <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> runSteps() <strong class="jxr_keyword">throws</strong> IOException, JobException, InterruptedException;
-<a class="jxr_linenumber" name="374" href="#374">374</a> 
-<a class="jxr_linenumber" name="375" href="#375">375</a> }
+<a class="jxr_linenumber" name="318" href="#318">318</a>     <strong class="jxr_keyword">while</strong> (isUploadInProgress(uploadingGenerationPrefix)) {
+<a class="jxr_linenumber" name="319" href="#319">319</a>       log.info(<span class="jxr_string">"Waiting for uploads to finish in {}"</span>, uploadingGenerationPrefix);
+<a class="jxr_linenumber" name="320" href="#320">320</a>       Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES));
+<a class="jxr_linenumber" name="321" href="#321">321</a>     }
+<a class="jxr_linenumber" name="322" href="#322">322</a>   }
+<a class="jxr_linenumber" name="323" href="#323">323</a> 
+<a class="jxr_linenumber" name="324" href="#324">324</a>   <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isUploadInProgress(String uploadingGenerationPrefix) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="325" href="#325">325</a>     <a href="../../../../../com/cloudera/oryx/common/servcomp/Store.html">Store</a> store = Store.get();
+<a class="jxr_linenumber" name="326" href="#326">326</a>     <strong class="jxr_keyword">long</strong> now = System.currentTimeMillis();
+<a class="jxr_linenumber" name="327" href="#327">327</a>     <strong class="jxr_keyword">for</strong> (String fileName : store.list(uploadingGenerationPrefix, <strong class="jxr_keyword">true</strong>)) {
+<a class="jxr_linenumber" name="328" href="#328">328</a>       <strong class="jxr_keyword">long</strong> lastModified = store.getLastModified(fileName);
+<a class="jxr_linenumber" name="329" href="#329">329</a> 
+<a class="jxr_linenumber" name="330" href="#330">330</a>       <strong class="jxr_keyword">if</strong> (fileName.endsWith(<span class="jxr_string">".inprogress"</span>) || fileName.endsWith(<span class="jxr_string">"_COPYING_"</span>)) {
+<a class="jxr_linenumber" name="331" href="#331">331</a>         <em class="jxr_comment">// .inprogress is our marker for uploading files; _COPYING_ is Hadoop's</em>
+<a class="jxr_linenumber" name="332" href="#332">332</a>         <strong class="jxr_keyword">if</strong> (lastModified &gt; now - 3 * GENERATION_WAIT) {
+<a class="jxr_linenumber" name="333" href="#333">333</a>           log.info(<span class="jxr_string">"At least one upload is in progress ({})"</span>, fileName);
+<a class="jxr_linenumber" name="334" href="#334">334</a>           <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="335" href="#335">335</a>         }
+<a class="jxr_linenumber" name="336" href="#336">336</a>         <em class="jxr_comment">// Else, orphaned upload -- waited a long, long time with no progress</em>
+<a class="jxr_linenumber" name="337" href="#337">337</a>         log.warn(<span class="jxr_string">"Stale upload to {}? Deleting and continuing"</span>, fileName);
+<a class="jxr_linenumber" name="338" href="#338">338</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="339" href="#339">339</a>           store.delete(fileName);
+<a class="jxr_linenumber" name="340" href="#340">340</a>         } <strong class="jxr_keyword">catch</strong> (IOException ioe) {
+<a class="jxr_linenumber" name="341" href="#341">341</a>           log.info(<span class="jxr_string">"Could not delete {}"</span>, fileName, ioe);
+<a class="jxr_linenumber" name="342" href="#342">342</a>         }
+<a class="jxr_linenumber" name="343" href="#343">343</a>       } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="344" href="#344">344</a>         <em class="jxr_comment">// All other (data) files. Look for recent modification, but only quite recent.</em>
+<a class="jxr_linenumber" name="345" href="#345">345</a>         <em class="jxr_comment">// This accounts for possible side-loads of data from other processes.</em>
+<a class="jxr_linenumber" name="346" href="#346">346</a>         <strong class="jxr_keyword">if</strong> (lastModified &gt; now - GENERATION_WAIT) {
+<a class="jxr_linenumber" name="347" href="#347">347</a>           log.info(<span class="jxr_string">"At least one upload is in progress ({})"</span>, fileName);
+<a class="jxr_linenumber" name="348" href="#348">348</a>           <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="349" href="#349">349</a>         }
+<a class="jxr_linenumber" name="350" href="#350">350</a>       }
+<a class="jxr_linenumber" name="351" href="#351">351</a>     }
+<a class="jxr_linenumber" name="352" href="#352">352</a>     <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="353" href="#353">353</a>   }
+<a class="jxr_linenumber" name="354" href="#354">354</a> 
+<a class="jxr_linenumber" name="355" href="#355">355</a>   <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isAnyInputInGeneration(<strong class="jxr_keyword">long</strong> generationID) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="356" href="#356">356</a>     <a href="../../../../../com/cloudera/oryx/common/servcomp/Store.html">Store</a> store = Store.get();
+<a class="jxr_linenumber" name="357" href="#357">357</a>     <strong class="jxr_keyword">for</strong> (String filePrefix :
+<a class="jxr_linenumber" name="358" href="#358">358</a>          store.list(Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + <span class="jxr_string">"inbound/"</span>, <strong class="jxr_keyword">true</strong>)) {
+<a class="jxr_linenumber" name="359" href="#359">359</a>       <strong class="jxr_keyword">if</strong> (store.getSize(filePrefix) &gt; 0) {
+<a class="jxr_linenumber" name="360" href="#360">360</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="361" href="#361">361</a>       }
+<a class="jxr_linenumber" name="362" href="#362">362</a>     }
+<a class="jxr_linenumber" name="363" href="#363">363</a>     <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="364" href="#364">364</a>   }
+<a class="jxr_linenumber" name="365" href="#365">365</a> 
+<a class="jxr_linenumber" name="366" href="#366">366</a>   <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> readLatestIterationInProgress() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="367" href="#367">367</a>     String iterationsPrefix = Namespaces.getIterationsPrefix(instanceDir,  getGenerationID());
+<a class="jxr_linenumber" name="368" href="#368">368</a>     List&lt;String&gt; iterationPaths = Store.get().list(iterationsPrefix, false);
+<a class="jxr_linenumber" name="369" href="#369">369</a>     <strong class="jxr_keyword">if</strong> (iterationPaths == <strong class="jxr_keyword">null</strong> || iterationPaths.isEmpty()) {
+<a class="jxr_linenumber" name="370" href="#370">370</a>       <strong class="jxr_keyword">return</strong> 1;
+<a class="jxr_linenumber" name="371" href="#371">371</a>     }
+<a class="jxr_linenumber" name="372" href="#372">372</a>     String iterationString = StoreUtils.lastNonEmptyDelimited(iterationPaths.get(iterationPaths.size() - 1));
+<a class="jxr_linenumber" name="373" href="#373">373</a>     <strong class="jxr_keyword">int</strong> iteration = Integer.parseInt(iterationString);
+<a class="jxr_linenumber" name="374" href="#374">374</a>     <strong class="jxr_keyword">if</strong> (iteration == 0) {
+<a class="jxr_linenumber" name="375" href="#375">375</a>       <em class="jxr_comment">// Iteration 0 is a fake iteration with initial Y; means we're really on 1</em>
+<a class="jxr_linenumber" name="376" href="#376">376</a>       iteration = 1;
+<a class="jxr_linenumber" name="377" href="#377">377</a>     }
+<a class="jxr_linenumber" name="378" href="#378">378</a>     <strong class="jxr_keyword">return</strong> iteration;
+<a class="jxr_linenumber" name="379" href="#379">379</a>   }
+<a class="jxr_linenumber" name="380" href="#380">380</a> 
+<a class="jxr_linenumber" name="381" href="#381">381</a>   <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> runSteps() <strong class="jxr_keyword">throws</strong> IOException, JobException, InterruptedException;
+<a class="jxr_linenumber" name="382" href="#382">382</a> 
+<a class="jxr_linenumber" name="383" href="#383">383</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
