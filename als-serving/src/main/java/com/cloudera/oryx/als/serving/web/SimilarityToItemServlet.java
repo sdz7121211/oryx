@@ -52,24 +52,28 @@ public final class SimilarityToItemServlet extends AbstractALSServlet {
     }
     Iterator<String> pathComponents = SLASH.split(pathInfo).iterator();
     String toItemID;
-    List<String> itemIDs = Lists.newArrayList();
+    List<String> itemIDsList = Lists.newArrayList();
     try {
       toItemID = pathComponents.next();
       while (pathComponents.hasNext()) {
-        itemIDs.add(pathComponents.next());
+        itemIDsList.add(pathComponents.next());
       }
     } catch (NoSuchElementException nsee) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, nsee.toString());
       return;
     }
-    if (itemIDs.isEmpty()) {
+    if (itemIDsList.isEmpty()) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No items");
       return;
     }
 
+    toItemID = unescapeSlashHack(toItemID);
+    String[] itemIDs = itemIDsList.toArray(new String[itemIDsList.size()]);
+    unescapeSlashHack(itemIDs);
+
     OryxRecommender recommender = getRecommender();
     try {
-      float[] similarities = recommender.similarityToItem(toItemID, itemIDs.toArray(new String[itemIDs.size()]));
+      float[] similarities = recommender.similarityToItem(toItemID, itemIDs);
       Writer out = response.getWriter();
       for (float similarity : similarities) {
         out.write(Float.toString(similarity));

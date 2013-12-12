@@ -159,6 +159,8 @@ public final class Runner implements Callable<Object>, Closeable {
     MemoryHandler.setSensibleLogFormat();
     java.util.logging.Logger.getLogger("").addHandler(new MemoryHandler());
 
+    System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
+
     Tomcat tomcat = new Tomcat();
     Connector connector = makeConnector();
     configureTomcat(tomcat, connector);

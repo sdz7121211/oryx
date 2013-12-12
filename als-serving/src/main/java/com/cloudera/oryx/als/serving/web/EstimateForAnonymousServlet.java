@@ -69,6 +69,7 @@ public final class EstimateForAnonymousServlet extends AbstractALSServlet {
     }
 
     String[] itemIDs = itemIDsAndValue.getFirst();
+    unescapeSlashHack(itemIDs);
     float[] values = itemIDsAndValue.getSecond();
     
     OryxRecommender recommender = getRecommender();

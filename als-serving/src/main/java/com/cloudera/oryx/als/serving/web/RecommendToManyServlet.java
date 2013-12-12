@@ -69,13 +69,17 @@ public final class RecommendToManyServlet extends AbstractALSServlet {
     }
 
     String[] userIDs = userIDSet.toArray(new String[userIDSet.size()]);
+    unescapeSlashHack(userIDs);
 
     OryxRecommender recommender = getRecommender();
     RescorerProvider rescorerProvider = getRescorerProvider();
     try {
       Rescorer rescorer = rescorerProvider == null ? null :
           rescorerProvider.getRecommendRescorer(userIDs, recommender, getRescorerParams(request));
-      output(response, recommender.recommendToMany(userIDs, getHowMany(request), getConsiderKnownItems(request), rescorer));
+      output(response, recommender.recommendToMany(userIDs,
+                                                   getHowMany(request),
+                                                   getConsiderKnownItems(request),
+                                                   rescorer));
     } catch (NoSuchUserException nsue) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, nsue.toString());
     } catch (NotReadyException nre) {

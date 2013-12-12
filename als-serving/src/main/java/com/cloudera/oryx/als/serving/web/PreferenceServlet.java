@@ -61,6 +61,9 @@ public final class PreferenceServlet extends AbstractALSServlet {
       return;
     }
 
+    userID = unescapeSlashHack(userID);
+    itemID = unescapeSlashHack(itemID);
+
     float prefValue;
     try {
       prefValue = readValue(request);

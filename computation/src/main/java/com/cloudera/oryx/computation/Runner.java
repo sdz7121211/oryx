@@ -116,6 +116,8 @@ public final class Runner implements Callable<Object>, Closeable {
     MemoryHandler.setSensibleLogFormat();
     java.util.logging.Logger.getLogger("").addHandler(new MemoryHandler());
 
+    System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
+
     this.noSuchBaseDir = Files.createTempDir();
     this.noSuchBaseDir.deleteOnExit();
 

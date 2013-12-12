@@ -17,6 +17,7 @@ package com.cloudera.oryx.serving.web;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -29,7 +30,7 @@ import com.google.common.collect.Maps;
 import com.cloudera.oryx.serving.stats.ServletStats;
 
 /**
- * Superclass of {@link HttpServlet}s used in the application. All API methods return the following 
+ * Superclass of {@link HttpServlet}s used in the application. All API methods return the following
  * HTTP statuses in certain situations:
  *
  * <ul>
@@ -48,6 +49,8 @@ public abstract class AbstractOryxServlet extends HttpServlet {
 
   private static final String KEY_PREFIX = AbstractOryxServlet.class.getName();
   public static final String TIMINGS_KEY = KEY_PREFIX + ".TIMINGS";
+
+  private static final Pattern ESCAPED_SLASH = Pattern.compile("%2F", Pattern.CASE_INSENSITIVE);
 
   private ServletStats timing;
 
@@ -92,6 +95,23 @@ public abstract class AbstractOryxServlet extends HttpServlet {
       } else {
         timing.incrementClientErrors();
       }
+    }
+  }
+
+  /**
+   * Hack: we have to double-escape forward-slash so that Tomcat won't read it as a path delimiter,
+   * then un-escape again on the other end.
+   *
+   * @param pathElement path element potentially containing %2F
+   * @return argument, with %2F converted to /
+   */
+  protected static String unescapeSlashHack(CharSequence pathElement) {
+    return ESCAPED_SLASH.matcher(pathElement).replaceAll("/");
+  }
+
+  protected static void unescapeSlashHack(String[] pathElements) {
+    for (int i = 0; i < pathElements.length; i++) {
+      pathElements[i] = unescapeSlashHack(pathElements[i]);
     }
   }
 
