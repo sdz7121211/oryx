@@ -45,7 +45,11 @@ import com.cloudera.oryx.als.serving.RescorerProvider;
  *
  * <p>Outputs item/score pairs like {@link RecommendServlet} does.</p>
  *
+ * <p>This does something slightly different from {@link com.cloudera.oryx.als.serving.web.SimilarityServlet};
+ * see {@link OryxRecommender#recommendToAnonymous(String[], float[], int)}.</p>
+ *
  * @author Sean Owen
+ * @see com.cloudera.oryx.als.serving.web.SimilarityServlet
  */
 public final class RecommendToAnonymousServlet extends AbstractALSServlet {
   
