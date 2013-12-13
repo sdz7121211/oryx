@@ -41,7 +41,7 @@ public final class RecommendStep extends IterationStep {
     String iterationKey = iterationState.getIterationKey();
     JobStepConfig config = getConfig();
     String instanceDir = config.getInstanceDir();
-    long generationID = config.getGenerationID();
+    int generationID = config.getGenerationID();
     String tempPrefix = Namespaces.getTempPrefix(instanceDir, generationID);
     String outputKey = tempPrefix + "partialRecommend/";
 

@@ -43,7 +43,7 @@ public final class InitialYStep extends ALSJobStep {
 
     JobStepConfig alsConfig = getConfig();
     String instanceDir = alsConfig.getInstanceDir();
-    long generationID = alsConfig.getGenerationID();
+    int generationID = alsConfig.getGenerationID();
     String iterationsPrefix = Namespaces.getIterationsPrefix(instanceDir, generationID);
     Store store = Store.get();
 
@@ -71,7 +71,7 @@ public final class InitialYStep extends ALSJobStep {
         .parallelDo("flagNewItems", new FlagNewItemsFn(), Avros.tableOf(Avros.longs(), ALSTypes.FLOAT_ARRAY)));
 
     // Optionally override by reading in last generation's Y as starting value
-    long lastGenerationID = alsConfig.getLastGenerationID();
+    int lastGenerationID = alsConfig.getLastGenerationID();
     if (lastGenerationID >= 0) {
       String yPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, lastGenerationID) + "Y/";
       if (store.exists(yPrefix, false)) {

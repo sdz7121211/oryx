@@ -38,7 +38,7 @@ public final class SimilarStep extends ALSJobStep {
     JobStepConfig config = getConfig();
 
     String instanceDir = config.getInstanceDir();
-    long generationID = config.getGenerationID();
+    int generationID = config.getGenerationID();
     String tempPrefix = Namespaces.getTempPrefix(instanceDir, generationID);
     String outputPathKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "similarItems/";
 

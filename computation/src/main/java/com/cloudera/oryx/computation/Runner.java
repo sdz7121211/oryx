@@ -17,10 +17,7 @@ package com.cloudera.oryx.computation;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Callable;
 import javax.net.ssl.SSLContext;
@@ -32,7 +29,6 @@ import com.cloudera.oryx.common.servcomp.web.style_jspx;
 import com.cloudera.oryx.common.settings.APISettings;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 
-import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import com.typesafe.config.Config;
 import org.apache.catalina.Context;
@@ -66,8 +62,6 @@ import com.cloudera.oryx.common.io.IOUtils;
 import com.cloudera.oryx.common.log.MemoryHandler;
 import com.cloudera.oryx.common.signal.SignalManager;
 import com.cloudera.oryx.common.signal.SignalType;
-import com.cloudera.oryx.common.servcomp.Namespaces;
-import com.cloudera.oryx.common.servcomp.Store;
 import com.cloudera.oryx.computation.web.status_jspx;
 
 /**
@@ -115,6 +109,8 @@ public final class Runner implements Callable<Object>, Closeable {
 
     MemoryHandler.setSensibleLogFormat();
     java.util.logging.Logger.getLogger("").addHandler(new MemoryHandler());
+
+    System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
 
     this.noSuchBaseDir = Files.createTempDir();
     this.noSuchBaseDir.deleteOnExit();
@@ -226,28 +222,17 @@ public final class Runner implements Callable<Object>, Closeable {
     host.setAutoDeploy(false);
   }
 
-  private Connector makeConnector() throws IOException {
+  private Connector makeConnector() {
     Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
     APISettings apiSettings = APISettings.create(config.getConfig("computation-layer.api"));
     File keystoreFile = apiSettings.getKeystoreFile();
-    String keystorePassword = apiSettings.getKeystorePassword();
-    if (keystoreFile == null && keystorePassword == null) {
+    if (keystoreFile == null) {
       // HTTP connector
       connector.setPort(apiSettings.getPort());
       connector.setSecure(false);
       connector.setScheme("http");
 
     } else {
-
-      if (keystoreFile == null || !keystoreFile.exists()) {
-        log.info("Keystore file not found; trying to load remote keystore file if applicable");
-        String instanceDir = config.getString("model.instance-dir");
-        keystoreFile = getResourceAsFile(Namespaces.getKeystoreFilePrefix(instanceDir));
-        if (keystoreFile == null) {
-          throw new FileNotFoundException();
-        }
-      }
-
       // HTTPS connector
       connector.setPort(apiSettings.getSecurePort());
       connector.setSecure(true);
@@ -258,7 +243,7 @@ public final class Runner implements Callable<Object>, Closeable {
         connector.setAttribute("sslProtocol", protocol);
       }
       connector.setAttribute("keystoreFile", keystoreFile.getAbsoluteFile());
-      connector.setAttribute("keystorePass", keystorePassword);
+      connector.setAttribute("keystorePass", apiSettings.getKeystorePassword());
     }
 
     // Keep quiet about the server type
@@ -278,27 +263,6 @@ public final class Runner implements Callable<Object>, Closeable {
       }
     }
     return null;
-  }
-
-  private static File getResourceAsFile(String resource) throws IOException {
-    Preconditions.checkNotNull(resource);
-
-    String suffix;
-    int dot = resource.lastIndexOf('.');
-    if (dot >= 0) {
-      suffix = resource.substring(dot);
-    } else {
-      suffix = ".tmp";
-    }
-    File tempFile = File.createTempFile("oryx-", suffix);
-    tempFile.deleteOnExit();
-
-    try {
-      IOUtils.copyURLToFile(new URL(resource), tempFile);
-    } catch (MalformedURLException ignored) {
-      Store.get().download(resource, tempFile);
-    }
-    return tempFile;
   }
 
   private Context makeContext(Tomcat tomcat, File noSuchBaseDir) throws IOException {

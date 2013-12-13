@@ -60,6 +60,9 @@ public final class BecauseServlet extends AbstractALSServlet {
       return;
     }
 
+    userID = unescapeSlashHack(userID);
+    itemID = unescapeSlashHack(itemID);
+
     OryxRecommender recommender = getRecommender();
     try {
       output(response, recommender.recommendedBecause(userID, itemID, getHowMany(request)));

@@ -41,7 +41,12 @@ import com.cloudera.oryx.als.serving.RescorerProvider;
  *
  * <p>Outputs item/score pairs like {@link RecommendServlet} does.</p>
  *
+ * <p>This does something slightly different from
+ * {@link com.cloudera.oryx.als.serving.web.RecommendToAnonymousServlet}; see
+ * {@link OryxRecommender#mostSimilarItems(String, int)}.</p>
+ *
  * @author Sean Owen
+ * @see com.cloudera.oryx.als.serving.web.RecommendToAnonymousServlet
  */
 public final class SimilarityServlet extends AbstractALSServlet {
 
@@ -70,6 +75,7 @@ public final class SimilarityServlet extends AbstractALSServlet {
     }
 
     String[] itemIDs = itemIDSet.toArray(new String[itemIDSet.size()]);
+    unescapeSlashHack(itemIDs);
 
     OryxRecommender recommender = getRecommender();
     RescorerProvider rescorerProvider = getRescorerProvider();

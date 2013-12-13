@@ -39,8 +39,8 @@ public final class MergeIDMappingStep extends ALSJobStep {
     JobStepConfig jobConfig = getConfig();
 
     String instanceDir = jobConfig.getInstanceDir();
-    long generationID = jobConfig.getGenerationID();
-    long lastGenerationID = jobConfig.getLastGenerationID();
+    int generationID = jobConfig.getGenerationID();
+    int lastGenerationID = jobConfig.getLastGenerationID();
 
     String outputKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "idMapping/";
     if (!validOutputPath(outputKey)) {

@@ -41,7 +41,7 @@ public final class RDFGenerationManager extends GenerationManager {
 
   private static final Logger log = LoggerFactory.getLogger(RDFGenerationManager.class);
 
-  private long modelGeneration;
+  private int modelGeneration;
   private Generation currentModel;
 
   public RDFGenerationManager(File appendTempDir) throws IOException {
@@ -62,7 +62,7 @@ public final class RDFGenerationManager extends GenerationManager {
   }
 
   @Override
-  protected void loadRecentModel(long mostRecentModelGeneration) throws IOException {
+  protected void loadRecentModel(int mostRecentModelGeneration) throws IOException {
     if (mostRecentModelGeneration <= modelGeneration) {
       return;
     }

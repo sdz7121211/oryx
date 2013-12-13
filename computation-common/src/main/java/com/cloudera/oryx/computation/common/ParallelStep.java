@@ -123,7 +123,7 @@ public final class ParallelStep extends Configured implements Tool, HasState {
   }
 
   public static void main(String[] args) throws Exception {
-    ToolRunner.run(new OryxConfiguration(), new ParallelStep(), args);
+    ToolRunner.run(OryxConfiguration.get(), new ParallelStep(), args);
   }
 
 }

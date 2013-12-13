@@ -52,21 +52,24 @@ public final class EstimateServlet extends AbstractALSServlet {
     }
     Iterator<String> pathComponents = SLASH.split(pathInfo).iterator();
     String userID;
-    List<String> itemIDs;
+    List<String> itemIDsList;
     try {
       userID = pathComponents.next();
-      itemIDs = Lists.newArrayList();
+      itemIDsList = Lists.newArrayList();
       while (pathComponents.hasNext()) {
-        itemIDs.add(pathComponents.next());
+        itemIDsList.add(pathComponents.next());
       }
     } catch (NoSuchElementException nsee) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, nsee.toString());
       return;
     }
 
+    String[] itemIDs = itemIDsList.toArray(new String[itemIDsList.size()]);
+    unescapeSlashHack(itemIDs);
+
     OryxRecommender recommender = getRecommender();
     try {
-      float[] estimates = recommender.estimatePreferences(userID, itemIDs.toArray(new String[itemIDs.size()]));
+      float[] estimates = recommender.estimatePreferences(userID, itemIDs);
       Writer out = response.getWriter();
       for (float estimate : estimates) {
         out.write(Float.toString(estimate));

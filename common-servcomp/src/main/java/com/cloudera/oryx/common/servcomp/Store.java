@@ -68,7 +68,7 @@ public final class Store {
       localData = config.getBoolean("model.local-data");
     }
     try {
-      Configuration conf = new OryxConfiguration();
+      Configuration conf = OryxConfiguration.get();
       if (localData) {
         fs = FileSystem.getLocal(conf);
       } else {

@@ -39,9 +39,9 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
   protected void runSteps() throws IOException, InterruptedException, JobException {
 
     String instanceDir = getInstanceDir();
-    long generationID = getGenerationID();
+    int generationID = getGenerationID();
     String generationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
-    long lastGenerationID = generationID - 1;
+    int lastGenerationID = getLastGenerationID();
 
     File currentInboundDir = Files.createTempDir();
     currentInboundDir.deleteOnExit();

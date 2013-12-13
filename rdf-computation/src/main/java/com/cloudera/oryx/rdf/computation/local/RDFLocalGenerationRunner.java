@@ -45,9 +45,9 @@ public final class RDFLocalGenerationRunner extends LocalGenerationRunner {
   protected void runSteps() throws IOException {
 
     String instanceDir = getInstanceDir();
-    long generationID = getGenerationID();
+    int generationID = getGenerationID();
     String generationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
-    long lastGenerationID = generationID - 1;
+    int lastGenerationID = getLastGenerationID();
 
     File currentInputDir = Files.createTempDir();
     currentInputDir.deleteOnExit();

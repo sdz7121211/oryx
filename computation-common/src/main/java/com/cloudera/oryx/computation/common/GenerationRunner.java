@@ -49,8 +49,8 @@ public abstract class GenerationRunner implements Callable<Object> {
   private static final long GENERATION_WAIT = TimeUnit.MILLISECONDS.convert(4, TimeUnit.MINUTES);
 
   private final String instanceDir;
-  private long lastGenerationID;
-  private long generationID;
+  private int lastGenerationID;
+  private int generationID;
   private Date startTime;
   private Date endTime;
   private long startSize;
@@ -70,11 +70,11 @@ public abstract class GenerationRunner implements Callable<Object> {
     return instanceDir;
   }
 
-  protected final long getGenerationID() {
+  protected final int getGenerationID() {
     return generationID;
   }
 
-  protected final long getLastGenerationID() {
+  protected final int getLastGenerationID() {
     return lastGenerationID;
   }
 
@@ -140,10 +140,10 @@ public abstract class GenerationRunner implements Callable<Object> {
       }
     }
 
-    long lastDoneGeneration = -1;
+    int lastDoneGeneration = -1;
     int lastDoneGenerationIndex = -1;
     for (int i = count - 1; i >= 0; i--) {
-      long generationID = StoreUtils.parseGenerationFromPrefix(generationStrings.get(i));
+      int generationID = StoreUtils.parseGenerationFromPrefix(generationStrings.get(i));
       if (store.exists(Namespaces.getGenerationDoneKey(instanceDir, generationID), true)) {
         lastDoneGeneration = generationID;
         lastDoneGenerationIndex = i;
@@ -153,20 +153,20 @@ public abstract class GenerationRunner implements Callable<Object> {
 
     lastGenerationID = lastDoneGeneration;
 
-    long generationToMake;
-    long generationToWaitFor;
-    long generationToRun;
+    int generationToMake;
+    int generationToWaitFor;
+    int generationToRun;
 
     if (lastDoneGeneration >= 0) {
 
       log.info("Last complete generation is {}", lastDoneGeneration);
       if (lastDoneGenerationIndex == count - 1) {
-        generationToMake = lastDoneGeneration + 1;
+        generationToMake = lastDoneGeneration == Namespaces.MAX_GENERATION ? 0 : lastDoneGeneration + 1;
         generationToRun = -1;
         generationToWaitFor = -1;
       } else if (lastDoneGenerationIndex == count - 2) {
         generationToRun = StoreUtils.parseGenerationFromPrefix(generationStrings.get(lastDoneGenerationIndex + 1));
-        generationToMake = generationToRun + 1;
+        generationToMake =  generationToRun == Namespaces.MAX_GENERATION ? 0 : generationToRun + 1;
         generationToWaitFor = generationToMake;
       } else {
         generationToRun = StoreUtils.parseGenerationFromPrefix(generationStrings.get(lastDoneGenerationIndex + 1));
@@ -191,7 +191,7 @@ public abstract class GenerationRunner implements Callable<Object> {
           generationToWaitFor = StoreUtils.parseGenerationFromPrefix(generationStrings.get(1));
         } else {
           generationToRun = StoreUtils.parseGenerationFromPrefix(generationStrings.get(0));
-          generationToMake = generationToRun + 1;
+          generationToMake = generationToRun == Namespaces.MAX_GENERATION ? 0 : generationToRun + 1;
           generationToWaitFor = generationToMake;
         }
       }
@@ -282,8 +282,8 @@ public abstract class GenerationRunner implements Callable<Object> {
   }
 
   private static void maybeWaitToRun(String instanceDir,
-                                     long generationToWaitFor,
-                                     long generationToRun) throws IOException, InterruptedException {
+                                     int generationToWaitFor,
+                                     int generationToRun) throws IOException, InterruptedException {
     if (generationToWaitFor < 0) {
       log.info("No need to wait for a generation");
       return;
@@ -315,36 +315,48 @@ public abstract class GenerationRunner implements Callable<Object> {
     String uploadingGenerationPrefix =
         Namespaces.getInstanceGenerationPrefix(instanceDir, generationToRun) + "inbound/";
 
-    boolean anyInProgress = true;
-    while (anyInProgress) {
-      log.info("Waiting for uploads to finish in {}...", uploadingGenerationPrefix);
-      anyInProgress = false;
-      for (String fileName : store.list(uploadingGenerationPrefix, true)) {
-        // .inprogress is our marker for uploading files; _COPYING_ is Hadoop's
-        if (fileName.endsWith(".inprogress") || fileName.endsWith("_COPYING_")) {
-          long inProgressLastModified = store.getLastModified(fileName);
-          if (System.currentTimeMillis() < inProgressLastModified + 5 * GENERATION_WAIT) {
-            log.info("At least one upload is in progress ({})", fileName);
-            anyInProgress = true;
-            break;
-          } else {
-            log.warn("Stale upload to {}? Deleting and continuing", fileName);
-            try {
-              store.delete(fileName);
-            } catch (IOException ioe) {
-              log.info("Could not delete {}", fileName, ioe);
-            }
-          }
-        }
-      }
-      if (anyInProgress) {
+    if (ConfigUtils.getDefaultConfig().getBoolean("test.integration")) {
+      log.info("Skipping waiting for uploads in a test");
+    } else {
+      while (isUploadInProgress(uploadingGenerationPrefix)) {
+        log.info("Waiting for uploads to finish in {}", uploadingGenerationPrefix);
         Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES));
       }
     }
-
   }
 
-  private boolean isAnyInputInGeneration(long generationID) throws IOException {
+  private static boolean isUploadInProgress(String uploadingGenerationPrefix) throws IOException {
+    Store store = Store.get();
+    long now = System.currentTimeMillis();
+    for (String fileName : store.list(uploadingGenerationPrefix, true)) {
+      long lastModified = store.getLastModified(fileName);
+
+      if (fileName.endsWith(".inprogress") || fileName.endsWith("_COPYING_")) {
+        // .inprogress is our marker for uploading files; _COPYING_ is Hadoop's
+        if (lastModified > now - 3 * GENERATION_WAIT) {
+          log.info("At least one upload is in progress ({})", fileName);
+          return true;
+        }
+        // Else, orphaned upload -- waited a long, long time with no progress
+        log.warn("Stale upload to {}? Deleting and continuing", fileName);
+        try {
+          store.delete(fileName);
+        } catch (IOException ioe) {
+          log.info("Could not delete {}", fileName, ioe);
+        }
+      } else {
+        // All other (data) files. Look for recent modification, but only quite recent.
+        // This accounts for possible side-loads of data from other processes.
+        if (lastModified > now - GENERATION_WAIT) {
+          log.info("At least one upload is in progress ({})", fileName);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean isAnyInputInGeneration(int generationID) throws IOException {
     Store store = Store.get();
     for (String filePrefix :
          store.list(Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "inbound/", true)) {

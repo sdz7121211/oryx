@@ -41,7 +41,7 @@ public final class OutlierStep extends KMeansJobStep {
 
     OutlierSettings settings = OutlierSettings.create();
     String instanceDir = stepConfig.getInstanceDir();
-    long generationID = stepConfig.getGenerationID();
+    int generationID = stepConfig.getGenerationID();
     String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     String outputKey = prefix + "outliers/";
     if (!validOutputPath(outputKey)) {

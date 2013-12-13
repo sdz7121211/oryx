@@ -92,10 +92,20 @@ public interface OryxRecommender {
   void removePreference(String userID, String itemID);
 
   /**
+   * <p>Returns items that are most similar to the given item, as its name implies. Similarity here
+   * is defined by cosine similarity in the latent feature space.</p>
+   *
+   * <p>This differs from {@link #recommendToAnonymous(String[], float[], int)}, conceptually, in that it is
+   * for finding items similar to a given set of item. It is appropriate for non-personalized similar-item
+   * use cases. Technically speaking, this calculates items that have a high average similarity (cosine similarity,
+   * which is like a normalized dot product) in the latent feature space. This is slightly different from the
+   * other method.</p>
+   *
    * @param itemID ID of item for which to find most similar other items
    * @param howMany desired number of most similar items to find
    * @return items most similar to the given item, ordered from most similar to least
    * @throws NoSuchItemException if the item is not known
+   * @see #recommendToAnonymous(String[], float[], int)
    */
   List<IDValue> mostSimilarItems(String itemID, int howMany)
       throws NoSuchItemException, NotReadyException;
@@ -140,7 +150,6 @@ public interface OryxRecommender {
       throws NoSuchItemException, NotReadyException;
 
   /**
-   * Like {@code refresh(Collection)} from Mahout, but the need for the argument does not exist.
    * Triggers a rebuild of the object's internal state, particularly, the matrix model.
    */
   void refresh();
@@ -150,9 +159,8 @@ public interface OryxRecommender {
    * is determined is left to the implementation, but, generally this will return items that the user prefers
    * and that are similar to the given item.</p>
    *
-   * <p>This returns a {@link List} of {@link IDValue} which is a little misleading since it's returning
-   * recommend<strong>ing</strong> items, but, I thought it more natural to just reuse this class since it
-   * encapsulates an item and value. The value here does not necessarily have a consistent interpretation or
+   * <p>This returns a {@link List} of {@link IDValue}.
+   * The value here does not necessarily have a consistent interpretation or
    * expected range; it will be higher the more influential the item was in the recommendation.</p>
    *
    * @param userID ID of user who was recommended the item
@@ -283,13 +291,21 @@ public interface OryxRecommender {
   float[] estimatePreferences(String userID, String... itemIDs) throws NotReadyException;
 
   /**
-   * A version of {@link #estimatePreference(String, String)} that, like
+   * <p>A version of {@link #estimatePreference(String, String)} that, like
    * {@link #recommendToAnonymous(String[], float[], int)}, operates on "anonymous" users --
-   * defined not by a previously known set of data, but data given in the request.
+   * defined not by a previously known set of data, but data given in the request.</p>
+   *
+   * <p>This differs from {@link #mostSimilarItems(String, int)}, conceptually, in that it is
+   * for recommending to a user that is defined only by a given set of item interactions. It is
+   * appropriate for recommendation-like uses. Technically speaking, this method creates a user
+   * vector formed by projecting the given items together into the latent feature space, and then
+   * recommending to that user vector (high dot product items), which is slightly different
+   * from the other method.</p>
    * 
    * @param toItemID item for which the anonymous user's strength of interaction is to be estimated
    * @param itemIDs item IDs that the anonymous user has interacted with
    * @see #recommendToAnonymous(String[], float[], int)
+   * @see #mostSimilarItems(String, int)
    */
   float estimateForAnonymous(String toItemID, String[] itemIDs) throws NotReadyException, NoSuchItemException;
   

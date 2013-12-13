@@ -32,18 +32,18 @@ public final class NamespacesTest extends OryxTest {
   public void testNamespaces() throws Exception {
     Config config = ConfigUtils.getDefaultConfig();
     assertEquals("/tmp/OryxTest/00001/",
-                 Namespaces.getInstanceGenerationPrefix(config.getString("model.instance-dir"), 1L));
+                 Namespaces.getInstanceGenerationPrefix(config.getString("model.instance-dir"), 1));
     assertEquals("/tmp/OryxTest/00001/tmp/iterations/",
-                 Namespaces.getIterationsPrefix(config.getString("model.instance-dir"), 1L));
+                 Namespaces.getIterationsPrefix(config.getString("model.instance-dir"), 1));
     assertEquals("/tmp/OryxTest/00001/_SUCCESS",
-                 Namespaces.getGenerationDoneKey(config.getString("model.instance-dir"), 1L));
+                 Namespaces.getGenerationDoneKey(config.getString("model.instance-dir"), 1));
     assertEquals(new Path("file:/user/smurf"),
                  Namespaces.toPath("/user/smurf"));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testNegativeGenerationID() throws Exception {
-    Namespaces.getInstanceGenerationPrefix(ConfigUtils.getDefaultConfig().getString("model.instance-dir"), -1L);
+    Namespaces.getInstanceGenerationPrefix(ConfigUtils.getDefaultConfig().getString("model.instance-dir"), -1);
   }
 
 }

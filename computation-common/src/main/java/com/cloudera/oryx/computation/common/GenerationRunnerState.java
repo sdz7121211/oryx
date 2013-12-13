@@ -28,13 +28,13 @@ import java.util.List;
  */
 public final class GenerationRunnerState implements Serializable {
 
-  private final long generationID;
+  private final int generationID;
   private final List<StepState> stepStates;
   private final boolean running;
   private final Date startTime;
   private final Date endTime;
 
-  public GenerationRunnerState(long generationID,
+  public GenerationRunnerState(int generationID,
                                List<StepState> stepStates,
                                boolean running,
                                Date startTime,
@@ -50,7 +50,7 @@ public final class GenerationRunnerState implements Serializable {
     return d == null ? null : new Date(d.getTime());
   }
 
-  public long getGenerationID() {
+  public int getGenerationID() {
     return generationID;
   }
 

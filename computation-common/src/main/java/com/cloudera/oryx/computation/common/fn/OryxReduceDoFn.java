@@ -22,6 +22,7 @@ import com.cloudera.oryx.computation.common.JobStep;
 import com.google.common.base.Preconditions;
 import org.apache.crunch.DoFn;
 import org.apache.crunch.Pair;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.MRJobConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,19 +31,19 @@ public abstract class OryxReduceDoFn<K, V, T> extends DoFn<Pair<K, V>, T> {
 
   private static final Logger log = LoggerFactory.getLogger(OryxReduceDoFn.class);
 
-  private OryxConfiguration configuration;
+  private Configuration configuration;
   private int partition;
   private int numPartitions;
 
   @Override
-  protected final OryxConfiguration getConfiguration() {
+  protected final Configuration getConfiguration() {
     return configuration;
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    this.configuration = new OryxConfiguration(getContext().getConfiguration());
+    this.configuration = OryxConfiguration.get(getContext().getConfiguration());
 
     ConfigUtils.overlayConfigOnDefault(configuration.get(JobStep.CONFIG_SERIALIZATION_KEY));
 

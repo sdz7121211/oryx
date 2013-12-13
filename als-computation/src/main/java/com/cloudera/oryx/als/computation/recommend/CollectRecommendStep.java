@@ -37,7 +37,7 @@ public final class CollectRecommendStep extends ALSJobStep {
 
     JobStepConfig config = getConfig();
     String instanceDir = config.getInstanceDir();
-    long generationID = config.getGenerationID();
+    int generationID = config.getGenerationID();
 
     String inputKey = Namespaces.getTempPrefix(instanceDir, generationID) + "partialRecommend/";
     String outputKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "recommend/";

@@ -241,7 +241,7 @@ public final class PeriodicRunner implements Runnable, Closeable {
     }
     Store store = Store.get();
     for (CharSequence recentGenerationPathString : mostRecentGenerations) {
-      long generationID = StoreUtils.parseGenerationFromPrefix(recentGenerationPathString);
+      int generationID = StoreUtils.parseGenerationFromPrefix(recentGenerationPathString);
       if (store.exists(Namespaces.getGenerationDoneKey(instanceDir, generationID), true)) {
         return true;
       }
@@ -253,7 +253,7 @@ public final class PeriodicRunner implements Runnable, Closeable {
     if (mostRecentGenerations.isEmpty()) {
       return 0;
     }
-    long currentGenerationID =
+    int currentGenerationID =
         StoreUtils.parseGenerationFromPrefix(mostRecentGenerations.get(mostRecentGenerations.size() - 1));
     String inboundPrefix =
         Namespaces.getInstanceGenerationPrefix(config.getString("model.instance-dir"), currentGenerationID) +

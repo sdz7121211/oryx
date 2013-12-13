@@ -42,9 +42,9 @@ public final class MultiLongPairRescorer implements PairRescorer {
   }
 
   @Override
-  public double rescore(String a, String b, double value) {
+  public double rescore(String fromID, String toID, double value) {
     for (PairRescorer rescorer : rescorers) {
-      value = rescorer.rescore(a, b, value);
+      value = rescorer.rescore(fromID, toID, value);
       if (Double.isNaN(value)) {
         return Double.NaN;
       }
@@ -53,9 +53,9 @@ public final class MultiLongPairRescorer implements PairRescorer {
   }
 
   @Override
-  public boolean isFiltered(String a, String b) {
+  public boolean isFiltered(String fromID, String toID) {
     for (PairRescorer rescorer : rescorers) {
-      if (rescorer.isFiltered(a, b)) {
+      if (rescorer.isFiltered(fromID, toID)) {
         return true;
       }
     }

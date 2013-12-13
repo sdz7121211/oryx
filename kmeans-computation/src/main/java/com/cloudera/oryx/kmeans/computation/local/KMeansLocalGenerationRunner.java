@@ -43,7 +43,7 @@ public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
   @Override
   protected void runSteps() throws IOException, InterruptedException, JobException {
     String instanceDir = getInstanceDir();
-    long generationID = getGenerationID();
+    int generationID = getGenerationID();
     String generationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
 
     File currentInboundDir = Files.createTempDir();
