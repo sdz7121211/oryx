@@ -76,17 +76,6 @@ public final class Namespaces {
     return prefix;
   }
 
-  public static String getSysPrefix(String instanceDir) {
-    return getInstancePrefix(instanceDir) + "sys/";
-  }
-
-  /**
-   * @return key where remote keystore file is optionally stored
-   */
-  public static String getKeystoreFilePrefix(String instanceDir) {
-    return getSysPrefix(instanceDir) + "keystore.ks";
-  }
-
   /**
    * @param suffix directory name
    * @return {@link Path} appropriate for use with Hadoop representing this directory

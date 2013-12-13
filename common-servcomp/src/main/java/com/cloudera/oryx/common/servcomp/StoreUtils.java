@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -44,16 +43,7 @@ public final class StoreUtils {
    * @return locations of all generation directories for the given instance
    */
   public static List<String> listGenerationsForInstance(String instanceDir) throws IOException {
-    String prefix = Namespaces.getInstancePrefix(instanceDir);
-    List<String> rawGenerations = Store.get().list(prefix, false);
-    Iterator<String> it = rawGenerations.iterator();
-    String sysPrefix = Namespaces.getSysPrefix(instanceDir);
-    while (it.hasNext()) {
-      if (it.next().startsWith(sysPrefix)) {
-        it.remove();
-      }
-    }
-    return rawGenerations;
+    return Store.get().list(Namespaces.getInstancePrefix(instanceDir), false);
   }
 
   public static long parseGenerationFromPrefix(CharSequence prefix) {
