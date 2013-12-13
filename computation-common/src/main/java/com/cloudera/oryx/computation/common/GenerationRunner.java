@@ -315,9 +315,13 @@ public abstract class GenerationRunner implements Callable<Object> {
     String uploadingGenerationPrefix =
         Namespaces.getInstanceGenerationPrefix(instanceDir, generationToRun) + "inbound/";
 
-    while (isUploadInProgress(uploadingGenerationPrefix)) {
-      log.info("Waiting for uploads to finish in {}", uploadingGenerationPrefix);
-      Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES));
+    if (ConfigUtils.getDefaultConfig().getBoolean("test.integration")) {
+      log.info("Skipping waiting for uploads in a test");
+    } else {
+      while (isUploadInProgress(uploadingGenerationPrefix)) {
+        log.info("Waiting for uploads to finish in {}", uploadingGenerationPrefix);
+        Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES));
+      }
     }
   }
 
