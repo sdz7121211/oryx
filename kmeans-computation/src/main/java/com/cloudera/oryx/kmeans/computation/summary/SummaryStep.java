@@ -39,7 +39,7 @@ public final class SummaryStep extends KMeansJobStep {
     JobStepConfig stepConfig = getConfig();
 
     String instanceDir = stepConfig.getInstanceDir();
-    long generationID = stepConfig.getGenerationID();
+    int generationID = stepConfig.getGenerationID();
     String outputKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "summary/";
     if (!validOutputPath(outputKey)) {
       return null;

@@ -39,7 +39,7 @@ public final class NormalizeStep extends KMeansJobStep {
     JobStepConfig stepConfig = getConfig();
 
     String instanceDir = stepConfig.getInstanceDir();
-    long generationID = stepConfig.getGenerationID();
+    int generationID = stepConfig.getGenerationID();
     String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     String outputKey = prefix + "normalized/";
     if (!validOutputPath(outputKey)) {

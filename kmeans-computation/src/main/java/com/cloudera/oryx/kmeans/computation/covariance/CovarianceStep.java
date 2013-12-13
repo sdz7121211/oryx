@@ -39,7 +39,7 @@ public final class CovarianceStep extends KMeansJobStep {
     CovarianceSettings settings = CovarianceSettings.create();
 
     String instanceDir = stepConfig.getInstanceDir();
-    long generationID = stepConfig.getGenerationID();
+    int generationID = stepConfig.getGenerationID();
     String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     String outputKey = prefix + "covariance/";
     if (!validOutputPath(outputKey)) {

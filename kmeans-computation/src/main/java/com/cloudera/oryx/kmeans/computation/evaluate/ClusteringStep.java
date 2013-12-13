@@ -60,7 +60,7 @@ public final class ClusteringStep extends KMeansJobStep {
     EvaluationSettings settings = EvaluationSettings.create(config);
 
     String instanceDir = stepConfig.getInstanceDir();
-    long generationID = stepConfig.getGenerationID();
+    int generationID = stepConfig.getGenerationID();
     String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     String outputKey = prefix + "eval/";
     if (!validOutputPath(outputKey)) {
@@ -96,7 +96,7 @@ public final class ClusteringStep extends KMeansJobStep {
   protected void postRun() throws IOException {
     JobStepConfig stepConfig = getConfig();
     String instanceDir = stepConfig.getInstanceDir();
-    long generationID = stepConfig.getGenerationID();
+    int generationID = stepConfig.getGenerationID();
     String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     String replicaStatsKey = prefix + "eval/replicaStats/";
     String replicaCentersKey = prefix + "eval/replicaCenters/";

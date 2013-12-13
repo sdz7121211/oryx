@@ -66,7 +66,7 @@ final class GenerationLoader {
     this.lockForRecent = lockForRecent;
   }
 
-  void loadModel(long generationID, Generation currentGeneration) throws IOException {
+  void loadModel(int generationID, Generation currentGeneration) throws IOException {
 
     File modelPMMLFile = File.createTempFile("oryx-model", ".pmml.gz");
     modelPMMLFile.deleteOnExit();

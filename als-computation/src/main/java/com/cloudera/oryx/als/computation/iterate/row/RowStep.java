@@ -57,7 +57,7 @@ public final class RowStep extends IterationStep {
 
     JobStepConfig config = getConfig();
     String instanceDir = config.getInstanceDir();
-    long generationID = config.getGenerationID();
+    int generationID = config.getGenerationID();
 
     if (store.exists(Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "X/", false)) {
       // Actually, looks like whole computation of X/Y finished -- just proceed

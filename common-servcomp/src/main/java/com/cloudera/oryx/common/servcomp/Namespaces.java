@@ -36,6 +36,9 @@ public final class Namespaces {
 
   private static final Logger log = LoggerFactory.getLogger(Namespaces.class);
 
+  private static final int DIGITS_IN_GENERATION_ID = 5;
+  public static final int MAX_GENERATION = Integer.parseInt(Strings.repeat("9", DIGITS_IN_GENERATION_ID));
+
   private static final Namespaces instance = new Namespaces();
 
   private final String prefix;
@@ -88,24 +91,24 @@ public final class Namespaces {
     return instanceDir + '/';
   }
 
-  public static String getInstanceGenerationPrefix(String instanceDir, long generationID) {
+  public static String getInstanceGenerationPrefix(String instanceDir, int generationID) {
     Preconditions.checkArgument(generationID >= 0L, "Bad generation %s", generationID);
     return getInstancePrefix(instanceDir) + getPaddedGenerationID(generationID) + '/';
   }
 
-  private static String getPaddedGenerationID(long generationID) {
-    return Strings.padStart(Long.toString(generationID), 5, '0');
+  private static String getPaddedGenerationID(int generationID) {
+    return Strings.padStart(Integer.toString(generationID), DIGITS_IN_GENERATION_ID, '0');
   }
 
-  public static String getTempPrefix(String instanceDir, long generationID) {
+  public static String getTempPrefix(String instanceDir, int generationID) {
     return getInstanceGenerationPrefix(instanceDir, generationID) + "tmp/";
   }
 
-  public static String getIterationsPrefix(String instanceDir, long generationID) {
+  public static String getIterationsPrefix(String instanceDir, int generationID) {
     return getTempPrefix(instanceDir, generationID) + "iterations/";
   }
 
-  public static String getGenerationDoneKey(String instanceDir, long generationID) {
+  public static String getGenerationDoneKey(String instanceDir, int generationID) {
     return getInstanceGenerationPrefix(instanceDir, generationID) + "_SUCCESS";
   }
 

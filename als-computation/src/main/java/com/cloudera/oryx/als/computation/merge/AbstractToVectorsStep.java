@@ -36,7 +36,7 @@ abstract class AbstractToVectorsStep extends ALSJobStep {
 
     JobStepConfig config = getConfig();
     String instanceDir = config.getInstanceDir();
-    long generationID = config.getGenerationID();
+    int generationID = config.getGenerationID();
 
     String inputKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "input/";
     String outputKey = Namespaces.getTempPrefix(instanceDir, generationID) + getSuffix();

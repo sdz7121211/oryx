@@ -50,11 +50,11 @@ public abstract class GenerationManager implements Closeable {
 
   private static final Logger log = LoggerFactory.getLogger(GenerationManager.class);
 
-  protected static final long NO_GENERATION = Long.MIN_VALUE;
+  protected static final int NO_GENERATION = Integer.MIN_VALUE;
 
   private final String instanceDir;
   private final ScheduledExecutorService executorService;
-  private long writeGeneration;
+  private int writeGeneration;
   private Writer appender;
   private final File appendTempDir;
   private File appenderTempFile;
@@ -206,7 +206,7 @@ public abstract class GenerationManager implements Closeable {
   }
 
   private synchronized void maybeRollAppender() throws IOException {
-    long newMostRecentGeneration = getMostRecentGeneration();
+    int newMostRecentGeneration = getMostRecentGeneration();
     if (newMostRecentGeneration > writeGeneration || countdownToUpload <= 0) {
       countdownToUpload = writesBetweenUpload;
       // Close and write into *current* write generation first -- but only if it exists
@@ -223,11 +223,11 @@ public abstract class GenerationManager implements Closeable {
     }
   }
 
-  private long getMostRecentGeneration() throws IOException {
+  private int getMostRecentGeneration() throws IOException {
     List<String> recentGenerationPathStrings = StoreUtils.listGenerationsForInstance(instanceDir);
     if (recentGenerationPathStrings.isEmpty()) {
       log.warn("No generation found at all at {}; wrong path?", Namespaces.getInstancePrefix(instanceDir));
-      return -1L;
+      return -1;
     }
     return StoreUtils.parseGenerationFromPrefix(
         recentGenerationPathStrings.get(recentGenerationPathStrings.size() - 1));
@@ -259,7 +259,7 @@ public abstract class GenerationManager implements Closeable {
     }
   }
 
-  protected abstract void loadRecentModel(long mostRecentModelGeneration) throws IOException;
+  protected abstract void loadRecentModel(int mostRecentModelGeneration) throws IOException;
 
   private final class RefreshCallable implements Callable<Object> {
 
@@ -267,8 +267,8 @@ public abstract class GenerationManager implements Closeable {
     public Void call() {
       try {
         maybeRollAppender();
-        long mostRecentModelGeneration = getMostRecentModelGeneration();
-        if (mostRecentModelGeneration >= 0L) {
+        int mostRecentModelGeneration = getMostRecentModelGeneration();
+        if (mostRecentModelGeneration >= 0) {
           loadRecentModel(mostRecentModelGeneration);
         } else {
           log.info("No available generation, nothing to do");
@@ -281,18 +281,18 @@ public abstract class GenerationManager implements Closeable {
       return null;
     }
 
-    private long getMostRecentModelGeneration() throws IOException {
+    private int getMostRecentModelGeneration() throws IOException {
       List<String> recentGenerationPathStrings = StoreUtils.listGenerationsForInstance(instanceDir);
       Store store = Store.get();
       for (int i = recentGenerationPathStrings.size() - 1; i >= 0; i--) {
-        long generationID = StoreUtils.parseGenerationFromPrefix(recentGenerationPathStrings.get(i));
+        int generationID = StoreUtils.parseGenerationFromPrefix(recentGenerationPathStrings.get(i));
         String instanceGenerationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
         if (store.exists(Namespaces.getGenerationDoneKey(instanceDir, generationID), true) &&
             store.exists(instanceGenerationPrefix + "model.pmml.gz", true)) {
           return generationID;
         }
       }
-      return -1L;
+      return -1;
     }
 
   }

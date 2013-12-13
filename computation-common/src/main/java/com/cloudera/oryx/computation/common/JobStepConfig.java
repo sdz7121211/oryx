@@ -27,13 +27,13 @@ import com.google.common.base.Preconditions;
 public abstract class JobStepConfig {
   
   private final String instanceDir;
-  private final long generationID;
-  private final long lastGenerationID;
+  private final int generationID;
+  private final int lastGenerationID;
   private final int iteration;
 
   protected JobStepConfig(String instanceDir,
-                          long generationID,
-                          long lastGenerationID,
+                          int generationID,
+                          int lastGenerationID,
                           int iteration) {
     Preconditions.checkNotNull(instanceDir);
     Preconditions.checkArgument(generationID >= 0L, "Generation must be nonnegative: {}", generationID);
@@ -48,11 +48,11 @@ public abstract class JobStepConfig {
     return instanceDir;
   }
 
-  public final long getGenerationID() {
+  public final int getGenerationID() {
     return generationID;
   }
 
-  public final long getLastGenerationID() {
+  public final int getLastGenerationID() {
     return lastGenerationID;
   }
 
