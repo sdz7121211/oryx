@@ -43,11 +43,11 @@ import org.dmg.pmml.True;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
@@ -86,14 +86,30 @@ public final class DecisionForestPMML {
   // Write PMML
 
   /**
-   * @param pmmlFile file to write PMML representation to
+   * Writes to a {@link File} instead of {@link Writer}.
+   *
+   * @see #write(Writer, DecisionForest, Map)
+   */
+  public static void write(File pmmlFile,
+                           DecisionForest forest,
+                           Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping) throws IOException {
+    Writer pmmlOut = IOUtils.buildGZIPWriter(pmmlFile);
+    try {
+      write(pmmlOut, forest, columnToCategoryNameToIDMapping);
+    } finally {
+      pmmlOut.close();
+    }
+  }
+
+  /**
+   * @param pmmlOut stream to write PMML representation to
    * @param forest {@link DecisionForest} to encode as PMML
    * @param columnToCategoryNameToIDMapping {@link Map} from column number in the input, to a {@link BiMap}
    *  mapping between category value names and category value IDs (for categorical feature columns only). This
    *  is necessary because the {@link DecisionForest} operates in terms of value IDs, but the PMML encoding
    *  should encode the names of these category values -- {@code female}, not {@code 2}
    */
-  public static void write(File pmmlFile,
+  public static void write(Writer pmmlOut,
                            DecisionForest forest,
                            Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping) throws IOException {
 
@@ -129,13 +145,10 @@ public final class DecisionForestPMML {
     PMML pmml = new PMML(null, dictionary, "4.1");
     pmml.getModels().add(miningModel);
 
-    OutputStream out = IOUtils.buildGZIPOutputStream(new FileOutputStream(pmmlFile));
     try {
-      IOUtil.marshal(pmml, out);
+      IOUtil.marshal(pmml, new StreamResult(pmmlOut));
     } catch (JAXBException jaxbe) {
       throw new IOException(jaxbe);
-    } finally {
-      out.close();
     }
   }
 

@@ -15,12 +15,12 @@
 
 package com.cloudera.oryx.rdf.computation.build;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.io.CharStreams;
 import com.google.common.math.IntMath;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.util.FastMath;
@@ -29,15 +29,12 @@ import org.apache.crunch.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
-import com.cloudera.oryx.common.io.IOUtils;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.common.settings.InboundSettings;
 import com.cloudera.oryx.computation.common.fn.OryxReduceDoFn;
@@ -59,7 +56,7 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
 
   private static final Logger log = LoggerFactory.getLogger(BuildTreeFn.class);
 
-  private static final Pattern NEWLINES = Pattern.compile("[\\r\\n]+");
+  private static final CharMatcher NEWLINES = CharMatcher.anyOf("\n\r");
 
   private int numLocalTrees;
   private int trainingFoldsPerTree;
@@ -155,19 +152,11 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
 
       DecisionForest singletonForest = new DecisionForest(new DecisionTree[] { tree }, new double[] { weight });
 
-      log.info("Writing tree {} to file", treeID);
       String pmmlFileContents;
       try  {
-        File tempFile = File.createTempFile("model-" + treeID + '-', ".pmml.gz");
-        tempFile.deleteOnExit();
-        DecisionForestPMML.write(tempFile, singletonForest, columnToCategoryNameToIDMapping);
-        Reader in = IOUtils.openReaderMaybeDecompressing(tempFile);
-        try {
-          pmmlFileContents = NEWLINES.matcher(CharStreams.toString(in)).replaceAll("");
-        } finally {
-          in.close();
-        }
-        IOUtils.delete(tempFile);
+        StringWriter treePMML = new StringWriter();
+        DecisionForestPMML.write(treePMML, singletonForest, columnToCategoryNameToIDMapping);
+        pmmlFileContents = NEWLINES.removeFrom(treePMML.toString());
       } catch (IOException ioe) {
         throw new IllegalStateException(ioe);
       }
