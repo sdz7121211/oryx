@@ -160,7 +160,9 @@ public abstract class DistributedGenerationRunner extends GenerationRunner {
   /**
    * @return true iff iteration should be considered complete
    */
-  protected abstract boolean areIterationsDone(int iterationNumber) throws IOException;
+  protected boolean areIterationsDone(int iterationNumber) throws IOException {
+    return true;
+  }
 
   /**
    * Override to perform logic after all {@link JobStep}s have executed.
