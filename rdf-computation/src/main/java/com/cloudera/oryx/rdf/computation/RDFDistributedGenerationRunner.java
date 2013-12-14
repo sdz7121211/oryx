@@ -83,8 +83,8 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     Store store = Store.get();
     PMML joinedForest = null;
 
+    int treeCount = 0;
     for (String treePrefix : store.list(outputPathKey, true)) {
-      log.info("Joining model file {}", outputPathKey);
       for (String treePMMLAsLine : new FileLineIterable(store.readFrom(treePrefix))) {
         PMML treePMML;
         try {
@@ -95,6 +95,7 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
           throw new IOException(e);
         }
 
+        log.info("Adding tree {} to combined model", treeCount++);
         if (joinedForest == null) {
           joinedForest = treePMML;
         } else {
@@ -105,6 +106,7 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
       }
     }
 
+    log.info("Writing combined model file");
     File tempJoinedForestFile = File.createTempFile("model-", ".pmml.gz");
     tempJoinedForestFile.deleteOnExit();
     OutputStream out = IOUtils.buildGZIPOutputStream(new FileOutputStream(tempJoinedForestFile));
