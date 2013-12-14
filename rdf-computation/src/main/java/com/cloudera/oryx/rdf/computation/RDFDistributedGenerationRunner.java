@@ -83,8 +83,11 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     Store store = Store.get();
     PMML joinedForest = null;
 
-    int treeCount = 0;
+    // TODO This is still loading all trees into memory, which can be quite large.
+    // To do better we would have to manage XML output more directly.
+
     for (String treePrefix : store.list(outputPathKey, true)) {
+      log.info("Reading trees from file {}", treePrefix);
       for (String treePMMLAsLine : new FileLineIterable(store.readFrom(treePrefix))) {
         PMML treePMML;
         try {
@@ -95,7 +98,6 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
           throw new IOException(e);
         }
 
-        log.info("Adding tree {} to combined model", treeCount++);
         if (joinedForest == null) {
           joinedForest = treePMML;
         } else {
@@ -118,6 +120,7 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
       out.close();
     }
 
+    log.info("Uploading combined model file");
     store.upload(instanceGenerationPrefix + "model.pmml.gz", tempJoinedForestFile, false);
     IOUtils.delete(tempJoinedForestFile);
   }

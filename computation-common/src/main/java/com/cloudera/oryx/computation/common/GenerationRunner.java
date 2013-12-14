@@ -238,6 +238,7 @@ public abstract class GenerationRunner implements Callable<Object> {
       log.info("Dumping some stats on generation {}", generationID);
       endSize = store.getSizeRecursive(Namespaces.getInstanceGenerationPrefix(instanceDir, generationID));
       dumpStats();
+      log.info("Generation {} complete", generationID);
     }
   }
 
