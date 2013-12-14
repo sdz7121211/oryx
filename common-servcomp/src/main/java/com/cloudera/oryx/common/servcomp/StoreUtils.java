@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,27 +38,53 @@ public final class StoreUtils {
   }
 
   /**
-   * Lists all generation keys for a given instance. This skips any system directories, for example.
+   * Lists all generation keys for a given instance. The results are ordered by recency -- most recent generation
+   * is last. Note that this not in every case the same as lexicographic ordering, although almost always is.
+   * It will not in the case of generation number "wrapping around": 00000,99998,99999 will be returned as
+   * 99998,99999,00000.
    * 
    * @param instanceDir instance directory from which to retrieve generations for
    * @return locations of all generation directories for the given instance
    */
   public static List<String> listGenerationsForInstance(String instanceDir) throws IOException {
-    String prefix = Namespaces.getInstancePrefix(instanceDir);
-    List<String> rawGenerations = Store.get().list(prefix, false);
-    Iterator<String> it = rawGenerations.iterator();
-    String sysPrefix = Namespaces.getSysPrefix(instanceDir);
-    while (it.hasNext()) {
-      if (it.next().startsWith(sysPrefix)) {
-        it.remove();
-      }
-    }
-    return rawGenerations;
+    List<String> generations = Store.get().list(Namespaces.getInstancePrefix(instanceDir), false);
+    orderGenerations(generations);
+    return generations;
   }
 
-  public static long parseGenerationFromPrefix(CharSequence prefix) {
+  /**
+   * @param generations lexicographically ordered list of generations
+   * @return generations ordered by creation -- accounts for the case of 00000,99998,99999 where 00000 is
+   *  most recent
+   */
+  public static List<String> orderGenerations(List<String> generations) throws IOException {
+    if (generations.isEmpty()) {
+      return generations;
+    }
+    String highestGenerationKey = generations.get(generations.size() - 1);
+    int highestGeneration = parseGenerationFromPrefix(highestGenerationKey);
+    if (highestGeneration < Namespaces.MAX_GENERATION) {
+      // Nothing to do to order these further
+      return generations;
+    }
+
+    Store store = Store.get();
+    long lastModified = store.getLastModified(highestGenerationKey);
+    for (int i = 0; i < generations.size(); i++) {
+      String possiblyLaterGeneration = generations.get(i);
+      long possiblyLaterModTime = store.getLastModified(possiblyLaterGeneration);
+      if (possiblyLaterModTime <= lastModified) {
+        Collections.rotate(generations, -i);
+        break;
+      }
+      lastModified = possiblyLaterModTime;
+    }
+    return generations;
+  }
+
+  public static int parseGenerationFromPrefix(CharSequence prefix) {
     try {
-      return Long.parseLong(lastNonEmptyDelimited(prefix));
+      return Integer.parseInt(lastNonEmptyDelimited(prefix));
     } catch (NumberFormatException nfe) {
       log.error("Bad generation directory: {}", prefix);
       throw nfe;

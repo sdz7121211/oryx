@@ -319,6 +319,10 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>com.twitter</groupId>
+            <artifactId>parquet-avro</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 

@@ -20,8 +20,8 @@ import com.cloudera.oryx.computation.common.JobStepConfig;
 public final class KMeansJobStepConfig extends JobStepConfig {
 
   public KMeansJobStepConfig(String instanceDir,
-                             long generationID,
-                             long lastGenerationID,
+                             int generationID,
+                             int lastGenerationID,
                              int iteration) {
     super(instanceDir, generationID, lastGenerationID, iteration);
   }
@@ -30,8 +30,8 @@ public final class KMeansJobStepConfig extends JobStepConfig {
   public String[] toArgsArray() {
     return new String[] {
         getInstanceDir(),
-        Long.toString(getGenerationID()),
-        Long.toString(getLastGenerationID()),
+        Integer.toString(getGenerationID()),
+        Integer.toString(getLastGenerationID()),
         Integer.toString(getIteration()),
     };
   }

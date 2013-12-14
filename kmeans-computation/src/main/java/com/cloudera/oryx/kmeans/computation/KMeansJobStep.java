@@ -46,8 +46,8 @@ public class KMeansJobStep extends JobStep {
     Preconditions.checkNotNull(args);
     Preconditions.checkArgument(args.length >= 4);
     return new KMeansJobStepConfig(args[0],
-        Long.parseLong(args[1]),
-        Long.parseLong(args[2]),
+        Integer.parseInt(args[1]),
+        Integer.parseInt(args[2]),
         Integer.parseInt(args[3]));
   }
 

@@ -20,18 +20,20 @@ import org.dmg.pmml.MiningModel;
 import org.dmg.pmml.PMML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 
 import com.cloudera.oryx.common.io.IOUtils;
+import com.cloudera.oryx.common.iterator.FileLineIterable;
 import com.cloudera.oryx.common.servcomp.Namespaces;
 import com.cloudera.oryx.common.servcomp.Store;
 import com.cloudera.oryx.computation.common.DependsOn;
@@ -81,38 +83,30 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     Store store = Store.get();
     PMML joinedForest = null;
 
+    int treeCount = 0;
     for (String treePrefix : store.list(outputPathKey, true)) {
+      for (String treePMMLAsLine : new FileLineIterable(store.readFrom(treePrefix))) {
+        PMML treePMML;
+        try {
+          treePMML = IOUtil.unmarshal(new InputSource(new StringReader(treePMMLAsLine)));
+        } catch (SAXException e) {
+          throw new IOException(e);
+        } catch (JAXBException e) {
+          throw new IOException(e);
+        }
 
-      File treeTempFile = File.createTempFile("model-", ".pmml.gz");
-      log.info("Joining mode file {}", treeTempFile);
-
-      treeTempFile.deleteOnExit();
-      store.download(treePrefix, treeTempFile);
-
-      PMML pmml;
-      InputStream in = IOUtils.openMaybeDecompressing(treeTempFile);
-      try {
-        pmml = IOUtil.unmarshal(in);
-      } catch (SAXException e) {
-        throw new IOException(e);
-      } catch (JAXBException e) {
-        throw new IOException(e);
-      } finally {
-        in.close();
+        log.info("Adding tree {} to combined model", treeCount++);
+        if (joinedForest == null) {
+          joinedForest = treePMML;
+        } else {
+          MiningModel existingModel = (MiningModel) joinedForest.getModels().get(0);
+          MiningModel nextModel = (MiningModel) treePMML.getModels().get(0);
+          existingModel.getSegmentation().getSegments().addAll(nextModel.getSegmentation().getSegments());
+        }
       }
-
-      IOUtils.delete(treeTempFile);
-
-      if (joinedForest == null) {
-        joinedForest = pmml;
-      } else {
-        MiningModel existingModel = (MiningModel) joinedForest.getModels().get(0);
-        MiningModel nextModel = (MiningModel) pmml.getModels().get(0);
-        existingModel.getSegmentation().getSegments().addAll(nextModel.getSegmentation().getSegments());
-      }
-
     }
 
+    log.info("Writing combined model file");
     File tempJoinedForestFile = File.createTempFile("model-", ".pmml.gz");
     tempJoinedForestFile.deleteOnExit();
     OutputStream out = IOUtils.buildGZIPOutputStream(new FileOutputStream(tempJoinedForestFile));
@@ -126,11 +120,6 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
 
     store.upload(instanceGenerationPrefix + "model.pmml.gz", tempJoinedForestFile, false);
     IOUtils.delete(tempJoinedForestFile);
-  }
-
-  @Override
-  protected boolean areIterationsDone(int iterationNumber) {
-    return true;
   }
 
 }

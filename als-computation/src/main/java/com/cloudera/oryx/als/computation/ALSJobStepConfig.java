@@ -24,8 +24,8 @@ public final class ALSJobStepConfig extends JobStepConfig {
   private final boolean computingX;
 
   public ALSJobStepConfig(String instanceDir,
-                          long generationID,
-                          long lastGenerationID,
+                          int generationID,
+                          int lastGenerationID,
                           int iteration,
                           boolean computingX) {
     super(instanceDir, generationID, lastGenerationID, iteration);
@@ -40,8 +40,8 @@ public final class ALSJobStepConfig extends JobStepConfig {
   public String[] toArgsArray() {
     return new String[] {
         getInstanceDir(),
-        Long.toString(getGenerationID()),
-        Long.toString(getLastGenerationID()),
+        Integer.toString(getGenerationID()),
+        Integer.toString(getLastGenerationID()),
         Integer.toString(getIteration()),
         Boolean.toString(computingX),
     };
@@ -51,8 +51,8 @@ public final class ALSJobStepConfig extends JobStepConfig {
     Preconditions.checkNotNull(args);
     Preconditions.checkArgument(args.length >= 5);
     return new ALSJobStepConfig(args[0],
-                                Long.parseLong(args[1]),
-                                Long.parseLong(args[2]),
+                                Integer.parseInt(args[1]),
+                                Integer.parseInt(args[2]),
                                 Integer.parseInt(args[3]),
                                 Boolean.parseBoolean(args[4]));
   }

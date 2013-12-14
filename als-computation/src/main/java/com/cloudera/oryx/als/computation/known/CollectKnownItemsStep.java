@@ -35,7 +35,7 @@ public final class CollectKnownItemsStep extends ALSJobStep {
 
     JobStepConfig config = getConfig();
     String instanceDir = config.getInstanceDir();
-    long generationID = config.getGenerationID();
+    int generationID = config.getGenerationID();
 
     String outputKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "knownItems/";
 

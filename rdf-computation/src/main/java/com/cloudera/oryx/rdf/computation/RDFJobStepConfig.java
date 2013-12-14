@@ -22,8 +22,8 @@ import com.cloudera.oryx.computation.common.JobStepConfig;
 public final class RDFJobStepConfig extends JobStepConfig {
 
   public RDFJobStepConfig(String instanceDir,
-                          long generationID,
-                          long lastGenerationID,
+                          int generationID,
+                          int lastGenerationID,
                           int iteration) {
     super(instanceDir, generationID, lastGenerationID, iteration);
   }
@@ -32,8 +32,8 @@ public final class RDFJobStepConfig extends JobStepConfig {
   public String[] toArgsArray() {
     return new String[] {
         getInstanceDir(),
-        Long.toString(getGenerationID()),
-        Long.toString(getLastGenerationID()),
+        Integer.toString(getGenerationID()),
+        Integer.toString(getLastGenerationID()),
         Integer.toString(getIteration()),
     };
   }
@@ -42,8 +42,8 @@ public final class RDFJobStepConfig extends JobStepConfig {
     Preconditions.checkNotNull(args);
     Preconditions.checkArgument(args.length >= 4);
     return new RDFJobStepConfig(args[0],
-                                Long.parseLong(args[1]),
-                                Long.parseLong(args[2]),
+                                Integer.parseInt(args[1]),
+                                Integer.parseInt(args[2]),
                                 Integer.parseInt(args[3]));
   }
 

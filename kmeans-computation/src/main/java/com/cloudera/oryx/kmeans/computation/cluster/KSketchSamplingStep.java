@@ -41,7 +41,7 @@ public final class KSketchSamplingStep extends KMeansJobStep {
     ClusterSettings settings = ClusterSettings.create(ConfigUtils.getDefaultConfig());
 
     String instanceDir = stepConfig.getInstanceDir();
-    long generationID = stepConfig.getGenerationID();
+    int generationID = stepConfig.getGenerationID();
     int iteration = stepConfig.getIteration();
     String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     String outputKey = prefix + String.format("sketch/%d/", iteration);

@@ -40,7 +40,7 @@ public final class VoronoiPartitionStep extends KMeansJobStep {
     ClusterSettings clusterSettings = ClusterSettings.create(config);
 
     String instanceDir = stepConfig.getInstanceDir();
-    long generationID = stepConfig.getGenerationID();
+    int generationID = stepConfig.getGenerationID();
     String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     String outputKey = prefix + "weighted/";
     if (!validOutputPath(outputKey)) {

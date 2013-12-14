@@ -41,7 +41,7 @@ public final class ALSGenerationManager extends GenerationManager {
 
   private static final Logger log = LoggerFactory.getLogger(ALSGenerationManager.class);
 
-  private long modelGeneration;
+  private int modelGeneration;
   private Generation currentGeneration;
   private final LongSet recentlyActiveUsers;
   private final LongSet recentlyActiveItems;
@@ -112,7 +112,7 @@ public final class ALSGenerationManager extends GenerationManager {
   }
 
   @Override
-  protected void loadRecentModel(long mostRecentModelGeneration) throws IOException {
+  protected void loadRecentModel(int mostRecentModelGeneration) throws IOException {
     if (mostRecentModelGeneration <= modelGeneration) {
       return;
     }

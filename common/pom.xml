@@ -53,6 +53,12 @@
     <dependency>
       <groupId>org.jpmml</groupId>
       <artifactId>pmml-manager</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>com.sun.xml.bind</artifactId>
+          <groupId>jaxb-impl</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
