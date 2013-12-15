@@ -51,9 +51,18 @@ public final class ExampleSet implements Iterable<Example> {
 
     featureTypes = new FeatureType[numFeatures];
     for (int i = 0; i < numFeatures; i++) {
-      featureTypes[i] = inbound.isNumeric(i) ? FeatureType.NUMERIC : FeatureType.CATEGORICAL;
+      FeatureType type;
+      if (inbound.isNumeric(i)) {
+        type = FeatureType.NUMERIC;
+      } else if (inbound.isCategorical(i)) {
+        type = FeatureType.CATEGORICAL;
+      } else {
+        type = FeatureType.IGNORED;
+      }
+      featureTypes[i] = type;
     }
     int targetColumn = inbound.getTargetColumn();
+    featureTypes[targetColumn] = FeatureType.IGNORED;
     targetType = inbound.isNumeric(targetColumn) ? FeatureType.NUMERIC : FeatureType.CATEGORICAL;
 
     categoryCounts = new int[numFeatures];
