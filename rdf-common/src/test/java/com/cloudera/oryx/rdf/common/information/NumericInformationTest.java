@@ -28,6 +28,7 @@ import com.cloudera.oryx.common.collection.BitSet;
 import com.cloudera.oryx.rdf.common.example.CategoricalFeature;
 import com.cloudera.oryx.rdf.common.example.Example;
 import com.cloudera.oryx.rdf.common.example.ExampleSet;
+import com.cloudera.oryx.rdf.common.example.FeatureType;
 import com.cloudera.oryx.rdf.common.example.NumericFeature;
 import com.cloudera.oryx.rdf.common.rule.CategoricalDecision;
 import com.cloudera.oryx.rdf.common.rule.Decision;
@@ -84,7 +85,9 @@ public final class NumericInformationTest extends OryxTest {
         examples.add(new Example(NumericFeature.forValue(value), CategoricalFeature.forValue(category)));
       }
     }
-    return new ExampleSet(examples);
+    return new ExampleSet(examples,
+                          new FeatureType[] {FeatureType.CATEGORICAL, FeatureType.IGNORED},
+                          FeatureType.NUMERIC);
   }
 
   @Test
@@ -119,7 +122,9 @@ public final class NumericInformationTest extends OryxTest {
     for (int i = 0; i < features.length; i++) {
       examples.add(new Example(NumericFeature.forValue(values[i]), NumericFeature.forValue(features[i])));
     }
-    return new ExampleSet(examples);
+    return new ExampleSet(examples,
+                          new FeatureType[] {FeatureType.NUMERIC, FeatureType.IGNORED},
+                          FeatureType.NUMERIC);
   }
 
 }

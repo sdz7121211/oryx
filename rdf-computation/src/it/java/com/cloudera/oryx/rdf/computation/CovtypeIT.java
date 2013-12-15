@@ -74,25 +74,17 @@ public final class CovtypeIT extends AbstractComputationIT {
     File dataFile = new File(TEST_TEMP_INBOUND_DIR, "covtype.csv.gz");
     for (CharSequence line : new FileLineIterable(dataFile)) {
       String[] tokens = delimiter.split(line);
-      Feature[] features = new Feature[12];
+      Feature[] features = new Feature[54];
       for (int i = 0; i < 10; i++) {
         features[i] = NumericFeature.forValue(Float.parseFloat(tokens[i]));
       }
-      features[10] = CategoricalFeature.forValue(binaryToCategorical(tokens, 10, 14));
-      features[11] = CategoricalFeature.forValue(binaryToCategorical(tokens, 14, 54));
+      for (int i = 10; i < 54; i++) {
+        features[i] = CategoricalFeature.forValue(Integer.parseInt(tokens[i]));
+      }
       Example trainingExample = new Example(CategoricalFeature.forValue(Integer.parseInt(tokens[54]) - 1), features);
       allExamples.add(trainingExample);
     }
     return allExamples;
-  }
-
-  private static int binaryToCategorical(String[] tokens, int from, int to) {
-    for (int i = from; i < to; i++) {
-      if ("1".equals(tokens[i])) {
-        return i - from;
-      }
-    }
-    throw new IllegalStateException();
   }
 
 }

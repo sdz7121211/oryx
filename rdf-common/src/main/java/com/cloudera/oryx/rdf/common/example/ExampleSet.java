@@ -61,16 +61,49 @@ public final class ExampleSet implements Iterable<Example> {
       }
       featureTypes[i] = type;
     }
+
     int targetColumn = inbound.getTargetColumn();
     featureTypes[targetColumn] = FeatureType.IGNORED;
     targetType = inbound.isNumeric(targetColumn) ? FeatureType.NUMERIC : FeatureType.CATEGORICAL;
 
     categoryCounts = new int[numFeatures];
-    int theTargetCategoryCount = 0;
 
+    int theTargetCategoryCount = 0;
     for (Example example : examples) {
       for (int i = 0; i < numFeatures; i++) {
-        if (i != targetColumn && featureTypes[i] == FeatureType.CATEGORICAL) {
+        if (featureTypes[i] == FeatureType.CATEGORICAL) {
+          CategoricalFeature feature = (CategoricalFeature) example.getFeature(i);
+          if (feature != null) {
+            categoryCounts[i] = FastMath.max(categoryCounts[i], feature.getValueID() + 1);
+          }
+        }
+      }
+      if (targetType == FeatureType.CATEGORICAL) {
+        theTargetCategoryCount = FastMath.max(theTargetCategoryCount,
+                                              ((CategoricalFeature) example.getTarget()).getValueID() + 1);
+      }
+    }
+    this.targetCategoryCount = theTargetCategoryCount;
+  }
+
+  /**
+   * For testing.
+   */
+  public ExampleSet(List<Example> examples, FeatureType[] featureTypes, FeatureType targetType) {
+    Preconditions.checkNotNull(examples);
+    Preconditions.checkArgument(!examples.isEmpty());
+    this.examples = examples;
+
+    this.featureTypes = featureTypes;
+    this.targetType = targetType;
+    int numFeatures = featureTypes.length;
+
+    categoryCounts = new int[numFeatures];
+
+    int theTargetCategoryCount = 0;
+    for (Example example : examples) {
+      for (int i = 0; i < numFeatures; i++) {
+        if (featureTypes[i] == FeatureType.CATEGORICAL) {
           CategoricalFeature feature = (CategoricalFeature) example.getFeature(i);
           if (feature != null) {
             categoryCounts[i] = FastMath.max(categoryCounts[i], feature.getValueID() + 1);

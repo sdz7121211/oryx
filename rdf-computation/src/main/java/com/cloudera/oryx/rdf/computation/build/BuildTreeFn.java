@@ -143,6 +143,7 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
       Preconditions.checkState(!trainingExamples.isEmpty(), "No training examples sampled?");
       Preconditions.checkState(!cvExamples.isEmpty(), "No CV examples sampled?");
 
+      progress(); // Helps prevent timeouts
       DecisionTree tree = DecisionTree.fromExamplesWithDefault(trainingExamples);
       progress(); // Helps prevent timeouts
       log.info("Built tree {}", treeID);
