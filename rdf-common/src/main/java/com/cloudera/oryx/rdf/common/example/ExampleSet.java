@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cloudera.oryx.common.settings.ConfigUtils;
+import com.cloudera.oryx.common.settings.InboundSettings;
 import com.cloudera.oryx.rdf.common.rule.Decision;
 
 /**
@@ -44,32 +46,22 @@ public final class ExampleSet implements Iterable<Example> {
     Preconditions.checkArgument(!examples.isEmpty());
     this.examples = examples;
 
-    Example first = examples.get(0);
-    int numFeatures = first.getNumFeatures();
+    InboundSettings inbound = InboundSettings.create(ConfigUtils.getDefaultConfig());
+    int numFeatures = inbound.getColumnNames().size();
+
     featureTypes = new FeatureType[numFeatures];
-    for (Example example : examples) {
-      boolean allNonNull = true;
-      for (int i = 0; i < numFeatures; i++) {
-        if (featureTypes[i] == null) {
-          allNonNull = false;
-          Feature feature = example.getFeature(i);
-          if (feature != null) {
-            featureTypes[i] = feature.getFeatureType();
-          }
-        }
-      }
-      if (allNonNull) {
-        break;
-      }
+    for (int i = 0; i < numFeatures; i++) {
+      featureTypes[i] = inbound.isNumeric(i) ? FeatureType.NUMERIC : FeatureType.CATEGORICAL;
     }
-    targetType = first.getTarget().getFeatureType();
+    int targetColumn = inbound.getTargetColumn();
+    targetType = inbound.isNumeric(targetColumn) ? FeatureType.NUMERIC : FeatureType.CATEGORICAL;
 
     categoryCounts = new int[numFeatures];
     int theTargetCategoryCount = 0;
 
     for (Example example : examples) {
       for (int i = 0; i < numFeatures; i++) {
-        if (featureTypes[i] == FeatureType.CATEGORICAL) {
+        if (i != targetColumn && featureTypes[i] == FeatureType.CATEGORICAL) {
           CategoricalFeature feature = (CategoricalFeature) example.getFeature(i);
           if (feature != null) {
             categoryCounts[i] = FastMath.max(categoryCounts[i], feature.getValueID() + 1);
