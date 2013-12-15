@@ -171,6 +171,9 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
                                       String token,
                                       InboundSettings inboundSettings,
                                       Map<Integer, BiMap<String, Integer>> columnToCategoryNameToIDMapping) {
+    if (token == null || token.isEmpty()) {
+      return null;
+    }
     if (inboundSettings.isNumeric(columnNumber)) {
       return NumericFeature.forValue(Float.parseFloat(token));
     }

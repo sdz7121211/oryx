@@ -26,11 +26,9 @@ import java.util.Map;
 
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 import com.cloudera.oryx.common.settings.InboundSettings;
-import com.cloudera.oryx.rdf.common.example.CategoricalFeature;
 import com.cloudera.oryx.rdf.common.example.Example;
 import com.cloudera.oryx.rdf.common.example.Feature;
 import com.cloudera.oryx.rdf.common.example.IgnoredFeature;
-import com.cloudera.oryx.rdf.common.example.NumericFeature;
 import com.cloudera.oryx.rdf.common.tree.TreeBasedClassifier;
 import com.cloudera.oryx.rdf.serving.generation.Generation;
 import com.cloudera.oryx.rdf.serving.generation.RDFGenerationManager;
@@ -95,20 +93,6 @@ public final class TrainServlet extends AbstractRDFServlet {
       forest.update(example);
 
     }
-  }
-
-  private Feature buildFeature(int columnNumber,
-                               String token,
-                               Map<Integer, BiMap<String, Integer>> columnToCategoryNameToIDMapping) {
-    InboundSettings inboundSettings = getInboundSettings();
-    if (inboundSettings.isNumeric(columnNumber)) {
-      return NumericFeature.forValue(Float.parseFloat(token));
-    }
-    if (inboundSettings.isCategorical(columnNumber)) {
-      return CategoricalFeature.forValue(
-          ClassifyServlet.categoricalFromString(columnNumber, token, columnToCategoryNameToIDMapping));
-    }
-    return IgnoredFeature.INSTANCE;
   }
 
 }
