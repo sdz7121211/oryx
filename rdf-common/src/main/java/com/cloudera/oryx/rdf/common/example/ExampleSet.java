@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cloudera.oryx.common.settings.ConfigUtils;
+import com.cloudera.oryx.common.settings.InboundSettings;
 import com.cloudera.oryx.rdf.common.rule.Decision;
 
 /**
@@ -44,29 +46,61 @@ public final class ExampleSet implements Iterable<Example> {
     Preconditions.checkArgument(!examples.isEmpty());
     this.examples = examples;
 
-    Example first = examples.get(0);
-    int numFeatures = first.getNumFeatures();
+    InboundSettings inbound = InboundSettings.create(ConfigUtils.getDefaultConfig());
+    int numFeatures = inbound.getColumnNames().size();
+
     featureTypes = new FeatureType[numFeatures];
+    for (int i = 0; i < numFeatures; i++) {
+      FeatureType type;
+      if (inbound.isNumeric(i)) {
+        type = FeatureType.NUMERIC;
+      } else if (inbound.isCategorical(i)) {
+        type = FeatureType.CATEGORICAL;
+      } else {
+        type = FeatureType.IGNORED;
+      }
+      featureTypes[i] = type;
+    }
+
+    int targetColumn = inbound.getTargetColumn();
+    featureTypes[targetColumn] = FeatureType.IGNORED;
+    targetType = inbound.isNumeric(targetColumn) ? FeatureType.NUMERIC : FeatureType.CATEGORICAL;
+
+    categoryCounts = new int[numFeatures];
+
+    int theTargetCategoryCount = 0;
     for (Example example : examples) {
-      boolean allNonNull = true;
       for (int i = 0; i < numFeatures; i++) {
-        if (featureTypes[i] == null) {
-          allNonNull = false;
-          Feature feature = example.getFeature(i);
+        if (featureTypes[i] == FeatureType.CATEGORICAL) {
+          CategoricalFeature feature = (CategoricalFeature) example.getFeature(i);
           if (feature != null) {
-            featureTypes[i] = feature.getFeatureType();
+            categoryCounts[i] = FastMath.max(categoryCounts[i], feature.getValueID() + 1);
           }
         }
       }
-      if (allNonNull) {
-        break;
+      if (targetType == FeatureType.CATEGORICAL) {
+        theTargetCategoryCount = FastMath.max(theTargetCategoryCount,
+                                              ((CategoricalFeature) example.getTarget()).getValueID() + 1);
       }
     }
-    targetType = first.getTarget().getFeatureType();
+    this.targetCategoryCount = theTargetCategoryCount;
+  }
+
+  /**
+   * For testing.
+   */
+  public ExampleSet(List<Example> examples, FeatureType[] featureTypes, FeatureType targetType) {
+    Preconditions.checkNotNull(examples);
+    Preconditions.checkArgument(!examples.isEmpty());
+    this.examples = examples;
+
+    this.featureTypes = featureTypes;
+    this.targetType = targetType;
+    int numFeatures = featureTypes.length;
 
     categoryCounts = new int[numFeatures];
-    int theTargetCategoryCount = 0;
 
+    int theTargetCategoryCount = 0;
     for (Example example : examples) {
       for (int i = 0; i < numFeatures; i++) {
         if (featureTypes[i] == FeatureType.CATEGORICAL) {

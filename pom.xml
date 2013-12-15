@@ -298,6 +298,12 @@
         <groupId>org.jpmml</groupId>
         <artifactId>pmml-manager</artifactId>
         <version>1.0.21</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>com.sun.xml.bind</artifactId>
+            <groupId>jaxb-impl</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>

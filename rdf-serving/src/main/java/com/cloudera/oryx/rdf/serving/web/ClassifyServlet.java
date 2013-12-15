@@ -16,7 +16,6 @@
 package com.cloudera.oryx.rdf.serving.web;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,12 +25,10 @@ import java.util.Map;
 
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 import com.cloudera.oryx.common.settings.InboundSettings;
-import com.cloudera.oryx.rdf.common.example.CategoricalFeature;
 import com.cloudera.oryx.rdf.common.example.Example;
 import com.cloudera.oryx.rdf.common.example.Feature;
 import com.cloudera.oryx.rdf.common.example.FeatureType;
 import com.cloudera.oryx.rdf.common.example.IgnoredFeature;
-import com.cloudera.oryx.rdf.common.example.NumericFeature;
 import com.cloudera.oryx.rdf.common.rule.CategoricalPrediction;
 import com.cloudera.oryx.rdf.common.rule.NumericPrediction;
 import com.cloudera.oryx.rdf.common.rule.Prediction;
@@ -107,37 +104,6 @@ public final class ClassifyServlet extends AbstractRDFServlet {
       out.write(Float.toString(((NumericPrediction) prediction).getPrediction()));
     }
     out.write("\n");
-  }
-
-  private Feature buildFeature(int columnNumber,
-                               String token,
-                               Map<Integer, BiMap<String, Integer>> columnToCategoryNameToIDMapping) {
-    InboundSettings inboundSettings = getInboundSettings();
-    if (inboundSettings.isNumeric(columnNumber)) {
-      return NumericFeature.forValue(Float.parseFloat(token));
-    }
-    if (inboundSettings.isCategorical(columnNumber)) {
-      return CategoricalFeature.forValue(
-          categoricalFromString(columnNumber, token, columnToCategoryNameToIDMapping));
-    }
-    return IgnoredFeature.INSTANCE;
-  }
-
-  static int categoricalFromString(int columnNumber,
-                                   String value,
-                                   Map<Integer, BiMap<String, Integer>> columnToCategoryNameToIDMapping) {
-    BiMap<String,Integer> categoryNameToID = columnToCategoryNameToIDMapping.get(columnNumber);
-    if (categoryNameToID == null) {
-      categoryNameToID = HashBiMap.create();
-      columnToCategoryNameToIDMapping.put(columnNumber, categoryNameToID);
-    }
-    Integer mapped = categoryNameToID.get(value);
-    if (mapped != null) {
-      return mapped;
-    }
-    int newCategory = categoryNameToID.size();
-    categoryNameToID.put(value, newCategory);
-    return newCategory;
   }
 
 }

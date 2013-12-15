@@ -120,4 +120,16 @@ public final class InboundSettingsTest extends OryxTest {
 
   }
 
+  @Test
+  public void testNumColumns() throws Exception {
+    Map<String, Object> mb = ImmutableMap.<String, Object>builder()
+        .put("inbound.num-columns", "3")
+        .put("inbound.categorical-columns", ImmutableList.of())
+        .put("inbound.target-column", "0")
+        .build();
+    Config conf = overlayConfigOnDefault(mb);
+    InboundSettings settings = InboundSettings.create(conf);
+    assertEquals(0, settings.getTargetColumn().intValue());
+  }
+
 }

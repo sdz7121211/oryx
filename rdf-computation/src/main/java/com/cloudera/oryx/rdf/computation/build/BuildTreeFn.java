@@ -21,8 +21,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.math.IntMath;
 import com.typesafe.config.Config;
+import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.crunch.Emitter;
 import org.apache.crunch.Pair;
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
+import com.cloudera.oryx.common.random.RandomManager;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.common.settings.InboundSettings;
 import com.cloudera.oryx.computation.common.fn.OryxReduceDoFn;
@@ -60,6 +61,7 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
 
   private int numLocalTrees;
   private int trainingFoldsPerTree;
+  private final RandomDataGenerator random = new RandomDataGenerator(RandomManager.getRandom());
 
   @Override
   public void initialize() {
@@ -129,8 +131,7 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
       List<Example> trainingExamples = Lists.newArrayList();
       List<Example> cvExamples = Lists.newArrayList();
       for (Example example : allExamples) {
-        if (IntMath.mod(IntMath.mod(example.hashCode(), numLocalTrees) - treeID, numLocalTrees) <
-            trainingFoldsPerTree) {
+        if (random.nextInt(0, numLocalTrees - 1) < trainingFoldsPerTree) {
           trainingExamples.add(example);
         } else {
           cvExamples.add(example);
@@ -142,6 +143,7 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
       Preconditions.checkState(!trainingExamples.isEmpty(), "No training examples sampled?");
       Preconditions.checkState(!cvExamples.isEmpty(), "No CV examples sampled?");
 
+      progress(); // Helps prevent timeouts
       DecisionTree tree = DecisionTree.fromExamplesWithDefault(trainingExamples);
       progress(); // Helps prevent timeouts
       log.info("Built tree {}", treeID);
@@ -171,6 +173,9 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
                                       String token,
                                       InboundSettings inboundSettings,
                                       Map<Integer, BiMap<String, Integer>> columnToCategoryNameToIDMapping) {
+    if (token == null || token.isEmpty()) {
+      return null;
+    }
     if (inboundSettings.isNumeric(columnNumber)) {
       return NumericFeature.forValue(Float.parseFloat(token));
     }

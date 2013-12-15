@@ -93,6 +93,9 @@ final class ReadInputs implements Callable<Object> {
   }
 
   private Feature buildFeature(int columnNumber, String token, InboundSettings inboundSettings) {
+    if (token == null || token.isEmpty()) {
+      return null;
+    }
     if (inboundSettings.isNumeric(columnNumber)) {
       return NumericFeature.forValue(Float.parseFloat(token));
     }
