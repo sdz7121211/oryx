@@ -19,6 +19,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
 
@@ -41,7 +42,16 @@ public final class InboundSettings implements Serializable {
   public static InboundSettings create(Config config) {
     Config inbound = config.getConfig("inbound");
 
-    List<String> columnNames = inbound.getStringList("column-names");
+    List<String> columnNames;
+    if (inbound.hasPath("column-names")) {
+      columnNames = inbound.getStringList("column-names");
+    } else {
+      int numColumns = inbound.getInt("num-columns");
+      columnNames = Lists.newArrayListWithCapacity(numColumns);
+      for (int i = 0; i < numColumns; i++) {
+        columnNames.add(String.valueOf(i));
+      }
+    }
 
     Function<Object,Integer> lookup = new LookupFunction(columnNames);
 
