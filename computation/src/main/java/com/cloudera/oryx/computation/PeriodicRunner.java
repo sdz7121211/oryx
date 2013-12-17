@@ -259,11 +259,7 @@ public final class PeriodicRunner implements Runnable, Closeable {
         Namespaces.getInstanceGenerationPrefix(config.getString("model.instance-dir"), currentGenerationID) +
             "inbound/";
 
-    Store store = Store.get();
-    long totalSizeBytes = 0L;
-    for (String filePrefix : store.list(inboundPrefix, true)) {
-      totalSizeBytes += store.getSize(filePrefix);
-    }
+    long totalSizeBytes = Store.get().getSizeRecursive(inboundPrefix);
     return (int) (totalSizeBytes / 1000000);
   }
 

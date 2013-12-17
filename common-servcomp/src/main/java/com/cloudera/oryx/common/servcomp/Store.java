@@ -34,7 +34,6 @@ import com.typesafe.config.Config;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.security.AccessControlException;
@@ -122,29 +121,20 @@ public final class Store {
    * @return total number of bytes at the requested path in bytes
    */
   public long getSizeRecursive(String key) throws IOException {
-    // Impl based on FileUtil.getDU()
     Preconditions.checkNotNull(key);
     Path path = Namespaces.toPath(key);
 
     if (!fs.exists(path)) {
       return 0L;
     }
-    if (!fs.isDirectory(path)) {
-      return fs.getFileStatus(path).getLen();
-    }
 
-    // path is a directory
-
-    RemoteIterator<LocatedFileStatus> it = fs.listFiles(path, true);
     long size = 0L;
+    RemoteIterator<? extends FileStatus> it = fs.listFiles(path, true);
     while (it.hasNext()) {
-      FileStatus f = it.next();
-      Path p = f.getPath();
-      if (fs.isDirectory(p)) {
-        size += getSizeRecursive(p.toString());
-      } else {
-        size += f.getLen();
-      }
+      FileStatus status = it.next();
+      // listFiles() should only show files
+      Preconditions.checkState(status.isFile());
+      size += status.getLen();
     }
 
     return size;
