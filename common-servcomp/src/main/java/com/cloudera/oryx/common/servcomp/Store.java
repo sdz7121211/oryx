@@ -38,6 +38,7 @@ import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.security.AccessControlException;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,7 @@ public final class Store {
       if (localData) {
         fs = FileSystem.getLocal(conf);
       } else {
+        UserGroupInformation.setConfiguration(conf);
         fs = FileSystem.get(URI.create(Namespaces.get().getPrefix()), conf);
       }
     } catch (IOException ioe) {
