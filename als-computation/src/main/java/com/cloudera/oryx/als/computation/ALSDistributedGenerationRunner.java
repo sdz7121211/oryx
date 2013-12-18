@@ -265,10 +265,18 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
 
     String iterationsPrefix = Namespaces.getIterationsPrefix(getInstanceDir(), getGenerationID());
 
-    LongObjectMap<LongFloatMap> previousEstimates =
-        readUserItemEstimates(iterationsPrefix + (iterationNumber-1) + "/Yconvergence/");
-    LongObjectMap<LongFloatMap> estimates =
-        readUserItemEstimates(iterationsPrefix + iterationNumber + "/Yconvergence/");
+    String previousConvergenceKey = iterationsPrefix + (iterationNumber-1) + "/Yconvergence/";
+    String currentConvergenceKey = iterationsPrefix + iterationNumber + "/Yconvergence/";
+    Store store = Store.get();
+    Preconditions.checkState(store.exists(currentConvergenceKey, false),
+                             "No convergence samples in current iteration");
+    if (!store.exists(previousConvergenceKey, false)) {
+      // Previous iteration was deleted already because next iteration failed to start; continue
+      return false;
+    }
+
+    LongObjectMap<LongFloatMap> previousEstimates = readUserItemEstimates(previousConvergenceKey);
+    LongObjectMap<LongFloatMap> estimates = readUserItemEstimates(currentConvergenceKey);
     Preconditions.checkState(estimates.size() == previousEstimates.size(),
                              "Estimates and previous estimates not the same size: %s vs %s",
                              estimates.size(), previousEstimates.size());
