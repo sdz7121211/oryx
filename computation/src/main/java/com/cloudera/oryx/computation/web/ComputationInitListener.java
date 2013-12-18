@@ -15,11 +15,16 @@
 
 package com.cloudera.oryx.computation.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.logging.Handler;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.cloudera.oryx.common.settings.APISettings;
+import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.computation.PeriodicRunner;
 import com.cloudera.oryx.common.log.MemoryHandler;
 import com.cloudera.oryx.common.servcomp.web.LogServlet;
@@ -32,6 +37,8 @@ import com.cloudera.oryx.common.servcomp.web.LogServlet;
  */
 public final class ComputationInitListener implements ServletContextListener {
 
+  private static final Logger log = LoggerFactory.getLogger(ComputationInitListener.class);
+
   public static final String PERIODIC_RUNNER_KEY = "PERIODIC_RUNNER";
 
   private PeriodicRunner runner;
@@ -42,6 +49,9 @@ public final class ComputationInitListener implements ServletContextListener {
     configureLogging(context);
     runner = new PeriodicRunner();
     context.setAttribute(PERIODIC_RUNNER_KEY, runner);
+
+    APISettings apiSettings = APISettings.create(ConfigUtils.getDefaultConfig().getConfig("computation-layer.api"));
+    log.info("Computation Layer console available at {}", apiSettings.getConsoleURI());
   }
 
   private static void configureLogging(ServletContext context) {

@@ -17,17 +17,23 @@ package com.cloudera.oryx.common.settings;
 
 import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 
 /**
  * Common settings that define how and where and API is available.
  */
 public final class APISettings {
 
+  private static final Logger log = LoggerFactory.getLogger(APISettings.class);
+
   private static final String API_PATH = "api";
 
-  private static final String HOST_STR_PARAM = "host";
   private static final String PORT_INT_PARAM = "port";
   private static final String SECURE_PORT_INT_PARAM = "secure-port";
   private static final String USER_NAME_STR_PARAM = "user-name";
@@ -56,14 +62,15 @@ public final class APISettings {
     }
     int port = checkPort(config.getInt(PORT_INT_PARAM));
     int securePort = checkPort(config.getInt(SECURE_PORT_INT_PARAM));
-    String host = checkHost(config.getString(HOST_STR_PARAM));
+    String host;
+    try {
+      host = InetAddress.getLocalHost().getCanonicalHostName();
+    } catch (UnknownHostException uhe) {
+      log.warn("Unable to determine local host name", uhe);
+      // can't happen?
+      host = "localhost";
+    }
     return new APISettings(host, port, securePort, config);
-  }
-
-  static String checkHost(String host) {
-    Preconditions.checkArgument(host == null || (!host.startsWith("http://") && !host.startsWith("https://")),
-        "host should not include a URI scheme: %s", host);
-    return host;
   }
 
   static int checkPort(int port) {
@@ -142,4 +149,14 @@ public final class APISettings {
   public String getPassword() {
     return password;
   }
+
+  public URI getConsoleURI() {
+    String uriString = host;
+    if (port != 80) {
+      uriString += ":" + port;
+    }
+    uriString = (isSecure() ? "https" : "http") + "://" + uriString;
+    return URI.create(uriString);
+  }
+
 }

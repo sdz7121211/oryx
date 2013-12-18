@@ -35,6 +35,7 @@ import java.util.logging.Handler;
 import com.cloudera.oryx.common.io.IOUtils;
 import com.cloudera.oryx.common.log.MemoryHandler;
 import com.cloudera.oryx.common.servcomp.web.LogServlet;
+import com.cloudera.oryx.common.settings.APISettings;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 
 /**
@@ -59,6 +60,9 @@ public abstract class AbstractOryxServingInitListener implements ServletContextL
     Config config = ConfigUtils.getDefaultConfig();
     context.setAttribute(READ_ONLY_KEY, config.getBoolean("serving-layer.api.read-only"));
     context.setAttribute(LOCAL_INPUT_DIR_KEY, getLocalInputDir());
+
+    APISettings apiSettings = APISettings.create(config.getConfig("serving-layer.api"));
+    log.info("Serving Layer console available at {}", apiSettings.getConsoleURI());
   }
 
   @Override
