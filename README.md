@@ -298,6 +298,8 @@ a new line of CSV data that does not contain a value for the identifier column. 
 
 # [FAQ and Troubleshooting](https://github.com/cloudera/oryx/wiki/FAQ-and-Troubleshooting)
 
+# [Performance and Quality](https://github.com/cloudera/oryx/wiki/Performance-and-Quality)
+
 # [Javadoc](http://cloudera.github.io/oryx/apidocs/index.html)
 
 # [Configuration Reference](https://github.com/cloudera/oryx/wiki/Configuration-Reference)
