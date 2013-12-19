@@ -114,13 +114,12 @@ public final class DecisionForestPMML {
                            Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping) throws IOException {
 
     InboundSettings inboundSettings = InboundSettings.create(ConfigUtils.getDefaultConfig());
-    List<String> columnNames = inboundSettings.getColumnNames();
     int targetColumn = inboundSettings.getTargetColumn();
     boolean classificationTask = inboundSettings.isCategorical(targetColumn);
 
     MiningFunctionType miningFunctionType =
         classificationTask ? MiningFunctionType.CLASSIFICATION : MiningFunctionType.REGRESSION;
-    MiningSchema miningSchema = PMMLUtils.buildMiningSchema(inboundSettings, columnNames, targetColumn);
+    MiningSchema miningSchema = PMMLUtils.buildMiningSchema(inboundSettings);
     MiningModel miningModel = new MiningModel(miningSchema, miningFunctionType);
     MultipleModelMethodType multipleModelMethodType = classificationTask ?
         MultipleModelMethodType.WEIGHTED_MAJORITY_VOTE :

@@ -84,17 +84,6 @@ public final class PMMLUtils {
     return dictionary;
   }
 
-  public static MiningSchema buildMiningSchema(InboundSettings inboundSettings) {
-    MiningSchema schema = new MiningSchema();
-    List<String> columnNames = inboundSettings.getColumnNames();
-    for (int i = 0; i < columnNames.size(); i++) {
-      if (!inboundSettings.isIgnored(i)) {
-        schema.getMiningFields().add(new MiningField(new FieldName(columnNames.get(i))));
-      }
-    }
-    return schema;
-  }
-
   public static Map<Integer, BiMap<String, Integer>> buildColumnCategoryMapping(DataDictionary dictionary) {
     Preconditions.checkNotNull(dictionary);
     InboundSettings settings = InboundSettings.create(ConfigUtils.getDefaultConfig());
@@ -120,9 +109,9 @@ public final class PMMLUtils {
     return columnToCategoryNameToIDMapping;
   }
 
-  public static MiningSchema buildMiningSchema(InboundSettings inboundSettings,
-                                               List<String> columnNames,
-                                               int targetColumn) {
+  public static MiningSchema buildMiningSchema(InboundSettings inboundSettings) {
+    List<String> columnNames = inboundSettings.getColumnNames();
+    int targetColumn = inboundSettings.getTargetColumn();
     Collection<MiningField> miningFields = Lists.newArrayList();
     for (int categoricalColumn : inboundSettings.getCategoricalColumns()) {
       MiningField field = new MiningField(new FieldName(columnNames.get(categoricalColumn)));
