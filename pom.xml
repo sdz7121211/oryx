@@ -817,9 +817,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:git:http://github.com/cloudera/oryx.git</connection>
-    <url>scm:git:http://github.com/cloudera/oryx.git</url>
-    <developerConnection>scm:git:http://github.com/cloudera/oryx.git</developerConnection>
+    <connection>scm:git:https://github.com/cloudera/oryx.git</connection>
+    <url>scm:git:https://github.com/cloudera/oryx.git</url>
+    <developerConnection>scm:git:https://github.com/cloudera/oryx.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
   
