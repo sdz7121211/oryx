@@ -139,8 +139,6 @@ A simple, sound `oryx.conf` file:
 
 ```
 model=${als-model}
-model.local-computation=false
-model.local-data=false
 model.instance-dir=/user/oryx/example
 serving-layer.api.port=8091
 computation-layer.api.port=8092
@@ -195,6 +193,8 @@ Example configuration, which will run computation locally:
 ```
 model=${als-model}
 model.instance-dir=/tmp/oryx/example
+model.local-computation=true
+model.local-data=true
 model.features=25
 model.lambda=0.065
 ```
@@ -225,6 +225,8 @@ The following example configuration file works with this input:
 ```
 model=${rdf-model}
 model.instance-dir=/tmp/oryx/example
+model.local-computation=true
+model.local-data=true
 inbound.numeric-columns=[0,1,2,3,4,5,6,7,8,9]
 inbound.target-column=54
 inbound.column-names=["Elevation", "Aspect", "Slope", "Horizontal_Distance_To_Hydrology",
@@ -264,6 +266,8 @@ the [UCI KDD99 homepage](http://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html
 ```
 model=${kmeans-model}
 model.instance-dir=/tmp/oryx/example
+model.local-computation=true
+model.local-data=true
 model.sketch-points=50
 model.k=[1, 5, 10]
 model.replications=2
@@ -293,6 +297,8 @@ a new line of CSV data that does not contain a value for the identifier column. 
 ```
 
 # [FAQ and Troubleshooting](https://github.com/cloudera/oryx/wiki/FAQ-and-Troubleshooting)
+
+# [Performance and Quality](https://github.com/cloudera/oryx/wiki/Performance-and-Quality)
 
 # [Javadoc](http://cloudera.github.io/oryx/apidocs/index.html)
 

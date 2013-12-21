@@ -315,7 +315,7 @@
       <dependency>
         <groupId>org.apache.crunch</groupId>
         <artifactId>crunch-core</artifactId>
-        <version>0.8.1-hadoop2</version>
+        <version>${crunch.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -372,6 +372,7 @@
     <!-- Don't update to 1.7.5+ until Hadoop uses Jackson 1.9+ -->
     <avro.version>1.7.4</avro.version>
     <hadoop.version>2.0.0-mr1-cdh4.5.0</hadoop.version>
+    <crunch.version>0.8.1-hadoop2</crunch.version>
     <!-- our custom props -->
     <module.jspx.package>override-me</module.jspx.package>
   </properties>
@@ -816,9 +817,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:git:http://github.com/cloudera/oryx.git</connection>
-    <url>scm:git:http://github.com/cloudera/oryx.git</url>
-    <developerConnection>scm:git:http://github.com/cloudera/oryx.git</developerConnection>
+    <connection>scm:git:https://github.com/cloudera/oryx.git</connection>
+    <url>scm:git:https://github.com/cloudera/oryx.git</url>
+    <developerConnection>scm:git:https://github.com/cloudera/oryx.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
   
@@ -902,6 +903,7 @@
       <id>cdh5</id>
       <properties>
         <hadoop.version>2.2.0-cdh5.0.0-beta-1</hadoop.version>
+        <!--<crunch.version>0.9.0-hadoop2</crunch.version>-->
       </properties>
     </profile>
   </profiles>

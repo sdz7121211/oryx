@@ -29,17 +29,6 @@ import org.junit.Test;
 public final class APISettingsTest extends OryxTest {
 
   @Test
-  public void testHost() {
-    String validHost = "example.com";
-    assertEquals(validHost, APISettings.checkHost(validHost));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testUriHost() {
-    APISettings.checkHost("http://www.example.com");
-  }
-
-  @Test
   public void testPort() {
     int port = 1729;
     assertEquals(port, APISettings.checkPort(port));

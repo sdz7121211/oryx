@@ -43,16 +43,18 @@ public final class StoreTest extends OryxTest {
   public void testSizeRecursive() throws Exception {
     File dir = Files.createTempDir();
     dir.deleteOnExit();
-    File file1 = File.createTempFile("testDU1", ".txt", dir);
-    file1.deleteOnExit();
-    File file2 = File.createTempFile("testDU2", ".txt", dir);
-    file2.deleteOnExit();
+    File subDir = new File(dir, "subdir");
+    assertTrue(subDir.mkdir());
+    File file1 = new File(dir, "testDU1.txt");
+    File file2 = new File(subDir, "testDU2.txt");
     Files.write("Hello.", file1, Charsets.UTF_8);
     Files.write("Shalom.", file2, Charsets.UTF_8);
-    assertEquals(7, Store.get().getSizeRecursive(file2.toString()));
-    assertEquals(13, Store.get().getSizeRecursive(dir.toString()));
-    IOUtils.delete(file1);
-    IOUtils.delete(file2);
-    IOUtils.delete(dir);
+    Store store = Store.get();
+    assertEquals(6, store.getSizeRecursive(file1.toString()));
+    assertEquals(7, store.getSizeRecursive(file2.toString()));
+    assertEquals(7, store.getSizeRecursive(subDir.toString()));
+    assertEquals(13, store.getSizeRecursive(dir.toString()));
+    IOUtils.deleteRecursively(dir);
   }
+
 }
