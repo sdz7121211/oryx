@@ -49,9 +49,9 @@
 <a class="jxr_linenumber" name="39" href="#39">39</a>    <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> runSteps() <strong class="jxr_keyword">throws</strong> IOException, InterruptedException, JobException {
 <a class="jxr_linenumber" name="40" href="#40">40</a>  
 <a class="jxr_linenumber" name="41" href="#41">41</a>      String instanceDir = getInstanceDir();
-<a class="jxr_linenumber" name="42" href="#42">42</a>      <strong class="jxr_keyword">long</strong> generationID = getGenerationID();
+<a class="jxr_linenumber" name="42" href="#42">42</a>      <strong class="jxr_keyword">int</strong> generationID = getGenerationID();
 <a class="jxr_linenumber" name="43" href="#43">43</a>      String generationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
-<a class="jxr_linenumber" name="44" href="#44">44</a>      <strong class="jxr_keyword">long</strong> lastGenerationID = generationID - 1;
+<a class="jxr_linenumber" name="44" href="#44">44</a>      <strong class="jxr_keyword">int</strong> lastGenerationID = getLastGenerationID();
 <a class="jxr_linenumber" name="45" href="#45">45</a>  
 <a class="jxr_linenumber" name="46" href="#46">46</a>      File currentInboundDir = Files.createTempDir();
 <a class="jxr_linenumber" name="47" href="#47">47</a>      currentInboundDir.deleteOnExit();

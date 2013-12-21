@@ -70,7 +70,7 @@
 <a class="jxr_linenumber" name="60" href="#60">60</a>      <a href="../../../../../../com/cloudera/oryx/kmeans/computation/evaluate/EvaluationSettings.html">EvaluationSettings</a> settings = EvaluationSettings.create(config);
 <a class="jxr_linenumber" name="61" href="#61">61</a>  
 <a class="jxr_linenumber" name="62" href="#62">62</a>      String instanceDir = stepConfig.getInstanceDir();
-<a class="jxr_linenumber" name="63" href="#63">63</a>      <strong class="jxr_keyword">long</strong> generationID = stepConfig.getGenerationID();
+<a class="jxr_linenumber" name="63" href="#63">63</a>      <strong class="jxr_keyword">int</strong> generationID = stepConfig.getGenerationID();
 <a class="jxr_linenumber" name="64" href="#64">64</a>      String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
 <a class="jxr_linenumber" name="65" href="#65">65</a>      String outputKey = prefix + <span class="jxr_string">"eval/"</span>;
 <a class="jxr_linenumber" name="66" href="#66">66</a>      <strong class="jxr_keyword">if</strong> (!validOutputPath(outputKey)) {
@@ -106,7 +106,7 @@
 <a class="jxr_linenumber" name="96" href="#96">96</a>    <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> postRun() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="97" href="#97">97</a>      <a href="../../../../../../com/cloudera/oryx/computation/common/JobStepConfig.html">JobStepConfig</a> stepConfig = getConfig();
 <a class="jxr_linenumber" name="98" href="#98">98</a>      String instanceDir = stepConfig.getInstanceDir();
-<a class="jxr_linenumber" name="99" href="#99">99</a>      <strong class="jxr_keyword">long</strong> generationID = stepConfig.getGenerationID();
+<a class="jxr_linenumber" name="99" href="#99">99</a>      <strong class="jxr_keyword">int</strong> generationID = stepConfig.getGenerationID();
 <a class="jxr_linenumber" name="100" href="#100">100</a>     String prefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
 <a class="jxr_linenumber" name="101" href="#101">101</a>     String replicaStatsKey = prefix + <span class="jxr_string">"eval/replicaStats/"</span>;
 <a class="jxr_linenumber" name="102" href="#102">102</a>     String replicaCentersKey = prefix + <span class="jxr_string">"eval/replicaCenters/"</span>;

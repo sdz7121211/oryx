@@ -34,8 +34,8 @@
 <a class="jxr_linenumber" name="24" href="#24">24</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> computingX;
 <a class="jxr_linenumber" name="25" href="#25">25</a>  
 <a class="jxr_linenumber" name="26" href="#26">26</a>    <strong class="jxr_keyword">public</strong> <a href="../../../../../com/cloudera/oryx/als/computation/ALSJobStepConfig.html">ALSJobStepConfig</a>(String instanceDir,
-<a class="jxr_linenumber" name="27" href="#27">27</a>                            <strong class="jxr_keyword">long</strong> generationID,
-<a class="jxr_linenumber" name="28" href="#28">28</a>                            <strong class="jxr_keyword">long</strong> lastGenerationID,
+<a class="jxr_linenumber" name="27" href="#27">27</a>                            <strong class="jxr_keyword">int</strong> generationID,
+<a class="jxr_linenumber" name="28" href="#28">28</a>                            <strong class="jxr_keyword">int</strong> lastGenerationID,
 <a class="jxr_linenumber" name="29" href="#29">29</a>                            <strong class="jxr_keyword">int</strong> iteration,
 <a class="jxr_linenumber" name="30" href="#30">30</a>                            <strong class="jxr_keyword">boolean</strong> computingX) {
 <a class="jxr_linenumber" name="31" href="#31">31</a>      <strong class="jxr_keyword">super</strong>(instanceDir, generationID, lastGenerationID, iteration);
@@ -50,8 +50,8 @@
 <a class="jxr_linenumber" name="40" href="#40">40</a>    <strong class="jxr_keyword">public</strong> String[] toArgsArray() {
 <a class="jxr_linenumber" name="41" href="#41">41</a>      <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> String[] {
 <a class="jxr_linenumber" name="42" href="#42">42</a>          getInstanceDir(),
-<a class="jxr_linenumber" name="43" href="#43">43</a>          Long.toString(getGenerationID()),
-<a class="jxr_linenumber" name="44" href="#44">44</a>          Long.toString(getLastGenerationID()),
+<a class="jxr_linenumber" name="43" href="#43">43</a>          Integer.toString(getGenerationID()),
+<a class="jxr_linenumber" name="44" href="#44">44</a>          Integer.toString(getLastGenerationID()),
 <a class="jxr_linenumber" name="45" href="#45">45</a>          Integer.toString(getIteration()),
 <a class="jxr_linenumber" name="46" href="#46">46</a>          Boolean.toString(computingX),
 <a class="jxr_linenumber" name="47" href="#47">47</a>      };
@@ -61,8 +61,8 @@
 <a class="jxr_linenumber" name="51" href="#51">51</a>      Preconditions.checkNotNull(args);
 <a class="jxr_linenumber" name="52" href="#52">52</a>      Preconditions.checkArgument(args.length &gt;= 5);
 <a class="jxr_linenumber" name="53" href="#53">53</a>      <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../com/cloudera/oryx/als/computation/ALSJobStepConfig.html">ALSJobStepConfig</a>(args[0],
-<a class="jxr_linenumber" name="54" href="#54">54</a>                                  Long.parseLong(args[1]),
-<a class="jxr_linenumber" name="55" href="#55">55</a>                                  Long.parseLong(args[2]),
+<a class="jxr_linenumber" name="54" href="#54">54</a>                                  Integer.parseInt(args[1]),
+<a class="jxr_linenumber" name="55" href="#55">55</a>                                  Integer.parseInt(args[2]),
 <a class="jxr_linenumber" name="56" href="#56">56</a>                                  Integer.parseInt(args[3]),
 <a class="jxr_linenumber" name="57" href="#57">57</a>                                  Boolean.parseBoolean(args[4]));
 <a class="jxr_linenumber" name="58" href="#58">58</a>    }

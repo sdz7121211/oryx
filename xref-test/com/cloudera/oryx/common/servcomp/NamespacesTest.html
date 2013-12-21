@@ -42,18 +42,18 @@
 <a class="jxr_linenumber" name="32" href="#32">32</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNamespaces() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="33" href="#33">33</a>      Config config = ConfigUtils.getDefaultConfig();
 <a class="jxr_linenumber" name="34" href="#34">34</a>      assertEquals(<span class="jxr_string">"/tmp/OryxTest/00001/"</span>,
-<a class="jxr_linenumber" name="35" href="#35">35</a>                   Namespaces.getInstanceGenerationPrefix(config.getString(<span class="jxr_string">"model.instance-dir"</span>), 1L));
+<a class="jxr_linenumber" name="35" href="#35">35</a>                   Namespaces.getInstanceGenerationPrefix(config.getString(<span class="jxr_string">"model.instance-dir"</span>), 1));
 <a class="jxr_linenumber" name="36" href="#36">36</a>      assertEquals(<span class="jxr_string">"/tmp/OryxTest/00001/tmp/iterations/"</span>,
-<a class="jxr_linenumber" name="37" href="#37">37</a>                   Namespaces.getIterationsPrefix(config.getString(<span class="jxr_string">"model.instance-dir"</span>), 1L));
+<a class="jxr_linenumber" name="37" href="#37">37</a>                   Namespaces.getIterationsPrefix(config.getString(<span class="jxr_string">"model.instance-dir"</span>), 1));
 <a class="jxr_linenumber" name="38" href="#38">38</a>      assertEquals(<span class="jxr_string">"/tmp/OryxTest/00001/_SUCCESS"</span>,
-<a class="jxr_linenumber" name="39" href="#39">39</a>                   Namespaces.getGenerationDoneKey(config.getString(<span class="jxr_string">"model.instance-dir"</span>), 1L));
+<a class="jxr_linenumber" name="39" href="#39">39</a>                   Namespaces.getGenerationDoneKey(config.getString(<span class="jxr_string">"model.instance-dir"</span>), 1));
 <a class="jxr_linenumber" name="40" href="#40">40</a>      assertEquals(<strong class="jxr_keyword">new</strong> Path(<span class="jxr_string">"file:/user/smurf"</span>),
 <a class="jxr_linenumber" name="41" href="#41">41</a>                   Namespaces.toPath(<span class="jxr_string">"/user/smurf"</span>));
 <a class="jxr_linenumber" name="42" href="#42">42</a>    }
 <a class="jxr_linenumber" name="43" href="#43">43</a>  
 <a class="jxr_linenumber" name="44" href="#44">44</a>    @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="45" href="#45">45</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNegativeGenerationID() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="46" href="#46">46</a>      Namespaces.getInstanceGenerationPrefix(ConfigUtils.getDefaultConfig().getString(<span class="jxr_string">"model.instance-dir"</span>), -1L);
+<a class="jxr_linenumber" name="46" href="#46">46</a>      Namespaces.getInstanceGenerationPrefix(ConfigUtils.getDefaultConfig().getString(<span class="jxr_string">"model.instance-dir"</span>), -1);
 <a class="jxr_linenumber" name="47" href="#47">47</a>    }
 <a class="jxr_linenumber" name="48" href="#48">48</a>  
 <a class="jxr_linenumber" name="49" href="#49">49</a>  }

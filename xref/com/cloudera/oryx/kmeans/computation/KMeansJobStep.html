@@ -56,8 +56,8 @@
 <a class="jxr_linenumber" name="46" href="#46">46</a>      Preconditions.checkNotNull(args);
 <a class="jxr_linenumber" name="47" href="#47">47</a>      Preconditions.checkArgument(args.length &gt;= 4);
 <a class="jxr_linenumber" name="48" href="#48">48</a>      <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../com/cloudera/oryx/kmeans/computation/KMeansJobStepConfig.html">KMeansJobStepConfig</a>(args[0],
-<a class="jxr_linenumber" name="49" href="#49">49</a>          Long.parseLong(args[1]),
-<a class="jxr_linenumber" name="50" href="#50">50</a>          Long.parseLong(args[2]),
+<a class="jxr_linenumber" name="49" href="#49">49</a>          Integer.parseInt(args[1]),
+<a class="jxr_linenumber" name="50" href="#50">50</a>          Integer.parseInt(args[2]),
 <a class="jxr_linenumber" name="51" href="#51">51</a>          Integer.parseInt(args[3]));
 <a class="jxr_linenumber" name="52" href="#52">52</a>    }
 <a class="jxr_linenumber" name="53" href="#53">53</a>  

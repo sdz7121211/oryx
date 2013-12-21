@@ -67,7 +67,7 @@
 <a class="jxr_linenumber" name="57" href="#57">57</a>  
 <a class="jxr_linenumber" name="58" href="#58">58</a>      <a href="../../../../../../../com/cloudera/oryx/computation/common/JobStepConfig.html">JobStepConfig</a> config = getConfig();
 <a class="jxr_linenumber" name="59" href="#59">59</a>      String instanceDir = config.getInstanceDir();
-<a class="jxr_linenumber" name="60" href="#60">60</a>      <strong class="jxr_keyword">long</strong> generationID = config.getGenerationID();
+<a class="jxr_linenumber" name="60" href="#60">60</a>      <strong class="jxr_keyword">int</strong> generationID = config.getGenerationID();
 <a class="jxr_linenumber" name="61" href="#61">61</a>  
 <a class="jxr_linenumber" name="62" href="#62">62</a>      <strong class="jxr_keyword">if</strong> (store.exists(Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + <span class="jxr_string">"X/"</span>, false)) {
 <a class="jxr_linenumber" name="63" href="#63">63</a>        <em class="jxr_comment">// Actually, looks like whole computation of X/Y finished -- just proceed</em>
