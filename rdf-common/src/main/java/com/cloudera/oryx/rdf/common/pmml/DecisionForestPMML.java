@@ -24,6 +24,7 @@ import org.dmg.pmml.Array;
 import org.dmg.pmml.DataDictionary;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.IOUtil;
+import org.dmg.pmml.MiningField;
 import org.dmg.pmml.MiningFunctionType;
 import org.dmg.pmml.MiningModel;
 import org.dmg.pmml.MiningSchema;
@@ -119,7 +120,7 @@ public final class DecisionForestPMML {
 
     MiningFunctionType miningFunctionType =
         classificationTask ? MiningFunctionType.CLASSIFICATION : MiningFunctionType.REGRESSION;
-    MiningSchema miningSchema = PMMLUtils.buildMiningSchema(inboundSettings);
+    MiningSchema miningSchema = PMMLUtils.buildMiningSchema(inboundSettings, forest.getFeatureImportances());
     MiningModel miningModel = new MiningModel(miningSchema, miningFunctionType);
     MultipleModelMethodType multipleModelMethodType = classificationTask ?
         MultipleModelMethodType.WEIGHTED_MAJORITY_VOTE :
@@ -330,8 +331,19 @@ public final class DecisionForestPMML {
       trees[i] = new DecisionTree(root);
     }
 
+    List<String> columnNames = settings.getColumnNames();
+    List<MiningField> fields = miningModel.getMiningSchema().getMiningFields();
+    double[] featureImportances = new double[fields.size()];
+    for (MiningField field : fields) {
+      Double importance = field.getImportance();
+      if (importance != null) {
+        int featureNumber = columnNames.indexOf(field.getName().getValue());
+        featureImportances[featureNumber] = importance;
+      }
+    }
+
     return new Pair<DecisionForest, Map<Integer, BiMap<String, Integer>>>(
-        new DecisionForest(trees, weights),
+        new DecisionForest(trees, weights, featureImportances),
         columnToCategoryNameToIDMapping);
   }
 

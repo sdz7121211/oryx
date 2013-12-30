@@ -110,6 +110,10 @@ public final class PMMLUtils {
   }
 
   public static MiningSchema buildMiningSchema(InboundSettings inboundSettings) {
+    return buildMiningSchema(inboundSettings, null);
+  }
+
+  public static MiningSchema buildMiningSchema(InboundSettings inboundSettings, double[] importances) {
     List<String> columnNames = inboundSettings.getColumnNames();
     int targetColumn = inboundSettings.getTargetColumn();
     Collection<MiningField> miningFields = Lists.newArrayList();
@@ -118,6 +122,10 @@ public final class PMMLUtils {
       field.setOptype(OpType.CATEGORICAL);
       if (categoricalColumn == targetColumn) {
         field.setUsageType(FieldUsageType.PREDICTED);
+      } else {
+        if (importances != null) {
+          field.setImportance(importances[categoricalColumn]);
+        }
       }
       miningFields.add(field);
     }
@@ -126,6 +134,10 @@ public final class PMMLUtils {
       field.setOptype(OpType.CONTINUOUS);
       if (numericColumn == targetColumn) {
         field.setUsageType(FieldUsageType.PREDICTED);
+      } else {
+        if (importances != null) {
+          field.setImportance(importances[numericColumn]);
+        }
       }
       miningFields.add(field);
     }

@@ -55,6 +55,7 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
   private final DecisionTree[] trees;
   private final double[] weights;
   private final double[] evaluations;
+  private final double[] featureImportances;
 
   public static DecisionForest fromExamplesWithDefault(List<Example> examples) {
     Config config = ConfigUtils.getDefaultConfig();
@@ -99,6 +100,8 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
     Arrays.fill(weights, 1.0);
     evaluations = new double[numTrees];
     Arrays.fill(evaluations, Double.NaN);
+    final double[][] perTreeFeatureImportances = new double[numTrees][];
+
     // Going to set an arbitrary upper bound on the training size of about 90%
     int maxFolds = FastMath.min(numTrees - 1, (int) (0.9 * numTrees));
     // Going to set an arbitrary lower bound on the CV size of about 10%
@@ -140,9 +143,11 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
                                              maxDepth,
                                              examples.subset(trainingExamples));
             log.info("Finished tree {}", treeID);
-            double[] weightEval = Evaluation.evaluateToWeight(trees[treeID], examples.subset(cvExamples));
+            ExampleSet cvExampleSet = examples.subset(cvExamples);
+            double[] weightEval = Evaluation.evaluateToWeight(trees[treeID], cvExampleSet);
             weights[treeID] = weightEval[0];
             evaluations[treeID] = weightEval[1];
+            perTreeFeatureImportances[treeID] = trees[treeID].featureImportance(cvExampleSet);
             log.info("Tree {} eval: {}", treeID, weightEval[1]);
             return null;
           }
@@ -152,12 +157,23 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
     } finally {
       ExecutorUtils.shutdownNowAndAwait(executor);
     }
+
+    featureImportances = new double[numFeatures];
+    for (double[] perTreeFeatureImporatance : perTreeFeatureImportances) {
+      for (int i = 0; i < numFeatures; i++) {
+        featureImportances[i] += perTreeFeatureImporatance[i];
+      }
+    }
+    for (int i = 0; i < numFeatures; i++) {
+      featureImportances[i] /= numTrees;
+    }
   }
 
-  public DecisionForest(DecisionTree[] trees, double[] weights) {
+  public DecisionForest(DecisionTree[] trees, double[] weights, double[] featureImportances) {
     this.trees = trees;
     this.weights = weights;
     this.evaluations = new double[weights.length];
+    this.featureImportances = featureImportances;
   }
 
   @Override
@@ -179,24 +195,15 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
   public double[] getEvaluations() {
     return evaluations;
   }
+
+  public double[] getFeatureImportances() {
+    return featureImportances;
+  }
   
   @Override
   public Prediction classify(Example test) {
     return WeightedPrediction.voteOnFeature(
         Lists.transform(Arrays.asList(trees), new TreeToPredictionFunction(test)), weights);
-  }
-
-  public double[] importance(ExampleSet testSet) {
-    int numFeatures = testSet.getNumFeatures();
-    int[] totalCounts = new int[numFeatures];
-    double[] totalWeightedGains = new double[numFeatures];
-    for (DecisionTree tree : trees) {
-      tree.importance(testSet, totalCounts, totalWeightedGains);
-    }
-    for (int i = 0; i < numFeatures; i++) {
-      totalWeightedGains[i] /= totalCounts[i];
-    }
-    return totalWeightedGains;
   }
 
   @Override

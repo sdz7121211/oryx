@@ -147,12 +147,15 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
       DecisionTree tree = DecisionTree.fromExamplesWithDefault(trainingExamples);
       progress(); // Helps prevent timeouts
       log.info("Built tree {}", treeID);
-      double[] weightEval = Evaluation.evaluateToWeight(tree, new ExampleSet(cvExamples));
+      ExampleSet cvSet = new ExampleSet(cvExamples);
+      double[] weightEval = Evaluation.evaluateToWeight(tree, cvSet);
       double weight = weightEval[0];
+      double[] featureImportances = tree.featureImportance(cvSet);
       progress(); // Helps prevent timeouts
       log.info("Evaluated tree {}", treeID);
 
-      DecisionForest singletonForest = new DecisionForest(new DecisionTree[] { tree }, new double[] { weight });
+      DecisionForest singletonForest = new DecisionForest(
+          new DecisionTree[] { tree }, new double[] { weight }, featureImportances);
 
       String pmmlFileContents;
       try  {

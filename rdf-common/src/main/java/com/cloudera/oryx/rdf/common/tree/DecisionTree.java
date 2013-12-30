@@ -200,14 +200,15 @@ public final class DecisionTree implements TreeBasedClassifier {
     return (TerminalNode) node;
   }
 
-  void importance(Iterable<Example> testSet, int[] totalCounts, double[] totalGains) {
+  public double[] featureImportance(ExampleSet testSet) {
+    int numFeatures = testSet.getNumFeatures();
+    double[] totalGains = new double[numFeatures];
     for (Example test : testSet) {
       TreeNode node = root;
       while (!node.isTerminal()) {
         DecisionNode decisionNode = (DecisionNode) node;
         Decision decision = decisionNode.getDecision();
         int feature = decision.getFeatureNumber();
-        totalCounts[feature]++;
         totalGains[feature] += decision.getInformationGain();
         if (decision.isPositive(test)) {
           node = decisionNode.getRight();
@@ -216,6 +217,19 @@ public final class DecisionTree implements TreeBasedClassifier {
         }
       }
     }
+    double maxGain = 0.0;
+    for (int i = 0; i < numFeatures; i++) {
+      double gain = totalGains[i];
+      Preconditions.checkState(gain >= 0.0);
+      maxGain = FastMath.max(maxGain, gain);
+    }
+    if (maxGain > 0.0) {
+      for (int i = 0; i < numFeatures; i++) {
+        totalGains[i] /= maxGain;
+      }
+    }
+    // Otherwise all were 0?
+    return totalGains;
   }
 
   @Override
