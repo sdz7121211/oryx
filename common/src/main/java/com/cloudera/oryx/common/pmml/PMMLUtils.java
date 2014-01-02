@@ -115,12 +115,12 @@ public final class PMMLUtils {
 
   public static MiningSchema buildMiningSchema(InboundSettings inboundSettings, double[] importances) {
     List<String> columnNames = inboundSettings.getColumnNames();
-    int targetColumn = inboundSettings.getTargetColumn();
+    Integer targetColumn = inboundSettings.getTargetColumn();
     Collection<MiningField> miningFields = Lists.newArrayList();
     for (int categoricalColumn : inboundSettings.getCategoricalColumns()) {
       MiningField field = new MiningField(new FieldName(columnNames.get(categoricalColumn)));
       field.setOptype(OpType.CATEGORICAL);
-      if (categoricalColumn == targetColumn) {
+      if (targetColumn != null && categoricalColumn == targetColumn) {
         field.setUsageType(FieldUsageType.PREDICTED);
       } else {
         if (importances != null) {
@@ -132,7 +132,7 @@ public final class PMMLUtils {
     for (int numericColumn : inboundSettings.getNumericColumns()) {
       MiningField field = new MiningField(new FieldName(columnNames.get(numericColumn)));
       field.setOptype(OpType.CONTINUOUS);
-      if (numericColumn == targetColumn) {
+      if (targetColumn != null && numericColumn == targetColumn) {
         field.setUsageType(FieldUsageType.PREDICTED);
       } else {
         if (importances != null) {
