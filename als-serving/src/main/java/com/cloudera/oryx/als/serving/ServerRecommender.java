@@ -41,30 +41,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cloudera.oryx.als.common.IDValue;
-import com.cloudera.oryx.als.common.NumericIDValue;
-import com.cloudera.oryx.als.common.Rescorer;
-import com.cloudera.oryx.als.common.StringLongMapping;
-import com.cloudera.oryx.als.serving.generation.ALSGenerationManager;
-import com.cloudera.oryx.common.LangUtils;
 import com.cloudera.oryx.als.common.NoSuchItemException;
 import com.cloudera.oryx.als.common.NoSuchUserException;
 import com.cloudera.oryx.als.common.NotReadyException;
+import com.cloudera.oryx.als.common.NumericIDValue;
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.common.ReloadingReference;
-import com.cloudera.oryx.als.common.PairRescorer;
+import com.cloudera.oryx.als.common.StringLongMapping;
 import com.cloudera.oryx.als.common.TopN;
+import com.cloudera.oryx.als.common.candidate.CandidateFilter;
+import com.cloudera.oryx.als.common.rescorer.PairRescorer;
+import com.cloudera.oryx.als.common.rescorer.Rescorer;
+import com.cloudera.oryx.als.serving.generation.ALSGenerationManager;
+import com.cloudera.oryx.als.serving.generation.Generation;
+import com.cloudera.oryx.common.LangUtils;
+import com.cloudera.oryx.common.ReloadingReference;
 import com.cloudera.oryx.common.collection.LongFloatMap;
 import com.cloudera.oryx.common.collection.LongObjectMap;
 import com.cloudera.oryx.common.collection.LongSet;
 import com.cloudera.oryx.common.iterator.FileLineIterable;
 import com.cloudera.oryx.common.iterator.LongPrimitiveIterator;
 import com.cloudera.oryx.common.math.Solver;
-import com.cloudera.oryx.common.parallel.ExecutorUtils;
-import com.cloudera.oryx.common.io.IOUtils;
-import com.cloudera.oryx.als.serving.candidate.CandidateFilter;
 import com.cloudera.oryx.common.math.SimpleVectorMath;
-import com.cloudera.oryx.als.serving.generation.Generation;
+import com.cloudera.oryx.common.io.IOUtils;
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
+import com.cloudera.oryx.common.parallel.ExecutorUtils;
 
 /**
  * <p>The core implementation of {@link OryxRecommender} that lies inside the Serving Layer.</p>

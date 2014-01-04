@@ -13,29 +13,27 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving;
+package com.cloudera.oryx.als.common.rescorer;
 
-import com.cloudera.oryx.als.common.Rescorer;
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.als.common.PairRescorer;
 
 /**
  * <p>Implementations of this interface provide, optionally, objects that can be used to modify and influence
  * the results of:</p>
  *
  * <ul>
- *  <li>{@link ServerRecommender#recommend(String, int)}</li>
- *  <li>{@link ServerRecommender#recommendToMany(String[], int, boolean, Rescorer)}</li>
- *  <li>{@link ServerRecommender#recommendToAnonymous(String[], int, Rescorer)}</li>
- *  <li>{@link ServerRecommender#mostSimilarItems(String, int, PairRescorer)}</li>
+ *  <li>{@code ServerRecommender#recommend(String, int)}</li>
+ *  <li>{@code ServerRecommender#recommendToMany(String[], int, boolean, Rescorer)}</li>
+ *  <li>{@code ServerRecommender#recommendToAnonymous(String[], int, Rescorer)}</li>
+ *  <li>{@code ServerRecommender#mostSimilarItems(String, int, PairRescorer)}</li>
  * </ul>
  *
- * <p>It is a means to inject business logic into the results of {@link ServerRecommender}.</p>
+ * <p>It is a means to inject business logic into the results of {@code ServerRecommender}.</p>
  *
  * <p>Implementations of this class are factories. An implementation creates and configures an {@link Rescorer}
  * rescoring object and returns it for use in the context of one
- * {@link ServerRecommender#recommend(String, int, Rescorer)} method call. (A {@code Rescorer&lt;LongPair&gt;}
- * is used for {@link ServerRecommender#mostSimilarItems(String, int, PairRescorer)} since it operates on item ID
+ * {@code ServerRecommender#recommend(String, int, Rescorer)} method call. (A {@code Rescorer&lt;LongPair&gt;}
+ * is used for {@code ServerRecommender#mostSimilarItems(String, int, PairRescorer)} since it operates on item ID
  * <em>pairs</em>, but is otherwise analogous.) The {@link Rescorer} then filters the candidates
  * recommendations or most similar items by item ID ({@link Rescorer#isFiltered(String)})
  * or modifies the scores of item candidates that are not filtered ({@link Rescorer#rescore(String, double)})
@@ -54,7 +52,7 @@ import com.cloudera.oryx.als.common.PairRescorer;
  *
  * @author Sean Owen
  * @see MultiRescorer
- * @see com.cloudera.oryx.als.serving.candidate.CandidateFilter
+ * @see com.cloudera.oryx.als.common.candidate.CandidateFilter
  */
 public interface RescorerProvider {
 
@@ -64,7 +62,7 @@ public interface RescorerProvider {
    * @param args arguments, if any, that should be used when making the {@link Rescorer}. This is additional
    *  information from the request that may be necessary to its logic, like current location. What it means
    *  is up to the implementation.
-   * @return {@link Rescorer} to use with {@link ServerRecommender#recommend(String, int, Rescorer)}
+   * @return {@link Rescorer} to use with {@code ServerRecommender#recommend(String, int, Rescorer)}
    *  or {@code null} if none should be used. The resulting {@link Rescorer} will be passed each candidate
    *  item ID to {@link Rescorer#isFiltered(String)}, and each non-filtered candidate with its original score
    *  to {@link Rescorer#rescore(String, double)}
@@ -77,7 +75,7 @@ public interface RescorerProvider {
    * @param args arguments, if any, that should be used when making the {@link Rescorer}. This is additional
    *  information from the request that may be necessary to its logic, like current location. What it means
    *  is up to the implementation.
-   * @return {@link Rescorer} to use with {@link ServerRecommender#recommendToAnonymous(String[], int, Rescorer)}
+   * @return {@link Rescorer} to use with {@code ServerRecommender#recommendToAnonymous(String[], int, Rescorer)}
    *  or {@code null} if none should be used. The resulting {@link Rescorer} will be passed each candidate
    *  item ID to {@link Rescorer#isFiltered(String)}, and each non-filtered candidate with its original score
    *  to {@link Rescorer#rescore(String, double)}
@@ -89,7 +87,7 @@ public interface RescorerProvider {
    * @param args arguments, if any, that should be used when making the {@link Rescorer}. This is additional
    *  information from the request that may be necessary to its logic, like current location. What it means
    *  is up to the implementation.
-   * @return {@link Rescorer} to use with {@link ServerRecommender#mostPopularItems(int, Rescorer)}
+   * @return {@link Rescorer} to use with {@code ServerRecommender#mostPopularItems(int, Rescorer)}
    *  or {@code null} if none should be used.
    */
   Rescorer getMostPopularItemsRescorer(OryxRecommender recommender, String... args);
@@ -99,7 +97,7 @@ public interface RescorerProvider {
    * @param args arguments, if any, that should be used when making the {@link Rescorer}. This is additional
    *  information from the request that may be necessary to its logic, like current location. What it means
    *  is up to the implementation.
-   * @return {@link PairRescorer} to use with {@link ServerRecommender#mostSimilarItems(String[], int, PairRescorer)}
+   * @return {@link PairRescorer} to use with {@code ServerRecommender#mostSimilarItems(String[], int, PairRescorer)}
    *  or {@code null} if none should be used. The {@link PairRescorer} will be passed, to its
    *  {@link PairRescorer#isFiltered(String, String)} method, the candidate item ID
    *  and item ID passed in the user query as its second element.

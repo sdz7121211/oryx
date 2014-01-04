@@ -17,8 +17,8 @@ package com.cloudera.oryx.als.serving.example;
 
 import java.util.regex.Pattern;
 
-import com.cloudera.oryx.als.common.PairRescorer;
-import com.cloudera.oryx.als.common.Rescorer;
+import com.cloudera.oryx.als.common.rescorer.PairRescorer;
+import com.cloudera.oryx.als.common.rescorer.Rescorer;
 
 /**
  * Simple example of a {@link Rescorer} / {@link PairRescorer} that filters out everything except IDs

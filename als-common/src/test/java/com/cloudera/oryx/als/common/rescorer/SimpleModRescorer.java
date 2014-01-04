@@ -13,10 +13,7 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving;
-
-import com.cloudera.oryx.als.common.Rescorer;
-import com.cloudera.oryx.als.common.PairRescorer;
+package com.cloudera.oryx.als.common.rescorer;
 
 final class SimpleModRescorer implements Rescorer, PairRescorer {
   

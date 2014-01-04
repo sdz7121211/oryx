@@ -13,7 +13,7 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving.candidate;
+package com.cloudera.oryx.als.common.candidate;
 
 import java.util.concurrent.locks.Lock;
 

@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.als.common.PairRescorer;
-import com.cloudera.oryx.als.common.Rescorer;
-import com.cloudera.oryx.als.serving.RescorerProvider;
+import com.cloudera.oryx.als.common.rescorer.PairRescorer;
+import com.cloudera.oryx.als.common.rescorer.Rescorer;
+import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 
 /**
  * Simple example of a {@link RescorerProvider} that filters out everything except IDs matching a given

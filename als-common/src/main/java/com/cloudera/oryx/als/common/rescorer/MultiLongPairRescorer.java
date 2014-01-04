@@ -13,13 +13,11 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving;
+package com.cloudera.oryx.als.common.rescorer;
 
 import java.util.List;
 
 import com.google.common.base.Preconditions;
-
-import com.cloudera.oryx.als.common.PairRescorer;
 
 /**
  * Convenience implementation that will aggregate the behavior of multiple {@link PairRescorer}s.

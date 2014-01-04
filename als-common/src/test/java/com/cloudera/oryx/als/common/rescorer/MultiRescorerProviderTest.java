@@ -13,13 +13,11 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving;
+package com.cloudera.oryx.als.common.rescorer;
 
 import org.junit.Test;
 
-import com.cloudera.oryx.als.common.Rescorer;
 import com.cloudera.oryx.common.OryxTest;
-import com.cloudera.oryx.als.common.PairRescorer;
 
 /**
  * Tests {@link MultiRescorerProvider} (implementations).
@@ -30,7 +28,7 @@ public final class MultiRescorerProviderTest extends OryxTest {
   
   @Test
   public void testMultiRecommendRescorer() {
-    RescorerProvider multi = 
+    RescorerProvider multi =
         new MultiRescorerProvider(new SimpleModRescorerProvider(2), new SimpleModRescorerProvider(3));
     
     Rescorer provider = multi.getRecommendRescorer(new String[]{"ABCDE"}, null);

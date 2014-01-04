@@ -20,7 +20,7 @@ import java.util.Iterator;
 import com.google.common.base.Preconditions;
 
 import com.cloudera.oryx.als.common.NumericIDValue;
-import com.cloudera.oryx.als.common.Rescorer;
+import com.cloudera.oryx.als.common.rescorer.Rescorer;
 import com.cloudera.oryx.als.common.StringLongMapping;
 import com.cloudera.oryx.common.collection.LongObjectMap;
 import com.cloudera.oryx.common.collection.LongSet;

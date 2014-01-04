@@ -28,7 +28,7 @@ import java.io.Writer;
 
 import com.cloudera.oryx.als.common.IDValue;
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.als.serving.RescorerProvider;
+import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 import com.cloudera.oryx.serving.web.AbstractOryxServlet;
 
