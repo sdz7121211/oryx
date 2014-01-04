@@ -123,11 +123,11 @@ public final class InboundSettings implements Serializable {
       int index = columnNames.indexOf(input.toString());
       if (index >= 0) {
         return index;
-      } else if (input instanceof Integer) {
-        return (Integer) input;
-      } else {
-        throw new IllegalArgumentException(String.format("Could not find %s in list: %s", input, columnNames));
       }
+      if (input instanceof Number) {
+        return ((Number) input).intValue();
+      }
+      throw new IllegalArgumentException(String.format("Could not find %s in list: %s", input, columnNames));
     }
   }
 
