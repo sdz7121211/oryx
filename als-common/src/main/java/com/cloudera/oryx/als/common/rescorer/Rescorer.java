@@ -13,7 +13,7 @@
  * License.
  */
 
-package com.cloudera.oryx.als.common;
+package com.cloudera.oryx.als.common.rescorer;
 
 /**
  * Implementations of this interface can "rescore" the recommender's score for a item that is a candidate for

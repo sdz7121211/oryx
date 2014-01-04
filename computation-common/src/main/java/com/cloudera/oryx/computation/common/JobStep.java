@@ -276,7 +276,7 @@ public abstract class JobStep extends Configured implements Tool, HasState {
 
     int mapMemoryMB = appConfig.getInt("computation-layer.mapper-memory-mb");
     log.info("Mapper memory: {}", mapMemoryMB);
-    int mapHeapMB = (int) (mapMemoryMB / 1.3); // Matches CDH's default
+    int mapHeapMB = (int) (mapMemoryMB / 1.3); // Matches Hadoop's default
     log.info("Mappers have {}MB heap and can access {}MB RAM", mapHeapMB, mapMemoryMB);
     if (conf.get("mapreduce.map.java.opts") != null) {
       log.info("Overriding previous setting of {}, which was '{}'",
@@ -297,7 +297,7 @@ public abstract class JobStep extends Configured implements Tool, HasState {
     }
     conf.setInt("mapreduce.reduce.memory.mb", reduceMemoryMB);
 
-    int reduceHeapMB = (int) (reduceMemoryMB / 1.3); // Matches CDH's default
+    int reduceHeapMB = (int) (reduceMemoryMB / 1.3); // Matches Hadoop's default
     log.info("Reducers have {}MB heap and can access {}MB RAM", reduceHeapMB, reduceMemoryMB);
     if (conf.get("mapreduce.reduce.java.opts") != null) {
       log.info("Overriding previous setting of {}, which was '{}'",

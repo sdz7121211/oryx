@@ -73,6 +73,7 @@ public final class RDFServingInitListener extends AbstractOryxServingInitListene
   @Override
   public void addServlets(Context context) {
     addServlet(context, new ClassifyServlet(), "/classify/*");
+    addServlet(context, new FeatureImportanceServlet(), "/feature/importance/*");
     if (!ConfigUtils.getDefaultConfig().getBoolean("serving-layer.api.read-only")) {
       addServlet(context, new TrainServlet(), "/train/*");
       addServlet(context, new RefreshServlet(), "/refresh/*");

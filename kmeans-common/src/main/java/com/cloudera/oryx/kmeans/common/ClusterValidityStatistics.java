@@ -40,7 +40,9 @@ public final class ClusterValidityStatistics implements Serializable {
                                                  Centers test,
                                                  Centers train,
                                                  int replicaId) {
-    Preconditions.checkArgument(test.size() == train.size());
+    Preconditions.checkArgument(test.size() == train.size(),
+                                "Test size was %s, train size was %s, should be equal. Data too small?",
+                                test.size(), train.size());
     int k = test.size();
     double n = 0.0;
     double testCost = 0.0;

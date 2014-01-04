@@ -30,8 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.als.serving.AbstractRescorerProvider;
-import com.cloudera.oryx.als.serving.RescorerProvider;
+import com.cloudera.oryx.als.common.rescorer.AbstractRescorerProvider;
+import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 import com.cloudera.oryx.als.serving.ServerRecommender;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.serving.web.AbstractOryxServingInitListener;

@@ -13,7 +13,7 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving.candidate;
+package com.cloudera.oryx.als.common.candidate;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,11 +29,12 @@ import com.cloudera.oryx.common.collection.LongObjectMap;
  * to be excluded. It could pre-compute which items are eligible and </p>
  * 
  * <p>This is a form of filtering, but, differs from the filtering provided by 
- * {@link com.cloudera.oryx.als.serving.RescorerProvider}. That is a run-time, per-request filter;
+ * {@link com.cloudera.oryx.als.common.rescorer.RescorerProvider}. That is a run-time, per-request filter;
  * this class represents a more global, precomputed filtering that is not parameterized by the request.</p>
  *
  * <p><em>This is quite a low-level API and should be considered "advanced" usage; use a
- * {@link com.cloudera.oryx.als.serving.RescorerProvider} unless it's clear that it is not fast enough.</em></p>
+ * {@link com.cloudera.oryx.als.common.rescorer.RescorerProvider} unless it's clear that it is not fast
+ * enough.</em></p>
  *
  * <p>Implementations should define a constructor that accepts a parameter of type {@link LongObjectMap}.
  * This is a reference to the "Y" matrix in the model -- item-feature matrix.
@@ -44,7 +45,7 @@ import com.cloudera.oryx.common.collection.LongObjectMap;
  * methods and only for reading.</p>
  * 
  * @author Sean Owen
- * @see com.cloudera.oryx.als.serving.RescorerProvider
+ * @see com.cloudera.oryx.als.common.rescorer.RescorerProvider
  */
 public interface CandidateFilter {
   

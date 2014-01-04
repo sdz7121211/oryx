@@ -29,8 +29,8 @@ import com.cloudera.oryx.common.collection.LongSet;
 import com.cloudera.oryx.common.math.IllConditionedSolverException;
 import com.cloudera.oryx.common.math.MatrixUtils;
 import com.cloudera.oryx.common.math.Solver;
-import com.cloudera.oryx.als.serving.candidate.CandidateFilter;
-import com.cloudera.oryx.als.serving.candidate.CandidateFilterFactory;
+import com.cloudera.oryx.als.common.candidate.CandidateFilter;
+import com.cloudera.oryx.als.common.candidate.CandidateFilterFactory;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 
 /**

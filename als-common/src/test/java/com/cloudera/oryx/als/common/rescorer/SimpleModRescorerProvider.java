@@ -13,11 +13,9 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving;
+package com.cloudera.oryx.als.common.rescorer;
 
-import com.cloudera.oryx.als.common.Rescorer;
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.als.common.PairRescorer;
 
 final class SimpleModRescorerProvider extends AbstractRescorerProvider {
   

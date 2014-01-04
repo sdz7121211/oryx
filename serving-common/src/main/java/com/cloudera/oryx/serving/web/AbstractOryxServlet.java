@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 import com.cloudera.oryx.serving.stats.ServletStats;
@@ -51,6 +52,7 @@ public abstract class AbstractOryxServlet extends HttpServlet {
   public static final String TIMINGS_KEY = KEY_PREFIX + ".TIMINGS";
 
   private static final Pattern ESCAPED_SLASH = Pattern.compile("%2F", Pattern.CASE_INSENSITIVE);
+  protected static final Splitter SLASH = Splitter.on('/').omitEmptyStrings();
 
   private ServletStats timing;
 

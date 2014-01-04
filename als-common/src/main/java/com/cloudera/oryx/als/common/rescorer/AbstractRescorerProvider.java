@@ -13,14 +13,12 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving;
+package com.cloudera.oryx.als.common.rescorer;
 
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import com.cloudera.oryx.als.common.PairRescorer;
-import com.cloudera.oryx.als.common.Rescorer;
 import com.cloudera.oryx.common.ClassUtils;
 import com.cloudera.oryx.als.common.OryxRecommender;
 

@@ -28,8 +28,8 @@ import com.cloudera.oryx.als.common.IDValue;
 import com.cloudera.oryx.als.common.NoSuchItemException;
 import com.cloudera.oryx.als.common.NotReadyException;
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.als.common.PairRescorer;
-import com.cloudera.oryx.als.serving.RescorerProvider;
+import com.cloudera.oryx.als.common.rescorer.PairRescorer;
+import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 
 /**
  * <p>Responds to a GET request to {@code /similarity/[itemID1](/[itemID2]/...)?howMany=n(&rescorerParams=...)},

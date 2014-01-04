@@ -18,7 +18,7 @@ package com.cloudera.oryx.als.serving;
 import java.util.Iterator;
 
 import com.cloudera.oryx.als.common.NumericIDValue;
-import com.cloudera.oryx.als.common.Rescorer;
+import com.cloudera.oryx.als.common.rescorer.Rescorer;
 import com.cloudera.oryx.als.common.StringLongMapping;
 import com.cloudera.oryx.common.collection.LongFloatMap;
 

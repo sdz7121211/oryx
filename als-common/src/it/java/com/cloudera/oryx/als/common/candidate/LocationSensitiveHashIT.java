@@ -13,7 +13,7 @@
  * License.
  */
 
-package com.cloudera.oryx.als.common.lsh;
+package com.cloudera.oryx.als.common.candidate;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cloudera.oryx.als.common.lsh.LocationSensitiveHash;
 import com.cloudera.oryx.common.OryxTest;
 import com.cloudera.oryx.common.collection.LongObjectMap;
 import com.cloudera.oryx.common.collection.LongSet;

@@ -15,6 +15,7 @@
 
 package com.cloudera.oryx.kmeans.common;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ public final class WeightedSampler<T, W extends Weighted<T>> {
   private final RandomGenerator random;
   
   public WeightedSampler(List<W> things, RandomGenerator random) {
+    Preconditions.checkArgument(!things.isEmpty(), "Empty list of items given to WeightedSampler");
     this.things = things;
     this.cumulativeSum = new double[things.size() + 1];
     for (int i = 0; i < things.size(); i++) {

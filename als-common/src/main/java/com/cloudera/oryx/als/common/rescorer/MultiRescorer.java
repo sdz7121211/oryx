@@ -13,16 +13,14 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving;
+package com.cloudera.oryx.als.common.rescorer;
 
 import java.util.List;
 
 import com.google.common.base.Preconditions;
 
-import com.cloudera.oryx.als.common.Rescorer;
-
 /**
- * Convenience implementation that will aggregate the behavior of multiple {@link com.cloudera.oryx.als.common.Rescorer}s.
+ * Convenience implementation that will aggregate the behavior of multiple {@link Rescorer}s.
  * It will filter an item if any of the given instances filter it, and will rescore by applying
  * the rescorings in the given order.
  *
@@ -35,7 +33,7 @@ public final class MultiRescorer implements Rescorer {
   private final Rescorer[] rescorers;
 
   /**
-   * @param rescorers {@link com.cloudera.oryx.als.common.Rescorer} objects to delegate to
+   * @param rescorers {@link Rescorer} objects to delegate to
    */
   public MultiRescorer(List<Rescorer> rescorers) {
     Preconditions.checkNotNull(rescorers);

@@ -25,12 +25,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 
-import com.cloudera.oryx.als.common.Rescorer;
+import com.cloudera.oryx.als.common.rescorer.Rescorer;
 import com.cloudera.oryx.common.LangUtils;
 import com.cloudera.oryx.als.common.NoSuchItemException;
 import com.cloudera.oryx.als.common.NotReadyException;
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.als.serving.RescorerProvider;
+import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 
 /**
  * <p>Responds to a GET request to

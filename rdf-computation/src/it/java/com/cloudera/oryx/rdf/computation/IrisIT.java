@@ -16,6 +16,8 @@
 package com.cloudera.oryx.rdf.computation;
 
 import com.google.common.collect.BiMap;
+import com.google.common.io.CharStreams;
+import com.google.common.primitives.Doubles;
 import org.apache.commons.math3.util.Pair;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -25,6 +27,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.cloudera.oryx.common.io.IOUtils;
+import com.cloudera.oryx.common.settings.ConfigUtils;
+import com.cloudera.oryx.common.settings.InboundSettings;
 import com.cloudera.oryx.rdf.common.example.Example;
 import com.cloudera.oryx.rdf.common.example.Feature;
 import com.cloudera.oryx.rdf.common.example.NumericFeature;
@@ -58,12 +63,25 @@ public final class IrisIT extends AbstractComputationIT {
     // It's not clear this will actually be deterministic but it will probably be for our purposes
     new RDFLocalGenerationRunner().call();
     File pmmlFile = new File(TEST_TEMP_BASE_DIR, "00000/model.pmml.gz");
+
+    log.info("PMML:\n{}", CharStreams.toString(IOUtils.openReaderMaybeDecompressing(pmmlFile)));
+
     Pair<DecisionForest,Map<Integer,BiMap<String,Integer>>> forestAndMapping = DecisionForestPMML.read(pmmlFile);
     DecisionForest forest = forestAndMapping.getFirst();
     Map<Integer,BiMap<String,Integer>> categoryValueMapping = forestAndMapping.getSecond();
     Map<String,Integer> targetCategoryValueMapping = categoryValueMapping.get(4);
 
     log.info("{}", forest);
+
+    double[] importances = forest.getFeatureImportances();
+    for (double d : importances) {
+      assertTrue(d >= 0.0);
+      assertTrue(d <= 1.0);
+    }
+    // petal length ought to be most predictive
+    InboundSettings settings = InboundSettings.create(ConfigUtils.getDefaultConfig());
+    int petalLengthColumn = settings.getColumnNames().indexOf("petal length");
+    assertEquals(importances[petalLengthColumn], Doubles.max(importances));
 
     // Simple tests of the structure:
 

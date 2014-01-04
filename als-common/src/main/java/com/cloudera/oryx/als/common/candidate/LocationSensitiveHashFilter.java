@@ -13,38 +13,36 @@
  * License.
  */
 
-package com.cloudera.oryx.als.serving.candidate;
+package com.cloudera.oryx.als.common.candidate;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
+import com.cloudera.oryx.als.common.lsh.LocationSensitiveHash;
 import com.cloudera.oryx.common.collection.LongObjectMap;
 
 /**
- * Does no filtering.
- * 
+ * A {@link CandidateFilter} based on location-sensitive hashing, which chooses a set of candidate items
+ * to consider by filtering out items that are unlikely to make good recommendations.
+ *
  * @author Sean Owen
  */
-final class IdentityCandidateFilter implements CandidateFilter {
-  
-  private final LongObjectMap<float[]> Y;
+public final class LocationSensitiveHashFilter implements CandidateFilter {
 
-  /**
-   * @param Y item vectors to hash
-   */
-  IdentityCandidateFilter(LongObjectMap<float[]> Y) {
-    this.Y = Y;
+  private final LocationSensitiveHash delegate;
+
+  public LocationSensitiveHashFilter(LongObjectMap<float[]> Y, double lshSampleRatio, int numHashes) {
+    delegate = new LocationSensitiveHash(Y, lshSampleRatio, numHashes);
   }
 
   @Override
   public Collection<Iterator<LongObjectMap.MapEntry<float[]>>> getCandidateIterator(float[][] userVectors) {
-    return Collections.singleton(Y.entrySet().iterator());
+    return delegate.getCandidateIterator(userVectors);
   }
 
   @Override
   public void addItem(String itemID) {
-    // do nothing
+    delegate.addItem(itemID);
   }
 
 }

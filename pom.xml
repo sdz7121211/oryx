@@ -18,7 +18,7 @@
 
   <groupId>com.cloudera.oryx</groupId>
   <artifactId>oryx</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.4.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <dependencyManagement>
@@ -235,7 +235,7 @@
         <scope>runtime</scope>
       </dependency>
 
-      <!-- Update CDH/Hadoop dependency to avoid a packaging collision. Digester 1.8 depends on BeanUtils
+      <!-- Update Hadoop dependency to avoid a packaging collision. Digester 1.8 depends on BeanUtils
         1.7 but Configuration (which ironically depends on Digester) depends on 1.8. Updating to Digester
         1.8.1 makes everything agree on BeanUtils 1.8.
         Then, Configuration depends on just commons-beanutils-core, but Digester wants the full
@@ -697,7 +697,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jxr-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -898,11 +898,11 @@
         </plugins>
       </build>
     </profile>
-    <!-- Separate profile for CDH5 just because it requires a recompile, due to protobuf 2.4-to-2.5 difference -->
+    <!-- Separate profile for Hadoop 2.2.x because it requires a recompile, due to protobuf 2.4-to-2.5 difference -->
     <profile>
-      <id>cdh5</id>
+      <id>hadoop22</id>
       <properties>
-        <hadoop.version>2.2.0-cdh5.0.0-beta-1</hadoop.version>
+        <hadoop.version>2.2.0</hadoop.version>
         <!--<crunch.version>0.9.0-hadoop2</crunch.version>-->
       </properties>
     </profile>

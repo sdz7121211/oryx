@@ -120,12 +120,14 @@ public final class InboundSettings implements Serializable {
 
     @Override
     public Integer apply(Object input) {
-      if (input instanceof Integer) {
-        return (Integer) input;
-      }
       int index = columnNames.indexOf(input.toString());
-      Preconditions.checkArgument(index >= 0, String.format("Could not find %s in list: %s", input, columnNames));
-      return index;
+      if (index >= 0) {
+        return index;
+      }
+      if (input instanceof Number) {
+        return ((Number) input).intValue();
+      }
+      throw new IllegalArgumentException(String.format("Could not find %s in list: %s", input, columnNames));
     }
   }
 

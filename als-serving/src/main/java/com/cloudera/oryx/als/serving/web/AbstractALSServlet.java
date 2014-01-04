@@ -16,7 +16,6 @@
 package com.cloudera.oryx.als.serving.web;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -29,7 +28,7 @@ import java.io.Writer;
 
 import com.cloudera.oryx.als.common.IDValue;
 import com.cloudera.oryx.als.common.OryxRecommender;
-import com.cloudera.oryx.als.serving.RescorerProvider;
+import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 import com.cloudera.oryx.serving.web.AbstractOryxServlet;
 
@@ -41,7 +40,6 @@ import com.cloudera.oryx.serving.web.AbstractOryxServlet;
 public abstract class AbstractALSServlet extends AbstractOryxServlet {
 
   private static final int DEFAULT_HOW_MANY = 10;
-  static final Splitter SLASH = Splitter.on('/').omitEmptyStrings();
 
   private static final String KEY_PREFIX = AbstractALSServlet.class.getName();
   public static final String RECOMMENDER_KEY = KEY_PREFIX + ".RECOMMENDER";

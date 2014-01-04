@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
+import com.cloudera.oryx.als.common.rescorer.PairRescorer;
+import com.cloudera.oryx.als.common.rescorer.Rescorer;
+
 /**
  * Interface to the ALS-based recommender in Oryx. This interface represents the Java API exposed
  * by the implementation.

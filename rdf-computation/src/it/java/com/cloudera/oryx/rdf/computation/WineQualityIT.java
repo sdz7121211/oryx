@@ -16,6 +16,7 @@
 package com.cloudera.oryx.rdf.computation;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Doubles;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -60,6 +61,18 @@ public final class WineQualityIT extends AbstractComputationIT {
     DecisionForest forest = DecisionForest.fromExamplesWithDefault(allExamples);
     log.info("Evals: {}", forest.getEvaluations());
     assertTrue(new Mean().evaluate(forest.getEvaluations()) < 1.2);
+    double[] importances = forest.getFeatureImportances();
+    log.info("Importances: {}", importances);
+    for (double d : importances) {
+      assertTrue(d >= 0.0);
+      assertTrue(d <= 1.0);
+    }
+    assertEquals(importances[8], Doubles.max(importances));
+    assertTrue(importances[1] > 0.6);
+    assertTrue(importances[5] > 0.6);
+    assertTrue(importances[8] > 0.8);
+    assertTrue(importances[9] > 0.6);
+    assertTrue(importances[10] > 0.7);
   }
 
   @Test

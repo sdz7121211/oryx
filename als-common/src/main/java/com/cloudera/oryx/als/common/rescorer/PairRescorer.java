@@ -13,7 +13,7 @@
  * License.
  */
 
-package com.cloudera.oryx.als.common;
+package com.cloudera.oryx.als.common.rescorer;
 
 /**
  * Like {@link Rescorer}, but operates on pairs of item IDs, not single item IDs.

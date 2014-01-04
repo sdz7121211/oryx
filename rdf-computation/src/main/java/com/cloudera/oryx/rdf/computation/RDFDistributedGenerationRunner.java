@@ -15,8 +15,12 @@
 
 package com.cloudera.oryx.rdf.computation;
 
+import com.google.common.collect.Maps;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.dmg.pmml.IOUtil;
+import org.dmg.pmml.MiningField;
 import org.dmg.pmml.MiningModel;
+import org.dmg.pmml.Model;
 import org.dmg.pmml.PMML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +35,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.cloudera.oryx.common.io.IOUtils;
 import com.cloudera.oryx.common.iterator.FileLineIterable;
@@ -86,6 +91,8 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     // TODO This is still loading all trees into memory, which can be quite large.
     // To do better we would have to manage XML output more directly.
 
+    Map<String,Mean> columnNameToMeanImportance = Maps.newHashMap();
+
     for (String treePrefix : store.list(outputPathKey, true)) {
       log.info("Reading trees from file {}", treePrefix);
       for (String treePMMLAsLine : new FileLineIterable(store.readFrom(treePrefix))) {
@@ -100,11 +107,24 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
 
         if (joinedForest == null) {
           joinedForest = treePMML;
+          updateMeanImportances(columnNameToMeanImportance, treePMML.getModels().get(0));
         } else {
           MiningModel existingModel = (MiningModel) joinedForest.getModels().get(0);
           MiningModel nextModel = (MiningModel) treePMML.getModels().get(0);
+          updateMeanImportances(columnNameToMeanImportance, nextModel);
           existingModel.getSegmentation().getSegments().addAll(nextModel.getSegmentation().getSegments());
         }
+      }
+    }
+
+    // Stitch together feature importances
+    for (MiningField field : joinedForest.getModels().get(0).getMiningSchema().getMiningFields()) {
+      String name = field.getName().getValue();
+      Mean importance = columnNameToMeanImportance.get(name);
+      if (importance == null) {
+        field.setImportance(null);
+      } else {
+        field.setImportance(importance.getResult());
       }
     }
 
@@ -123,6 +143,21 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     log.info("Uploading combined model file");
     store.upload(instanceGenerationPrefix + "model.pmml.gz", tempJoinedForestFile, false);
     IOUtils.delete(tempJoinedForestFile);
+  }
+
+  private static void updateMeanImportances(Map<String,Mean> columnNameToMeanImportance, Model model) {
+    for (MiningField field : model.getMiningSchema().getMiningFields()) {
+      Double importance = field.getImportance();
+      if (importance != null) {
+        String fieldName = field.getName().getValue();
+        Mean mean = columnNameToMeanImportance.get(fieldName);
+        if (mean == null) {
+          mean = new Mean();
+          columnNameToMeanImportance.put(fieldName, mean);
+        }
+        mean.increment(importance);
+      }
+    }
   }
 
 }
