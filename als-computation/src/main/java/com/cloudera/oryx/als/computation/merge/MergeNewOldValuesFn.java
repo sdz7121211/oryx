@@ -29,8 +29,8 @@ import org.apache.crunch.Pair;
 public final class MergeNewOldValuesFn extends OryxReduceDoFn<Pair<Long, Integer>, Iterable<NumericIDValue>,
     Pair<Long, NumericIDValue>> {
 
-  private static final int BEFORE = 0;
-  private static final int AFTER = 1;
+  static final int BEFORE = 0;
+  static final int AFTER = 1;
 
   private boolean doDecay;
   private float decayFactor;
