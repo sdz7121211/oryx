@@ -16,7 +16,6 @@
 package com.cloudera.oryx.als.serving.web;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -74,11 +73,7 @@ public final class SimilarityToItemServlet extends AbstractALSServlet {
     OryxRecommender recommender = getRecommender();
     try {
       float[] similarities = recommender.similarityToItem(toItemID, itemIDs);
-      Writer out = response.getWriter();
-      for (float similarity : similarities) {
-        out.write(Float.toString(similarity));
-        out.write('\n');        
-      }
+      output(request, response, similarities);
     } catch (NoSuchItemException nsie) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, nsie.toString());
     } catch (NotReadyException nre) {

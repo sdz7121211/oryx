@@ -16,7 +16,6 @@
 package com.cloudera.oryx.als.serving.web;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -70,11 +69,7 @@ public final class EstimateServlet extends AbstractALSServlet {
     OryxRecommender recommender = getRecommender();
     try {
       float[] estimates = recommender.estimatePreferences(userID, itemIDs);
-      Writer out = response.getWriter();
-      for (float estimate : estimates) {
-        out.write(Float.toString(estimate));
-        out.write('\n');
-      }
+      output(request, response, estimates);
     } catch (NotReadyException nre) {
       response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, nre.toString());
     }

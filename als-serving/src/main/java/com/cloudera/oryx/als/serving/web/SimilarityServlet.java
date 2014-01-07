@@ -89,7 +89,7 @@ public final class SimilarityServlet extends AbstractALSServlet {
             rescorerProvider.getMostSimilarItemsRescorer(recommender, getRescorerParams(request));
         similar = recommender.mostSimilarItems(itemIDs, howMany, rescorer);
       }
-      output(response, similar);
+      output(request, response, similar);
     } catch (NoSuchItemException nsie) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, nsie.toString());
     } catch (NotReadyException nre) {

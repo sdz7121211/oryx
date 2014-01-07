@@ -70,7 +70,10 @@ public final class RecommendServlet extends AbstractALSServlet {
     try {
       Rescorer rescorer = rescorerProvider == null ? null :
           rescorerProvider.getRecommendRescorer(new String[] {userID}, recommender, getRescorerParams(request));
-      output(response, recommender.recommend(userID, getHowMany(request), getConsiderKnownItems(request), rescorer));
+      output(request, response, recommender.recommend(userID,
+                                                      getHowMany(request),
+                                                      getConsiderKnownItems(request),
+                                                      rescorer));
     } catch (NoSuchUserException nsue) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, nsue.toString());
     } catch (NotReadyException nre) {

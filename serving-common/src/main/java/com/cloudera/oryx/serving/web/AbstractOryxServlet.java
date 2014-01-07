@@ -16,18 +16,24 @@
 package com.cloudera.oryx.serving.web;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
+import com.google.common.net.HttpHeaders;
 
+import com.cloudera.oryx.common.LangUtils;
 import com.cloudera.oryx.serving.stats.ServletStats;
 
 /**
@@ -53,8 +59,10 @@ public abstract class AbstractOryxServlet extends HttpServlet {
 
   private static final Pattern ESCAPED_SLASH = Pattern.compile("%2F", Pattern.CASE_INSENSITIVE);
   protected static final Splitter SLASH = Splitter.on('/').omitEmptyStrings();
+  private static final Splitter COMMA = Splitter.on(',').omitEmptyStrings().trimResults();
 
   private ServletStats timing;
+  private ConcurrentMap<String,ResponseContentType> responseTypeCache;
 
   @Override
   public void init(ServletConfig config) throws ServletException {
@@ -80,6 +88,8 @@ public abstract class AbstractOryxServlet extends HttpServlet {
       timings.put(key, theTiming);
     }
     timing = theTiming;
+
+    responseTypeCache = Maps.newConcurrentMap();
   }
 
   @Override
@@ -115,6 +125,141 @@ public abstract class AbstractOryxServlet extends HttpServlet {
     for (int i = 0; i < pathElements.length; i++) {
       pathElements[i] = unescapeSlashHack(pathElements[i]);
     }
+  }
+
+  protected final void output(HttpServletRequest request,
+                              ServletResponse response,
+                              float... values) throws IOException {
+    Writer writer = response.getWriter();
+    switch (determineResponseType(request)) {
+      case JSON:
+        // Single value written alone
+        if (values.length == 1) {
+          writer.write(Float.toString(values[0]));
+        } else {
+          // Many values written as array
+          writer.write('[');
+          boolean first = true;
+          for (float value : values) {
+            if (first) {
+              first = false;
+            } else {
+              writer.write(',');
+            }
+            writer.write(Float.toString(value));
+          }
+          writer.write("]\n");
+        }
+        break;
+      case DELIMITED:
+        for (float value : values) {
+          writer.write(Float.toString(value));
+          writer.write('\n');
+        }
+        break;
+      default:
+        throw new IllegalStateException("Unknown response type");
+    }
+  }
+
+  protected final void output(HttpServletRequest request,
+                              ServletResponse response,
+                              double... values) throws IOException {
+    Writer writer = response.getWriter();
+    switch (determineResponseType(request)) {
+      case JSON:
+        // Single value written alone
+        if (values.length == 1) {
+          writer.write(Double.toString(values[0]));
+        } else {
+          // Many values written as array
+          writer.write('[');
+          boolean first = true;
+          for (double value : values) {
+            if (first) {
+              first = false;
+            } else {
+              writer.write(',');
+            }
+            writer.write(Double.toString(value));
+          }
+          writer.write("]\n");
+        }
+        break;
+      case DELIMITED:
+        for (double value : values) {
+          writer.write(Double.toString(value));
+          writer.write('\n');
+        }
+        break;
+      default:
+        throw new IllegalStateException("Unknown response type");
+    }
+  }
+
+  /**
+   * Determines the appropriate content type for the response based on request headers. At the moment these
+   * are chosen from the values in {@link ResponseContentType}.
+   */
+  protected final ResponseContentType determineResponseType(HttpServletRequest request) {
+
+    String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+    if (acceptHeader == null) {
+      return ResponseContentType.DELIMITED;
+    }
+    ResponseContentType cached = responseTypeCache.get(acceptHeader);
+    if (cached != null) {
+      return cached;
+    }
+
+    SortedMap<Double,ResponseContentType> types = Maps.newTreeMap();
+    for (String accept : COMMA.split(acceptHeader)) {
+      double preference;
+      String type;
+      int semiColon = accept.indexOf(';');
+      if (semiColon < 0) {
+        preference = 1.0;
+        type = accept;
+      } else {
+        String valueString = accept.substring(semiColon + 1).trim();
+        if (valueString.startsWith("q=")) {
+          valueString = valueString.substring(2);
+        }
+        try {
+          preference = LangUtils.parseDouble(valueString);
+        } catch (IllegalArgumentException ignored) {
+          preference = 1.0;
+        }
+        type = accept.substring(semiColon);
+      }
+      ResponseContentType parsedType = null;
+      if ("text/csv".equals(type) || "text/plain".equals(type)) {
+        parsedType = ResponseContentType.DELIMITED;
+      } else if ("application/json".equals(type)) {
+        parsedType = ResponseContentType.JSON;
+      }
+      if (parsedType != null) {
+        types.put(preference, parsedType);
+      }
+    }
+
+    ResponseContentType finalType;
+    if (types.isEmpty()) {
+      finalType = ResponseContentType.DELIMITED;
+    } else {
+      finalType = types.values().iterator().next();
+    }
+
+    responseTypeCache.putIfAbsent(acceptHeader, finalType);
+    return finalType;
+  }
+
+  /**
+   * Available content types / formats for response bodies.
+   */
+  protected enum ResponseContentType {
+    JSON,
+    DELIMITED,
   }
 
 }

@@ -76,10 +76,10 @@ public final class RecommendToManyServlet extends AbstractALSServlet {
     try {
       Rescorer rescorer = rescorerProvider == null ? null :
           rescorerProvider.getRecommendRescorer(userIDs, recommender, getRescorerParams(request));
-      output(response, recommender.recommendToMany(userIDs,
-                                                   getHowMany(request),
-                                                   getConsiderKnownItems(request),
-                                                   rescorer));
+      output(request, response, recommender.recommendToMany(userIDs,
+                                                            getHowMany(request),
+                                                            getConsiderKnownItems(request),
+                                                            rescorer));
     } catch (NoSuchUserException nsue) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, nsue.toString());
     } catch (NotReadyException nre) {

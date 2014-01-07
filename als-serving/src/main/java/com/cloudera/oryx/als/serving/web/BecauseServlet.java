@@ -65,7 +65,7 @@ public final class BecauseServlet extends AbstractALSServlet {
 
     OryxRecommender recommender = getRecommender();
     try {
-      output(response, recommender.recommendedBecause(userID, itemID, getHowMany(request)));
+      output(request, response, recommender.recommendedBecause(userID, itemID, getHowMany(request)));
     } catch (NoSuchUserException nsue) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, nsue.toString());
     } catch (NoSuchItemException nsie) {

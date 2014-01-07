@@ -83,7 +83,7 @@ public final class RecommendToAnonymousServlet extends AbstractALSServlet {
     try {
       Rescorer rescorer = rescorerProvider == null ? null :
           rescorerProvider.getRecommendToAnonymousRescorer(itemIDs, recommender, getRescorerParams(request));
-      output(response, recommender.recommendToAnonymous(itemIDs, values, getHowMany(request), rescorer));
+      output(request, response, recommender.recommendToAnonymous(itemIDs, values, getHowMany(request), rescorer));
     } catch (NotReadyException nre) {
       response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, nre.toString());
     } catch (NoSuchItemException nsie) {

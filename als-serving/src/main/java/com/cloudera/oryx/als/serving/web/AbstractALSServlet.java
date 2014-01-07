@@ -22,6 +22,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -88,11 +89,35 @@ public abstract class AbstractALSServlet extends AbstractOryxServlet {
    * <p>CSV output contains one recommendation per line, and each line is of the form {@code itemID,strength},
    * like {@code "ABC",0.53}. Strength is an opaque indicator of the relative quality of the recommendation.</p>
    */
-  final void output(ServletResponse response, Iterable<IDValue> items) throws IOException {
+  final void output(HttpServletRequest request, ServletResponse response, Iterable<IDValue> items) throws IOException {
     Writer writer = response.getWriter();
-    for (IDValue item : items) {
-      writer.write(DelimitedDataUtils.encode(item.getID(), Float.toString(item.getValue())));
-      writer.write('\n');
+    switch (determineResponseType(request)) {
+      case JSON:
+        writer.write('[');
+        boolean first = true;
+        for (IDValue item : items) {
+          if (first) {
+            first = false;
+          } else {
+            writer.write(',');
+          }
+          writer.write("[\"");
+          writer.write(item.getID());
+          // Not using DelimitedDataUtils as JSON needs comma
+          writer.write("\",");
+          writer.write(Float.toString(item.getValue()));
+          writer.write(']');
+        }
+        writer.write("]\n");
+        break;
+      case DELIMITED:
+        for (IDValue item : items) {
+          writer.write(DelimitedDataUtils.encode(item.getID(), Float.toString(item.getValue())));
+          writer.write('\n');
+        }
+        break;
+      default:
+        throw new IllegalStateException("Unknown response type");
     }
   }
 
