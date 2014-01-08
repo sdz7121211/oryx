@@ -45,15 +45,22 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
 
     File currentInboundDir = Files.createTempDir();
     currentInboundDir.deleteOnExit();
+    File currentTrainDir = Files.createTempDir();
+    currentTrainDir.deleteOnExit();
     File tempOutDir = Files.createTempDir();
     tempOutDir.deleteOnExit();
+    File currentTestDir = new File(tempOutDir, "test");
+
     File lastInputDir = null;
     File lastMappingDir = null;
+    File lastTestDir = null;
     if (lastGenerationID >= 0) {
       lastInputDir = Files.createTempDir();
       lastInputDir.deleteOnExit();
       lastMappingDir = Files.createTempDir();
       lastMappingDir.deleteOnExit();
+      lastTestDir = Files.createTempDir();
+      lastTestDir.deleteOnExit();
     }
 
     try {
@@ -61,11 +68,13 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
       Store store = Store.get();
       store.downloadDirectory(generationPrefix + "inbound/", currentInboundDir);
       if (lastGenerationID >= 0) {
-        store.downloadDirectory(Namespaces.getInstanceGenerationPrefix(instanceDir, lastGenerationID) + "input/",
-                                lastInputDir);
-        store.downloadDirectory(Namespaces.getInstanceGenerationPrefix(instanceDir, lastGenerationID) + "idMapping/",
-                                lastMappingDir);
+        String lastGenerationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, lastGenerationID);
+        store.downloadDirectory(lastGenerationPrefix + "input/", lastInputDir);
+        store.downloadDirectory(lastGenerationPrefix + "idMapping/", lastMappingDir);
+        store.downloadDirectory(lastGenerationPrefix + "test/", lastTestDir);
       }
+
+      new SplitTestTrain(currentInboundDir, currentTrainDir, currentTestDir).call();
 
       Config config = ConfigUtils.getDefaultConfig();
 
@@ -77,9 +86,10 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
 
       if (lastGenerationID >= 0) {
         new ReadInputs(lastInputDir, false, knownItemIDs, RbyRow, RbyColumn, idMapping).call();
+        new ReadInputs(lastTestDir, false, knownItemIDs, RbyRow, RbyColumn, idMapping).call();
         new ReadMapping(lastMappingDir, idMapping).call();
       }
-      new ReadInputs(currentInboundDir, true, knownItemIDs, RbyRow, RbyColumn, idMapping).call();
+      new ReadInputs(currentTrainDir, true, knownItemIDs, RbyRow, RbyColumn, idMapping).call();
 
       if (RbyRow.isEmpty() || RbyColumn.isEmpty()) {
         return;
@@ -88,6 +98,8 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
       MatrixFactorizer als = new FactorMatrix(RbyRow, RbyColumn).call();
 
       new WriteOutputs(tempOutDir, RbyRow, knownItemIDs, als.getX(), als.getY(), idMapping).call();
+
+      new ComputeMAP(currentTestDir, als.getX(), als.getY()).call();
 
       if (config.getBoolean("model.recommend.compute")) {
         new MakeRecommendations(tempOutDir, knownItemIDs, als.getX(), als.getY(), idMapping).call();
@@ -101,8 +113,11 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
 
     } finally {
       IOUtils.deleteRecursively(currentInboundDir);
+      IOUtils.deleteRecursively(currentTrainDir);
+      IOUtils.deleteRecursively(currentTestDir);
       IOUtils.deleteRecursively(tempOutDir);
       IOUtils.deleteRecursively(lastInputDir);
+      IOUtils.deleteRecursively(lastTestDir);
     }
   }
 
