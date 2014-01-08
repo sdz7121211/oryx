@@ -99,7 +99,9 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
 
       new WriteOutputs(tempOutDir, RbyRow, knownItemIDs, als.getX(), als.getY(), idMapping).call();
 
-      new ComputeMAP(currentTestDir, als.getX(), als.getY()).call();
+      if (config.getDouble("model.test-set-fraction") > 0.0) {
+        new ComputeMAP(currentTestDir, als.getX(), als.getY()).call();
+      }
 
       if (config.getBoolean("model.recommend.compute")) {
         new MakeRecommendations(tempOutDir, knownItemIDs, als.getX(), als.getY(), idMapping).call();

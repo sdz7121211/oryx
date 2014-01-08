@@ -67,10 +67,10 @@ final class SplitTestTrain implements Callable<Object> {
     } else {
       RandomGenerator random = RandomManager.getRandom();
       Writer trainOut = IOUtils.buildGZIPWriter(new File(trainDir, "train.csv.gz"));
-      Writer testOut = IOUtils.buildGZIPWriter(new File(testDir, "train.csv.gz"));
+      Writer testOut = IOUtils.buildGZIPWriter(new File(testDir, "test.csv.gz"));
       try {
         for (File inputFile : inputFiles) {
-          log.info("Reading {}", inputFile);
+          log.info("Splitting {}", inputFile);
           for (CharSequence line : new FileLineIterable(inputFile)) {
             if (random.nextDouble() < testSetFraction) {
               testOut.append(line).append('\n');
