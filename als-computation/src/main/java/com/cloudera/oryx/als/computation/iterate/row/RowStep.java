@@ -15,10 +15,15 @@
 
 package com.cloudera.oryx.als.computation.iterate.row;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.cloudera.oryx.als.computation.types.ALSTypes;
 import com.cloudera.oryx.als.computation.types.MatrixRow;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.crunch.GroupingOptions;
 import org.apache.crunch.PCollection;
 import org.apache.crunch.impl.mr.MRPipeline;
@@ -28,6 +33,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cloudera.oryx.common.io.IOUtils;
+import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.computation.common.JobStepConfig;
 import com.cloudera.oryx.als.computation.iterate.IterationState;
 import com.cloudera.oryx.als.computation.iterate.IterationStep;
@@ -45,6 +52,7 @@ public final class RowStep extends IterationStep {
   public static final String Y_KEY_KEY = "Y_KEY";
   public static final String POPULAR_KEY = "POPULAR";
   public static final String CONVERGENCE_SAMPLING_MODULUS_KEY = "CONVERGENCE_SAMPLING_MODULUS";
+  public static final String MAP_KEY = "MAP";
 
   @Override
   protected MRPipeline createPipeline() throws IOException {
@@ -96,6 +104,9 @@ public final class RowStep extends IterationStep {
     String popularKey = tempKey + (x ? "popularItemsByUserPartition/" : "popularUsersByItemPartition/");
     conf.set(POPULAR_KEY, popularKey);
 
+    String testPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "test/";
+    conf.set(MAP_KEY, testPrefix);
+
     YState yState = new YState(ALSTypes.DENSE_ROW_MATRIX); // Shared Y-Matrix state
 
     GroupingOptions opts = groupingOptions();
@@ -114,6 +125,24 @@ public final class RowStep extends IterationStep {
           .parallelDo("convergenceSample", new ConvergenceSampleFn(yState), Avros.strings())
           .write(compressedTextOutput(p.getConfiguration(), iterationKey + "Yconvergence"));
     }
+
+    if (x &&
+        ConfigUtils.getDefaultConfig().getDouble("model.test-set-fraction") > 0.0 &&
+        store.exists(testPrefix, false)) {
+      PCollection<Double> aps = matrix
+          .parallelDo("asPair", MatrixRow.AS_PAIR, Avros.tableOf(Avros.longs(), ALSTypes.FLOAT_ARRAY))
+          .parallelDo("computeAP", new ComputeUserAPFn(yState), Avros.doubles());
+      Mean meanAveragePrecision = new Mean();
+      for (double ap : aps.materialize()) {
+        meanAveragePrecision.increment(ap);
+      }
+      File tempMAPFile = File.createTempFile("MAP", ".txt");
+      tempMAPFile.deleteOnExit();
+      Files.write(Double.toString(meanAveragePrecision.getResult()), tempMAPFile, Charsets.UTF_8);
+      store.upload(iterationKey + "MAP", tempMAPFile, false);
+      IOUtils.delete(tempMAPFile);
+    }
+
     return p;
   }
   

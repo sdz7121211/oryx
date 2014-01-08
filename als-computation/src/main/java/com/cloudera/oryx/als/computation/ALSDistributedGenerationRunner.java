@@ -23,6 +23,7 @@ import java.util.List;
 import com.cloudera.oryx.als.common.DataUtils;
 import com.cloudera.oryx.als.common.pmml.ALSModelDescription;
 import com.cloudera.oryx.als.computation.merge.MergeIDMappingStep;
+import com.cloudera.oryx.als.computation.merge.SplitTestStep;
 import com.cloudera.oryx.common.collection.LongFloatMap;
 import com.cloudera.oryx.common.collection.LongObjectMap;
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
@@ -87,16 +88,23 @@ import com.cloudera.oryx.computation.common.JobStepConfig;
  * </ul>
  *
  *
- * <h2>Core Steps</2>
+ * <h2>Core Steps</h2>
+ *
+ * <h3>SplitTestStep</h3>
+ *
+ * <p>New input is always found in generation N under {@code inbound/}, in (compressed) CSV text files.
+ * This step splits the data into test and train data (if {@code model.test-set-fraction} is nonzero).
+ * These go into {@code test/} and {@code train/}, respectively, unmodified.</p>
  *
  * <h3>MergeNewOldStep</h3>
  *
- * <p>Merges all data from last generation with new input in the current generation. The last generation's
- * data exists in generation N-1 under {@code input/}. It encodes user,item,value tuples as
+ * <p>Merges all data from last generation (including the last generation's test data)
+ * with new input in the current generation. The last generation's
+ * data exists in generation N-1 under {@code input/} and {@code test/} (because the test data was not part of the
+ * input to the prior generation). It encodes user,item,value tuples as
  * user-(item,value) key/value pairs, in particular as varlong mapped to idvalue objects.</p>
  *
- * <p>New input is always found in generation N under {@code inbound/}, in (compressed) CSV text files.
- * This step merges old and new values by adding them. Here is where 'decay' of old data takes place too.</p>
+ * <p>This step merges old and new values by adding them. Here is where 'decay' of old data takes place too.</p>
  *
  * <p>Output goes to generation N's {@code input/}, and this is what drives all further computation in
  * the generation.</p>
@@ -192,6 +200,7 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
   protected List<DependsOn<Class<? extends JobStep>>> getPreDependencies() {
     List<DependsOn<Class<? extends JobStep>>> preDeps = Lists.newArrayList();
     preDeps.add(DependsOn.<Class<? extends JobStep>>first(MergeIDMappingStep.class));
+    preDeps.add(DependsOn.<Class<? extends JobStep>>nextAfterFirst(MergeNewOldStep.class, SplitTestStep.class));
     preDeps.add(DependsOn.<Class<? extends JobStep>>nextAfterFirst(ToUserVectorsStep.class, MergeNewOldStep.class));
     preDeps.add(DependsOn.<Class<? extends JobStep>>nextAfterFirst(ToItemVectorsStep.class, MergeNewOldStep.class));
     preDeps.add(DependsOn.<Class<? extends JobStep>>nextAfterFirst(CollectKnownItemsStep.class, ToUserVectorsStep.class));
@@ -251,6 +260,17 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
 
   @Override
   protected boolean areIterationsDone(int iterationNumber) throws IOException {
+
+    // First maybe output MAP
+    Store store = Store.get();
+    String iterationsPrefix = Namespaces.getIterationsPrefix(getInstanceDir(), getGenerationID());
+
+    String mapKey = iterationsPrefix + iterationNumber + "/MAP";
+    if (store.exists(mapKey, true)) {
+      double map = Double.parseDouble(store.readFrom(mapKey).readLine());
+      log.info("Mean average precision estimate: {}", map);
+    }
+
     if (iterationNumber < 2) {
       return false;
     }
@@ -263,11 +283,9 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
       return true;
     }
 
-    String iterationsPrefix = Namespaces.getIterationsPrefix(getInstanceDir(), getGenerationID());
 
     String previousConvergenceKey = iterationsPrefix + (iterationNumber-1) + "/Yconvergence/";
     String currentConvergenceKey = iterationsPrefix + iterationNumber + "/Yconvergence/";
-    Store store = Store.get();
     Preconditions.checkState(store.exists(currentConvergenceKey, false),
                              "No convergence samples in current iteration");
     if (!store.exists(previousConvergenceKey, false)) {

@@ -59,28 +59,39 @@ public final class MergeNewOldStep extends ALSJobStep {
 
     MRPipeline p = createBasicPipeline(MergeNewOldValuesFn.class);
 
-    String inboundKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "inbound/";
+    String trainKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "train/";
 
-    PCollection<Pair<Long, NumericIDValue>> parsed = p.read(textInput(inboundKey))
-        .parallelDo("inboundParse", new DelimitedInputParseFn(),
+    PCollection<Pair<Long, NumericIDValue>> parsed = p.read(textInput(trainKey))
+        .parallelDo("trainParse", new DelimitedInputParseFn(),
             Avros.pairs(ALSTypes.LONGS, ALSTypes.IDVALUE));
 
-    PTable<Pair<Long, Integer>, NumericIDValue> inbound = parsed.parallelDo("inbound", new InboundJoinFn(), JOIN_TYPE);
+    PTable<Pair<Long, Integer>, NumericIDValue> train = parsed.parallelDo("train", new InboundJoinFn(), JOIN_TYPE);
 
     if (lastGenerationID >= 0) {
       String inputPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, lastGenerationID) + "input/";
-      Preconditions.checkState(Store.get().exists(inputPrefix, false), "Input path does not exist: %s", inputPrefix);
-      PTable<Pair<Long, Integer>, NumericIDValue> joinBefore = p.read(input(inputPrefix, ALSTypes.VALUE_MATRIX))
-          .parallelDo("lastGeneration", new JoinBeforeMapFn(), JOIN_TYPE);
-      inbound = inbound.union(joinBefore);
+      Store store = Store.get();
+      Preconditions.checkState(store.exists(inputPrefix, false), "Input path does not exist: %s", inputPrefix);
+      PTable<Pair<Long, Integer>, NumericIDValue> joinInputBefore = p.read(input(inputPrefix, ALSTypes.VALUE_MATRIX))
+          .parallelDo("lastGenerationInput", new JoinBeforeMapFn(), JOIN_TYPE);
+      train = train.union(joinInputBefore);
+
+      String testPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, lastGenerationID) + "test/";
+      if (store.exists(testPrefix, false)) {
+        // Held out test data last time; incorporate now
+        PTable<Pair<Long, Integer>, NumericIDValue> joinTestSetBefore =
+            p.read(textInput(testPrefix))
+                .parallelDo("testParse", new DelimitedInputParseFn(), Avros.pairs(ALSTypes.LONGS, ALSTypes.IDVALUE))
+                .parallelDo("lastGenerationTest", new JoinBeforeMapFn(), JOIN_TYPE);
+        train = train.union(joinTestSetBefore);
+      }
     }
 
     GroupingOptions groupingOptions = GroupingOptions.builder()
-        .partitionerClass(JoinUtils.getPartitionerClass(inbound.getTypeFamily()))
+        .partitionerClass(JoinUtils.getPartitionerClass(train.getTypeFamily()))
         .numReducers(getNumReducers())
         .build();
 
-    inbound
+    train
         .groupByKey(groupingOptions)
         .parallelDo(new MergeNewOldValuesFn(), ALSTypes.VALUE_MATRIX)
         .write(output(outputKey));
