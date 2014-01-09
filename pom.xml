@@ -812,6 +812,14 @@
   </issueManagement>
   <mailingLists>
     <mailingList>
+      <name>oryx-user mailing list</name>
+      <archive>https://groups.google.com/a/cloudera.org/forum/#!forum/oryx-user</archive>
+    </mailingList>
+    <mailingList>
+      <name>StackOverflow tag</name>
+      <archive>http://stackoverflow.com/questions/tagged/oryx</archive>
+    </mailingList>
+    <mailingList>
       <name>Cloudera Community: Data Science and Machine Learning</name>
       <archive>https://community.cloudera.com/t5/Data-Science-and-Machine/bd-p/Mahout</archive>
     </mailingList>
