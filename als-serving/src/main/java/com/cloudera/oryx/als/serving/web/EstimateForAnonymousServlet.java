@@ -74,7 +74,7 @@ public final class EstimateForAnonymousServlet extends AbstractALSServlet {
     OryxRecommender recommender = getRecommender();
     try {
       float estimate = recommender.estimateForAnonymous(toItemID, itemIDs, values);
-      output(request, response, estimate);
+      output(request, response, new float[] { estimate });
     } catch (NotReadyException nre) {
       response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, nre.toString());
     } catch (NoSuchItemException nsie) {

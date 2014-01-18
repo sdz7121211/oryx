@@ -35,12 +35,17 @@ import org.dmg.pmml.MiningField;
 import org.dmg.pmml.MiningSchema;
 import org.dmg.pmml.NormContinuous;
 import org.dmg.pmml.NormDiscrete;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public final class VectorFactory {
+
+  private static final Logger log = LoggerFactory.getLogger(VectorFactory.class);
+
   private final boolean sparse;
   private final int fieldCount;
   private final List<Set<Update>> updates;
@@ -101,7 +106,7 @@ public final class VectorFactory {
       if (numeric.containsKey(fn)) {
         updates.add(ImmutableSet.<Update>copyOf(numeric.get(fn)));
       } else if (categorical.containsKey(fn)) {
-        CategoricalUpdate u = new CategoricalUpdate(categorical.get(fn));
+        CategoricalUpdate u = new CategoricalUpdate(fn.getValue(), categorical.get(fn));
         updates.add(ImmutableSet.<Update>of(u));
       }
     }
@@ -132,15 +137,22 @@ public final class VectorFactory {
   }
 
   private static final class CategoricalUpdate implements Update {
+    private final String name;
     private final Map<String, Update> updates;
 
-    CategoricalUpdate(Map<String, Update> updates) {
+    CategoricalUpdate(String name, Map<String, Update> updates) {
+      this.name = name;
       this.updates = updates;
     }
 
     @Override
     public void update(RealVector v, String value) {
-      updates.get(value).update(v, value);
+      Update u = updates.get(value);
+      if (u != null) {
+        u.update(v, value);
+      } else {
+        log.warn("Unknown value '{}' for categorical variable {}", value, name);
+      }
     }
   }
 
