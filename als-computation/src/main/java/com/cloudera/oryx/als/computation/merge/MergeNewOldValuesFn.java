@@ -18,10 +18,12 @@ package com.cloudera.oryx.als.computation.merge;
 import com.cloudera.oryx.als.common.NumericIDValue;
 import com.cloudera.oryx.common.collection.LongFloatMap;
 import com.cloudera.oryx.common.collection.LongSet;
+import com.cloudera.oryx.common.random.RandomManager;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.computation.common.fn.OryxReduceDoFn;
 import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.crunch.Emitter;
 import org.apache.crunch.Pair;
@@ -29,14 +31,16 @@ import org.apache.crunch.Pair;
 public final class MergeNewOldValuesFn extends OryxReduceDoFn<Pair<Long, Integer>, Iterable<NumericIDValue>,
     Pair<Long, NumericIDValue>> {
 
-  private static final int BEFORE = 0;
-  private static final int AFTER = 1;
+  static final int BEFORE = 0;
+  static final int AFTER = 1;
 
   private boolean doDecay;
   private float decayFactor;
   private float zeroThreshold;
   private Long previousUserID;
   private LongFloatMap previousUserPrefs;
+  private double testSetFraction;
+  private RandomGenerator random;
 
   @Override
   public void initialize() {
@@ -49,6 +53,12 @@ public final class MergeNewOldValuesFn extends OryxReduceDoFn<Pair<Long, Integer
     Preconditions.checkArgument(zeroThreshold >= 0.0f,
                                 "Zero threshold must be nonnegative: %s", zeroThreshold);
     doDecay = decayFactor < 1.0f;
+
+    testSetFraction = config.getDouble("model.test-set-fraction");
+    Preconditions.checkArgument(testSetFraction >= 0.0 && testSetFraction <= 1.0);
+    if (testSetFraction > 0.0) {
+      random = RandomManager.getRandom();
+    }
   }
 
   @Override
@@ -89,17 +99,28 @@ public final class MergeNewOldValuesFn extends OryxReduceDoFn<Pair<Long, Integer
 
       LongFloatMap newPrefs = new LongFloatMap();
       LongSet removedItemIDs = new LongSet();
+      LongFloatMap testSetPrefs = new LongFloatMap();
+
       for (NumericIDValue itemPref : input.second()) {
         long itemID = itemPref.getID();
         float newPrefValue = itemPref.getValue();
-        if (Float.isNaN(newPrefValue)) {
-          removedItemIDs.add(itemID);
+
+        // First: do we want to save off this data as test set data?
+        if (testSetFraction > 0.0 && random.nextDouble() < testSetFraction) {
+          testSetPrefs.increment(itemID, newPrefValue);
         } else {
-          newPrefs.increment(itemID, newPrefValue);
+          // Normal handling
+          if (Float.isNaN(newPrefValue)) {
+            removedItemIDs.add(itemID);
+          } else {
+            newPrefs.increment(itemID, newPrefValue);
+          }
         }
       }
 
       output(currentUserID, previousUserPrefs, newPrefs, removedItemIDs, emitter);
+      // TODO other emitter
+      output(currentUserID, null, testSetPrefs, null, emitter);
 
       previousUserPrefs = null;
       previousUserID = null;

@@ -23,6 +23,6 @@ public final class JoinBeforeMapFn extends OryxMapFn<Pair<Long, NumericIDValue>,
     Pair<Pair<Long, Integer>, NumericIDValue>> {
   @Override
   public Pair<Pair<Long, Integer>, NumericIDValue> map(Pair<Long, NumericIDValue> input) {
-    return Pair.of(Pair.of(input.first(), 1), input.second());
+    return Pair.of(Pair.of(input.first(), MergeNewOldValuesFn.BEFORE), input.second());
   }
 }

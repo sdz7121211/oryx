@@ -309,7 +309,7 @@
       <dependency>
         <groupId>com.typesafe</groupId>
         <artifactId>config</artifactId>
-        <version>1.0.2</version>
+        <version>1.2.0</version>
       </dependency>
 
       <dependency>
@@ -368,7 +368,7 @@
     <dependency.details.enabled>false</dependency.details.enabled>
     <!-- Dependency versions -->
     <slf4j.version>1.7.5</slf4j.version>
-    <tomcat.version>7.0.47</tomcat.version>
+    <tomcat.version>7.0.50</tomcat.version>
     <!-- Don't update to 1.7.5+ until Hadoop uses Jackson 1.9+ -->
     <avro.version>1.7.4</avro.version>
     <hadoop.version>2.0.0-mr1-cdh4.5.0</hadoop.version>
@@ -503,7 +503,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-plugin</artifactId>
-          <version>1.8.1</version>
+          <version>1.9</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -572,7 +572,7 @@
               <configuration>
                 <target name="precompile-jspx">
                   <typedef resource="org/apache/catalina/ant/catalina.tasks" />
-                  <jasper validateXml="true" webXmlFragment="" failonerror="true" listerrors="true" trimspaces="true" uriroot="src/main/jspx" outputDir="src/gen/java" package="${module.jspx.package}" xpoweredBy="false" />
+                  <jasper webXmlFragment="" failonerror="true" listerrors="true" trimspaces="true" uriroot="src/main/jspx" outputDir="src/gen/java" package="${module.jspx.package}" xpoweredBy="false" />
                 </target>
               </configuration>
             </execution>
@@ -811,6 +811,14 @@
     <url>https://github.com/cloudera/oryx/issues</url>
   </issueManagement>
   <mailingLists>
+    <mailingList>
+      <name>oryx-user mailing list</name>
+      <archive>https://groups.google.com/a/cloudera.org/forum/#!forum/oryx-user</archive>
+    </mailingList>
+    <mailingList>
+      <name>StackOverflow tag</name>
+      <archive>http://stackoverflow.com/questions/tagged/oryx</archive>
+    </mailingList>
     <mailingList>
       <name>Cloudera Community: Data Science and Machine Learning</name>
       <archive>https://community.cloudera.com/t5/Data-Science-and-Machine/bd-p/Mahout</archive>

@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Iterator;
 
 import com.cloudera.oryx.rdf.common.tree.DecisionForest;
@@ -59,13 +58,9 @@ public final class FeatureImportanceServlet extends AbstractRDFServlet {
     DecisionForest forest = generation.getForest();
     double[] importances = forest.getFeatureImportances();
 
-    Writer out = response.getWriter();
     if (featureNumberString == null) {
 
-      for (double importance : importances) {
-        out.write(Double.toString(importance));
-        out.write('\n');
-      }
+      output(request, response, importances);
 
     } else {
 
@@ -79,8 +74,7 @@ public final class FeatureImportanceServlet extends AbstractRDFServlet {
         return;
       }
 
-      out.write(Double.toString(importances[featureNumber]));
-      out.write('\n');
+      output(request, response, importances[featureNumber]);
     }
   }
 

@@ -292,6 +292,8 @@ public abstract class GenerationRunner implements Callable<Object> {
 
     Store store = Store.get();
 
+    boolean waitForData = !ConfigUtils.getDefaultConfig().getBoolean("test.integration");
+
     if (generationToRun == 0L) {
       // Special case: let generation 0 run immediately
       log.info("Generation 0 may run immediately", generationToWaitFor);
@@ -304,25 +306,29 @@ public abstract class GenerationRunner implements Callable<Object> {
         log.info("Generation {} is old enough to proceed", generationToWaitFor);
       } else {
         // Not long enough, wait
-        long toSleepMS = lastModified + GENERATION_WAIT - now;
-        log.info("Waiting {}s for data to start uploading to generation {} and then move to {}...",
-                 TimeUnit.SECONDS.convert(toSleepMS, TimeUnit.MILLISECONDS),
-                 generationToRun,
-                 generationToWaitFor);
-        Thread.sleep(toSleepMS);
+        if (waitForData) {
+          long toSleepMS = lastModified + GENERATION_WAIT - now;
+          log.info("Waiting {}s for data to start uploading to generation {} and then move to {}...",
+                   TimeUnit.SECONDS.convert(toSleepMS, TimeUnit.MILLISECONDS),
+                   generationToRun,
+                   generationToWaitFor);
+          Thread.sleep(toSleepMS);
+        } else {
+          log.info("Skipping waiting for uploads to start in a test");
+        }
       }
     }
 
     String uploadingGenerationPrefix =
         Namespaces.getInstanceGenerationPrefix(instanceDir, generationToRun) + "inbound/";
 
-    if (ConfigUtils.getDefaultConfig().getBoolean("test.integration")) {
-      log.info("Skipping waiting for uploads in a test");
-    } else {
+    if (waitForData) {
       while (isUploadInProgress(uploadingGenerationPrefix)) {
         log.info("Waiting for uploads to finish in {}", uploadingGenerationPrefix);
         Thread.sleep(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES));
       }
+    } else {
+      log.info("Skipping waiting for uploads in a test");
     }
   }
 
