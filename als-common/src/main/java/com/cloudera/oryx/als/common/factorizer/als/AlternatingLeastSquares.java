@@ -63,7 +63,6 @@ import com.cloudera.oryx.als.common.factorizer.MatrixFactorizer;
  *
  * <p>This implementation implements essentially this function, expressed in Octave/Matlab:</p>
  *
- * <p><pre>
  * {@code
  * function [X, Y] = als(R, f, iterations)
  *
@@ -76,7 +75,7 @@ import com.cloudera.oryx.als.common.factorizer.MatrixFactorizer;
  *   C = 1 + alpha * abs(R);
  *
  *   X = zeros(m,f);
- *   Y = stdnormal_rnd(n,f);
+ *   Y = abs(stdnormal_rnd(n,f));
  *   for i = 1:n
  *     Y(i,:) /= norm(Y(i,:));
  *   endfor
@@ -89,36 +88,27 @@ import com.cloudera.oryx.als.common.factorizer.MatrixFactorizer;
  *
  *     YTY = Y' * Y;
  *     for u = 1:m
- *       Cu = zeros(n,n);
- *       for i = 1:n
- *         Cu(i,i) = C(u,i);
- *       endfor
+ *       Cu = diag(C(u,:));
  *       count = sum(Pnonzero(u,:));
  *       YTCupu = Y' * Cu * P(u,:)';
  *       YTCuY = YTY + Y' * (Cu - In) * Y;
  *       Wu = pinv(YTCuY + lambda * count * If);
  *       X(u,:) = (Wu * YTCupu)';
- *
  *     endfor
  *
  *     XTX = X' * X;
  *     for i = 1:n
- *       Ci = zeros(m,m);
- *       for u = 1:m
- *         Ci(u,u) = C(u,i);
- *       endfor
+ *       Ci = diag(C(:,i));
  *       count = sum(Pnonzero(:,i));
  *       XTCipi = X' * Ci * P(:,i);
  *       XTCiX = XTX + X' * (Ci - Im) * X;
  *       Wi = pinv(XTCiX + lambda * count * If);
  *       Y(i,:) = (Wi * XTCipi)';
- *
  *     endfor
  *
  *   endfor
  *
  * end}
- * </pre></p>
  *
  * @author Sean Owen
  */
@@ -298,9 +288,9 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
           System.arraycopy(oldSmallerVector, 0, newLargerVector, 0, oldSmallerVector.length);
           // Fill in new dimensions with random values
           for (int i = oldSmallerVector.length; i < newLargerVector.length; i++) {
-            newLargerVector[i] = (float) random.nextGaussian();
+            newLargerVector[i] = FastMath.abs((float) random.nextGaussian());
           }
-          SimpleVectorMath.normalize(newLargerVector);          
+          SimpleVectorMath.normalize(newLargerVector);
           randomY.put(entry.getKey(), newLargerVector);
         }
         
