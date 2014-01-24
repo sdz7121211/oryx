@@ -333,7 +333,7 @@ public final class DecisionForestPMML {
 
     List<String> columnNames = settings.getColumnNames();
     List<MiningField> fields = miningModel.getMiningSchema().getMiningFields();
-    double[] featureImportances = new double[fields.size()];
+    double[] featureImportances = new double[columnNames.size()];
     for (MiningField field : fields) {
       Double importance = field.getImportance();
       if (importance != null) {

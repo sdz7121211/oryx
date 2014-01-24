@@ -96,6 +96,9 @@ public abstract class AbstractOryxServlet extends HttpServlet {
   protected final void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
+    // Default content type is just text
+    response.setContentType("text/plain; charset=UTF-8");
+
     long start = System.nanoTime();
     super.service(request, response);
     timing.addTimingNanosec(System.nanoTime() - start);
@@ -133,6 +136,7 @@ public abstract class AbstractOryxServlet extends HttpServlet {
     Writer writer = response.getWriter();
     switch (determineResponseType(request)) {
       case JSON:
+        response.setContentType("application/json");
         // Single value written alone
         if (values.length == 1) {
           writer.write(Float.toString(values[0]));
@@ -152,6 +156,7 @@ public abstract class AbstractOryxServlet extends HttpServlet {
         }
         break;
       case DELIMITED:
+        // Leave content type at default
         for (float value : values) {
           writer.write(Float.toString(value));
           writer.write('\n');

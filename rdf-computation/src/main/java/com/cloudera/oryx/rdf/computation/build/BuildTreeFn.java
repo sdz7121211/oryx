@@ -150,9 +150,11 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
       ExampleSet cvSet = new ExampleSet(cvExamples);
       double[] weightEval = Evaluation.evaluateToWeight(tree, cvSet);
       double weight = weightEval[0];
+      double eval = weightEval[1];
       double[] featureImportances = tree.featureImportance(cvSet);
       progress(); // Helps prevent timeouts
-      log.info("Evaluated tree {}", treeID);
+      log.info("Evaluated tree {}: {}", treeID, eval);
+      log.info("Feature importances: {}", featureImportances);
 
       DecisionForest singletonForest = new DecisionForest(
           new DecisionTree[] { tree }, new double[] { weight }, featureImportances);

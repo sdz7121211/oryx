@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Cloudera, Inc. All Rights Reserved.
+ * Copyright (c) 2014, Cloudera, Inc. All Rights Reserved.
  *
  * Cloudera, Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"). You may not use this file except in
@@ -30,19 +30,19 @@ import com.cloudera.oryx.rdf.common.example.Feature;
 import com.cloudera.oryx.rdf.common.example.FeatureType;
 import com.cloudera.oryx.rdf.common.example.IgnoredFeature;
 import com.cloudera.oryx.rdf.common.rule.CategoricalPrediction;
-import com.cloudera.oryx.rdf.common.rule.NumericPrediction;
 import com.cloudera.oryx.rdf.common.rule.Prediction;
 import com.cloudera.oryx.rdf.common.tree.TreeBasedClassifier;
 import com.cloudera.oryx.rdf.serving.generation.Generation;
 
 /**
- * <p>Responsds to a GET request to {@code /classify/[datum]}. The input is one data point to classify,
- * delimited, like "1,foo,3.0". The response body contains the result of classification on one line.
- * The result depends on the classifier --  could be a number or a category name.</p>
+ * <p>Like {@link ClassifyServlet}, but responds at endpoint {@code /classificationDistribution}.
+ * This returns not just the most probable category, but all categories and their associated probability.
+ * The output is "category,probability", one per line for each category value.
+ * Returns an error for models with numeric target feature.</p>
  *
  * @author Sean Owen
  */
-public final class ClassifyServlet extends AbstractRDFServlet {
+public final class ClassificationDistributionServlet extends AbstractRDFServlet {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -97,12 +97,17 @@ public final class ClassifyServlet extends AbstractRDFServlet {
     Prediction prediction = forest.classify(example);
 
     if (prediction.getFeatureType() == FeatureType.CATEGORICAL) {
-      int categoryID = ((CategoricalPrediction) prediction).getMostProbableCategoryID();
-      out.write(targetIDToCategory.get(categoryID));
+      CategoricalPrediction categoricalPrediction = (CategoricalPrediction) prediction;
+      float[] probabilities = categoricalPrediction.getCategoryProbabilities();
+      for (int categoryID = 0; categoryID < probabilities.length; categoryID++) {
+        out.write(targetIDToCategory.get(categoryID));
+        out.write(',');
+        out.write(Float.toString(probabilities[categoryID]));
+        out.write('\n');
+      }
     } else {
-      out.write(Float.toString(((NumericPrediction) prediction).getPrediction()));
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Not a categorical target");
     }
-    out.write("\n");
   }
 
 }

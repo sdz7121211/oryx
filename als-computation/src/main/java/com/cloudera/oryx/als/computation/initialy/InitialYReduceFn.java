@@ -25,6 +25,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.random.RandomGenerator;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.crunch.Pair;
 
 import java.util.List;
@@ -67,7 +68,7 @@ public final class InitialYReduceFn extends OryxReduceMapFn<Long, float[], Matri
         featureVector = new float[features];
         System.arraycopy(maybeFeatureVector, 0, featureVector, 0, maybeLength);
         for (int i = maybeLength; i < featureVector.length; i++) {
-          featureVector[i] = (float) random.nextGaussian();
+          featureVector[i] = FastMath.abs((float) random.nextGaussian());
         }
         SimpleVectorMath.normalize(featureVector);
       }
