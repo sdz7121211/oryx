@@ -299,6 +299,9 @@ public final class Runner implements Callable<Object>, Closeable {
     connector.setMaxPostSize(0);
     connector.setAttribute("disableUploadTimeout", false);
 
+    // Allow long URLs
+    connector.setAttribute("maxHttpHeaderSize", 32768);
+
     return connector;
   }
   
