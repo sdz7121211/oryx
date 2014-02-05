@@ -19,6 +19,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.concurrent.Callable;
 import javax.net.ssl.SSLContext;
 import javax.servlet.Servlet;
@@ -34,22 +35,19 @@ import com.typesafe.config.Config;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Server;
 import org.apache.catalina.authenticator.DigestAuthenticator;
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.core.JasperListener;
 import org.apache.catalina.core.JreMemoryLeakPreventionListener;
 import org.apache.catalina.core.ThreadLocalLeakPreventionListener;
-import org.apache.catalina.deploy.ApplicationListener;
-import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.SecurityCollection;
-import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.jasper.servlet.JasperInitializer;
+import org.apache.tomcat.util.descriptor.web.ApplicationListener;
+import org.apache.tomcat.util.descriptor.web.ErrorPage;
+import org.apache.tomcat.util.descriptor.web.LoginConfig;
+import org.apache.tomcat.util.descriptor.web.SecurityCollection;
+import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,9 +209,6 @@ public final class Runner implements Callable<Object>, Closeable {
   }
 
   private static void configureServer(Server server) {
-    LifecycleListener jasperListener = new JasperListener();
-    server.addLifecycleListener(jasperListener);
-    jasperListener.lifecycleEvent(new LifecycleEvent(server, Lifecycle.BEFORE_INIT_EVENT, null));
     server.addLifecycleListener(new JreMemoryLeakPreventionListener());
     server.addLifecycleListener(new ThreadLocalLeakPreventionListener());
   }
@@ -275,6 +270,8 @@ public final class Runner implements Callable<Object>, Closeable {
     context.addWelcomeFile("index.jspx");
     addErrorPages(context);
 
+    context.addServletContainerInitializer(new JasperInitializer(), Collections.<Class<?>>emptySet());
+
     APISettings apiSettings = APISettings.create(config.getConfig("computation-layer.api"));
 
     boolean needHTTPS = apiSettings.isSecure();
@@ -282,7 +279,7 @@ public final class Runner implements Callable<Object>, Closeable {
 
     if (needHTTPS || needAuthentication) {
 
-      SecurityCollection securityCollection = new SecurityCollection("Protected Resources");
+      SecurityCollection securityCollection = new SecurityCollection();
       securityCollection.addPattern("/*");
       SecurityConstraint securityConstraint = new SecurityConstraint();
       securityConstraint.addCollection(securityCollection);

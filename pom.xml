@@ -368,7 +368,7 @@
     <dependency.details.enabled>false</dependency.details.enabled>
     <!-- Dependency versions -->
     <slf4j.version>1.7.5</slf4j.version>
-    <tomcat.version>7.0.50</tomcat.version>
+    <tomcat.version>8.0.1</tomcat.version>
     <!-- Don't update to 1.7.5+ until Hadoop uses Jackson 1.9+ -->
     <avro.version>1.7.4</avro.version>
     <hadoop.version>2.0.0-cdh4.5.0</hadoop.version>
@@ -550,12 +550,6 @@
               <groupId>org.apache.tomcat</groupId>
               <artifactId>tomcat-jasper</artifactId>
               <version>${tomcat.version}</version>
-              <exclusions>
-                <exclusion>
-                  <groupId>org.eclipse.jdt.core.compiler</groupId>
-                  <artifactId>ecj</artifactId>
-                </exclusion>
-              </exclusions>
             </dependency>
             <dependency>
               <groupId>org.apache.tomcat</groupId>
@@ -572,7 +566,14 @@
               <configuration>
                 <target name="precompile-jspx">
                   <typedef resource="org/apache/catalina/ant/catalina.tasks" />
-                  <jasper webXmlFragment="" failonerror="true" listerrors="true" trimspaces="true" uriroot="src/main/jspx" outputDir="src/gen/java" package="${module.jspx.package}" xpoweredBy="false" />
+                    <jasper webXmlFragment="target/generated_web.xml"
+                            failonerror="true"
+                            listerrors="true"
+                            trimspaces="true"
+                            uriroot="src/main/jspx"
+                            outputDir="src/gen/java"
+                            package="${module.jspx.package}"
+                            xpoweredBy="false" />
                 </target>
               </configuration>
             </execution>
