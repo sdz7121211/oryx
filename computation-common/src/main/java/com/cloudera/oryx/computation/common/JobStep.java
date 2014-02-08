@@ -414,7 +414,7 @@ public abstract class JobStep extends Configured implements Tool, HasState {
   protected final int getNumReducers() {
     String parallelismString = ConfigUtils.getDefaultConfig().getString("computation-layer.parallelism");
     if ("auto".equals(parallelismString)) {
-      return 8; // Better idea for a default?
+      return 11; // Default to a prime. Helps avoid problems with funny distributions of IDs.
     } else {
       return Integer.parseInt(parallelismString);
     }
@@ -431,17 +431,15 @@ public abstract class JobStep extends Configured implements Tool, HasState {
       throw ioe;
     } catch (InterruptedException ie) {
       throw ie;
+    } catch (JobException je) {
+      throw je;
     } catch (Exception e) {
       throw new JobException(e);
     }
   }
 
   protected final String defaultCustomJobName() {
-    StringBuilder name = new StringBuilder(100);
-    name.append("Oryx-").append(config.getInstanceDir());
-    name.append('-').append(config.getGenerationID());
-    name.append('-').append(getClass().getSimpleName());
-    return name.toString();
+    return "Oryx-" + config.getInstanceDir() + '-' + config.getGenerationID() + '-' + getClass().getSimpleName();
   }
 
   protected String getCustomJobName() {
