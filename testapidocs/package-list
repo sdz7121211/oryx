@@ -1,9 +1,9 @@
 com.cloudera.oryx.als.common
+com.cloudera.oryx.als.common.candidate
 com.cloudera.oryx.als.common.factorizer.als
-com.cloudera.oryx.als.common.lsh
 com.cloudera.oryx.als.common.pmml
+com.cloudera.oryx.als.common.rescorer
 com.cloudera.oryx.als.computation
-com.cloudera.oryx.als.serving
 com.cloudera.oryx.common
 com.cloudera.oryx.common.collection
 com.cloudera.oryx.common.io
@@ -24,3 +24,4 @@ com.cloudera.oryx.rdf.common.example
 com.cloudera.oryx.rdf.common.information
 com.cloudera.oryx.rdf.common.rule
 com.cloudera.oryx.rdf.computation
+com.cloudera.oryx.rdf.serving.web

@@ -1,8 +1,10 @@
 com.cloudera.oryx.als.common
+com.cloudera.oryx.als.common.candidate
 com.cloudera.oryx.als.common.factorizer
 com.cloudera.oryx.als.common.factorizer.als
 com.cloudera.oryx.als.common.lsh
 com.cloudera.oryx.als.common.pmml
+com.cloudera.oryx.als.common.rescorer
 com.cloudera.oryx.als.computation
 com.cloudera.oryx.als.computation.initialy
 com.cloudera.oryx.als.computation.iterate
@@ -16,7 +18,6 @@ com.cloudera.oryx.als.computation.recommend
 com.cloudera.oryx.als.computation.similar
 com.cloudera.oryx.als.computation.types
 com.cloudera.oryx.als.serving
-com.cloudera.oryx.als.serving.candidate
 com.cloudera.oryx.als.serving.example
 com.cloudera.oryx.als.serving.generation
 com.cloudera.oryx.als.serving.web
