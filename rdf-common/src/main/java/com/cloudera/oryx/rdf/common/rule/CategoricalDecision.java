@@ -234,6 +234,9 @@ public final class CategoricalDecision extends Decision {
                                                               List<Pair<Double,Integer>> sorted,
                                                               int maxCategory,
                                                               int suggestedMaxSplitCandidates) {
+    if (sorted.isEmpty()) {
+      return Collections.emptyList();
+    }
     Collections.sort(sorted, PairComparator.INSTANCE);
     // The vital condition here is that if decision n decides an example is positive, then all subsequent
     // decisions in the list will also find it positive. Here we create decisions with sets of categories that

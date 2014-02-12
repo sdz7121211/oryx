@@ -53,7 +53,8 @@ public final class IngestServlet extends AbstractALSServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     OryxRecommender recommender = getRecommender();
 
-    boolean fromBrowserUpload = request.getContentType().startsWith("multipart/form-data");
+    String contentType = request.getContentType();
+    boolean fromBrowserUpload = contentType != null && contentType.startsWith("multipart/form-data");
 
     Reader reader;
     if (fromBrowserUpload) {

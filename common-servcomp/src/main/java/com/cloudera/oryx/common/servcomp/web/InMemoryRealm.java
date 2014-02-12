@@ -59,11 +59,6 @@ public final class InMemoryRealm extends RealmBase {
   private final Map<String,GenericPrincipal> principals = Maps.newHashMap();
 
   @Override
-  public String getInfo() {
-    return InMemoryRealm.class.getSimpleName() + "/1.0";
-  }
-
-  @Override
   public Principal authenticate(String username, String credentials) {
     GenericPrincipal principal = principals.get(username);
     boolean validated = false;

@@ -35,4 +35,12 @@ public final class PopularReduceFn extends OryxReduceDoFn<Integer, Iterable<Long
       }
     }
   }
+
+  @Override
+  public void cleanup(Emitter<Long> emitter) {
+    // Mild hack to ensure every reducer outputs a file. It won't hurt; at worst, reducers load one additional
+    // vector they don't need.
+    emitter.emit(-1L);
+  }
+
 }
