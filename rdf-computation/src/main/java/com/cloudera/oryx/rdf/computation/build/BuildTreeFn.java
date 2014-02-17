@@ -107,6 +107,8 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
     log.info("Reading input");
     for (String line : input.second()) {
       String[] tokens = DelimitedDataUtils.decode(line);
+      Preconditions.checkArgument(tokens.length == numFeaturesAndTarget,
+                                  "Wrong number of tokens in line: %s", line);
       Feature target = null;
       Feature[] features = new Feature[numFeaturesAndTarget]; // Too big by 1 but makes math easier
       for (int col = 0; col < numFeaturesAndTarget; col++) {
