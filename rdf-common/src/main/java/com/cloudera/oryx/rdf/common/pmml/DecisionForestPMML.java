@@ -271,7 +271,7 @@ public final class DecisionForestPMML {
         while ((categoryID = includedCategoryIDs.nextSetBit(categoryID + 1)) >= 0) {
           categoryNames.add(categoryIDToName.get(categoryID));
         }
-        Array categories = new Array(DelimitedDataUtils.encode(categoryNames, ' '), Array.Type.STRING);
+        Array categories = new Array(DelimitedDataUtils.encode(' ', categoryNames), Array.Type.STRING);
         predicate = new SimpleSetPredicate(categories, fieldName, SimpleSetPredicate.BooleanOperator.IS_IN);
 
       } else {

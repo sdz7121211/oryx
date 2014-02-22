@@ -48,7 +48,7 @@ final class ReadMapping implements Callable<Object> {
     for (File inputFile : inputFiles) {
       log.info("Reading {}", inputFile);
       for (CharSequence line : new FileLineIterable(inputFile)) {
-        String[] columns = DelimitedDataUtils.decode(line);
+        String[] columns = DelimitedDataUtils.decode(line, ',');
         long numericID = Long.parseLong(columns[0]);
         String id = columns[1];
         idMapping.addMapping(id, numericID);

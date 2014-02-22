@@ -40,7 +40,7 @@ public final class KnownItemsFn extends OryxDoFn<String, Pair<Long, LongSet>> {
 
   private static LongSet stringToSet(CharSequence values) {
     LongSet result = new LongSet();
-    for (String valueString : DelimitedDataUtils.decode(values)) {
+    for (String valueString : DelimitedDataUtils.decode(values, ',')) {
       result.add(Long.parseLong(valueString));
     }
     return result;

@@ -75,7 +75,7 @@ public final class ALSGenerationManager extends GenerationManager {
    */
   public void append(String userID, String itemID, float value) throws IOException {
     StringBuilder line = new StringBuilder(32);
-    line.append(DelimitedDataUtils.encode(userID, itemID, Float.toString(value))).append('\n');
+    line.append(DelimitedDataUtils.encode(',', userID, itemID, Float.toString(value))).append('\n');
     doAppend(line, userID, itemID);
   }
 
@@ -89,7 +89,7 @@ public final class ALSGenerationManager extends GenerationManager {
    */
   public void remove(String userID, String itemID) throws IOException {
     StringBuilder line = new StringBuilder(32);
-    line.append(DelimitedDataUtils.encode(userID, itemID, "")).append('\n');
+    line.append(DelimitedDataUtils.encode(',', userID, itemID, "")).append('\n');
     doAppend(line, userID, itemID);
   }
 

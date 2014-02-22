@@ -29,7 +29,7 @@ public final class CovarianceData {
   private final double cov;
 
   public static CovarianceData parse(String line) {
-    String[] pieces = DelimitedDataUtils.decode(line);
+    String[] pieces = DelimitedDataUtils.decode(line, ',');
     Preconditions.checkArgument(pieces.length == 6, "Invalid covariance data: %s", line);
     return new CovarianceData(
         Integer.valueOf(pieces[0]),
@@ -75,7 +75,7 @@ public final class CovarianceData {
 
   @Override
   public String toString() {
-    return DelimitedDataUtils.encode(clusteringId, centerId, row, column, meanX, cov);
+    return DelimitedDataUtils.encode(',', clusteringId, centerId, row, column, meanX, cov);
   }
 
   @Override

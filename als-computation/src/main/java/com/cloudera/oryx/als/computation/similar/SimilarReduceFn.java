@@ -52,7 +52,8 @@ public final class SimilarReduceFn extends OryxReduceDoFn<Long, Iterable<Numeric
     Iterable<NumericIDValue> mostSimilar = TopN.selectTopN(input.second().iterator(), numSimilar);
     String item1ID = mapping.toString(input.first());
     for (NumericIDValue similar : mostSimilar) {
-      emitter.emit(DelimitedDataUtils.encode(item1ID,
+      emitter.emit(DelimitedDataUtils.encode(',',
+                                             item1ID,
                                              mapping.toString(similar.getID()),
                                              Float.toString(similar.getValue())));
     }

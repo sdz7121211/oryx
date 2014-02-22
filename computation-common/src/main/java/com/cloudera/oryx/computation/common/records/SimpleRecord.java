@@ -142,7 +142,7 @@ public final class SimpleRecord implements Record {
   
   @Override
   public String toString() {
-    return DelimitedDataUtils.encode(values);
+    return DelimitedDataUtils.encode(',', values);
   }
   
   @Override

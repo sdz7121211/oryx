@@ -37,6 +37,6 @@ public final class CollectKnownItemsFn extends OryxMapFn<Pair<Long, LongFloatMap
     while (it.hasNext()) {
       keyStrings.add(Long.toString(it.nextLong()));
     }
-    return DelimitedDataUtils.encode(keyStrings);
+    return DelimitedDataUtils.encode(',', keyStrings);
   }
 }

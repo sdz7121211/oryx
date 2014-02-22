@@ -52,7 +52,8 @@ public final class CollectRecommendFn extends OryxReduceDoFn<Long, Iterable<Nume
     Iterable<NumericIDValue> recs = TopN.selectTopN(input.second().iterator(), numRecs);
     String userID = mapping.toString(input.first());
     for (NumericIDValue rec : recs) {
-      emitter.emit(DelimitedDataUtils.encode(userID,
+      emitter.emit(DelimitedDataUtils.encode(',',
+                                             userID,
                                              mapping.toString(rec.getID()),
                                              Float.toString(rec.getValue())));
     }

@@ -82,7 +82,7 @@ public final class RecordSpec implements Spec {
 
   @Override
   public String toString() {
-    return DelimitedDataUtils.encode(fields);
+    return DelimitedDataUtils.encode(',', fields);
   }
   
   public static Builder builder() {

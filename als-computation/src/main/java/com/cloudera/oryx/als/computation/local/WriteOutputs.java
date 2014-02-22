@@ -97,7 +97,7 @@ final class WriteOutputs implements Callable<Object> {
         for (LongFloatMap.MapEntry entry : row.getValue().entrySet()) {
           long colID = entry.getKey();
           float value = entry.getValue();
-          out.write(DelimitedDataUtils.encode(Long.toString(rowID), Long.toString(colID), Float.toString(value)));
+          out.write(DelimitedDataUtils.encode(',', Long.toString(rowID), Long.toString(colID), Float.toString(value)));
           out.write('\n');
         }
       }
@@ -123,7 +123,7 @@ final class WriteOutputs implements Callable<Object> {
         while (it.hasNext()) {
           keyStrings.add(Long.toString(it.nextLong()));
         }
-        out.write(DelimitedDataUtils.encode(keyStrings));
+        out.write(DelimitedDataUtils.encode(',', keyStrings));
         out.write('\n');
       }
     } finally {
@@ -147,7 +147,7 @@ final class WriteOutputs implements Callable<Object> {
         for (int i = 0; i < floatStrings.length; i++) {
           floatStrings[i] = Float.toString(f[i]);
         }
-        out.write(DelimitedDataUtils.encode(floatStrings));
+        out.write(DelimitedDataUtils.encode(',', floatStrings));
         out.write('\n');
       }
     } finally {
@@ -164,7 +164,7 @@ final class WriteOutputs implements Callable<Object> {
       lock.lock();
       try {
         for (LongObjectMap.MapEntry<String> entry : idMapping.getReverseMapping().entrySet()) {
-          out.write(DelimitedDataUtils.encode(Long.toString(entry.getKey()), entry.getValue()));
+          out.write(DelimitedDataUtils.encode(',', Long.toString(entry.getKey()), entry.getValue()));
           out.write('\n');
         }
       } finally {

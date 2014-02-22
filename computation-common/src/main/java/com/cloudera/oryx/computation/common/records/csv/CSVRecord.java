@@ -141,6 +141,6 @@ public final class CSVRecord implements Record {
   
   @Override
   public String toString() {
-    return DelimitedDataUtils.encode(values);
+    return DelimitedDataUtils.encode(',', values);
   }
 }

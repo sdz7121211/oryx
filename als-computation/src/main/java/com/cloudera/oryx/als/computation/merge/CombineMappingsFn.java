@@ -25,7 +25,7 @@ public final class CombineMappingsFn extends OryxReduceDoFn<Long, Iterable<Strin
 
   @Override
   public void process(Pair<Long, Iterable<String>> input, Emitter<String> emitter) {
-    emitter.emit(DelimitedDataUtils.encode(input.first().toString(), input.second().iterator().next()));
+    emitter.emit(DelimitedDataUtils.encode(',', input.first().toString(), input.second().iterator().next()));
   }
 
 }

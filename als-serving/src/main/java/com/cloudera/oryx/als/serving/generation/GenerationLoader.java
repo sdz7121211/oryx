@@ -220,7 +220,7 @@ final class GenerationLoader {
 
   private static LongSet stringToSet(CharSequence values) {
     LongSet result = new LongSet();
-    for (String valueString : DelimitedDataUtils.decode(values)) {
+    for (String valueString : DelimitedDataUtils.decode(values, ',')) {
       result.add(Long.parseLong(valueString));
     }
     return result;
@@ -254,7 +254,7 @@ final class GenerationLoader {
         @Override
         public Void call() throws IOException {
           for (CharSequence line : new FileLineIterable(Store.get().readFrom(prefix))) {
-            String[] columns = DelimitedDataUtils.decode(line);
+            String[] columns = DelimitedDataUtils.decode(line, ',');
             long numericID = Long.parseLong(columns[0]);
             String id = columns[1];
             Lock writeLock = generation.getKnownItemLock().writeLock();

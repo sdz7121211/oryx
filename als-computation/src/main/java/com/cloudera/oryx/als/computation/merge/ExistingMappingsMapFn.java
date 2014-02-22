@@ -25,7 +25,7 @@ public final class ExistingMappingsMapFn extends OryxDoFn<String, Pair<Long, Str
 
   @Override
   public void process(String line, Emitter<Pair<Long, String>> emitter) {
-    String[] columns = DelimitedDataUtils.decode(line);
+    String[] columns = DelimitedDataUtils.decode(line, ',');
     long numericID = Long.parseLong(columns[0]);
     String id = columns[1];
     emitter.emit(Pair.of(numericID, id));

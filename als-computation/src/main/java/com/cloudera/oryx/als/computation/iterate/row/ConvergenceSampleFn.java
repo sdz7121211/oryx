@@ -58,7 +58,7 @@ public final class ConvergenceSampleFn extends OryxReduceDoFn<Long, float[], Str
         long itemID = entry.getKey();
         if (itemID % convergenceSamplingModulus == 0) {
           float estimate = (float) SimpleVectorMath.dot(xu, entry.getValue());
-          emitter.emit(DelimitedDataUtils.encode(userID, itemID, estimate));
+          emitter.emit(DelimitedDataUtils.encode(',', userID, itemID, estimate));
         }
       }
     }
