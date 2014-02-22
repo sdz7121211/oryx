@@ -95,7 +95,8 @@ final class MakeItemSimilarity implements Callable<Object> {
                     new MostSimilarItemIterator(Y.entrySet().iterator(), itemID, itemFeatures), howMany);
                 String item1IDString = idMapping.toString(itemID);
                 for (NumericIDValue similar : mostSimilar) {
-                  out.write(DelimitedDataUtils.encode(item1IDString,
+                  out.write(DelimitedDataUtils.encode(',',
+                                                      item1IDString,
                                                       idMapping.toString(similar.getID()),
                                                       Float.toString(similar.getValue())));
                   out.write('\n');

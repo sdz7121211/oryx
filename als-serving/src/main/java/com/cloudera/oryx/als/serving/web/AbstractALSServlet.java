@@ -112,7 +112,7 @@ public abstract class AbstractALSServlet extends AbstractOryxServlet {
         break;
       case DELIMITED:
         for (IDValue item : items) {
-          writer.write(DelimitedDataUtils.encode(item.getID(), Float.toString(item.getValue())));
+          writer.write(DelimitedDataUtils.encode(',', item.getID(), Float.toString(item.getValue())));
           writer.write('\n');
         }
         break;

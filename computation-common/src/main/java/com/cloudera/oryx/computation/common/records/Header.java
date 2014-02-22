@@ -129,7 +129,7 @@ public final class Header {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     for (Map.Entry<String, Type> e : data.entrySet()) {
-      sb.append(DelimitedDataUtils.encode(e.getKey(), e.getValue().toString().toLowerCase(Locale.ENGLISH)))
+      sb.append(DelimitedDataUtils.encode(',', e.getKey(), e.getValue().toString().toLowerCase(Locale.ENGLISH)))
           .append('\n');
     }
     return sb.toString();

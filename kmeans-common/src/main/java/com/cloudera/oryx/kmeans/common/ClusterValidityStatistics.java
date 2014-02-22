@@ -67,7 +67,7 @@ public final class ClusterValidityStatistics implements Serializable {
   }
 
   public static ClusterValidityStatistics parse(String str) {
-    String[] pieces = DelimitedDataUtils.decode(str);
+    String[] pieces = DelimitedDataUtils.decode(str, ',');
     Preconditions.checkArgument(pieces.length == 6, "Invalid delimited string: " + str);
     return new ClusterValidityStatistics(
         Integer.valueOf(pieces[0]),
@@ -90,7 +90,7 @@ public final class ClusterValidityStatistics implements Serializable {
 
   @Override
   public String toString() {
-    return DelimitedDataUtils.encode(k, replica, testCost, trainCost, varInfo, vanDongen);
+    return DelimitedDataUtils.encode(',', k, replica, testCost, trainCost, varInfo, vanDongen);
   }
 
   public int getK() {

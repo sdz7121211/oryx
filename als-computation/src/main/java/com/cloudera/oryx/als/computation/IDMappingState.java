@@ -43,7 +43,7 @@ public final class IDMappingState {
     StringLongMapping idMapping = new StringLongMapping();
     for (String filePrefix : store.list(prefix, true)) {
       for (CharSequence line : new FileLineIterable(store.readFrom(filePrefix))) {
-        String[] columns = DelimitedDataUtils.decode(line);
+        String[] columns = DelimitedDataUtils.decode(line, ',');
         long numericID = Long.parseLong(columns[0]);
         String id = columns[1];
         idMapping.addMapping(id, numericID);

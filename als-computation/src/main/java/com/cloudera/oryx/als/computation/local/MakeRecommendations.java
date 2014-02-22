@@ -106,7 +106,8 @@ final class MakeRecommendations implements Callable<Object> {
                     howMany);
                 String userIDString = idMapping.toString(userID);
                 for (NumericIDValue rec : recs) {
-                  out.write(DelimitedDataUtils.encode(userIDString,
+                  out.write(DelimitedDataUtils.encode(',',
+                                                      userIDString,
                                                       idMapping.toString(rec.getID()),
                                                       Float.toString(rec.getValue())));
                   out.write('\n');

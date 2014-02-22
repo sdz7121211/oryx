@@ -57,14 +57,11 @@ public final class DelimitedDataUtils {
   }
 
   /**
-   * @param columns values whose string representation ({@link #toString()}) should be joined into one delimited string
-   * @return string representations joined by delimiters
+   * @param delim delimiter to use to write
+   * @param columns values to be joined into one delimited string
+   * @return values joined by delimiters
    */
-  public static String encode(Object... columns) {
-    return encode(columns, DELIMITER);
-  }
-
-  public static String encode(Object[] columns, char delim) {
+  public static String encode(char delim, Object... columns) {
     StringBuilder record = new StringBuilder();
     for (int i = 0; i < columns.length; i++) {
       if (i > 0) {
@@ -76,33 +73,11 @@ public final class DelimitedDataUtils {
   }
 
   /**
+   * @param delim delimiter to use to write
    * @param columns values to be joined into one delimited string
    * @return values joined by delimiters
    */
-  public static String encode(CharSequence... columns) {
-    return encode(columns, DELIMITER);
-  }
-
-  public static String encode(CharSequence[] columns, char delim) {
-    StringBuilder record = new StringBuilder();
-    for (int i = 0; i < columns.length; i++) {
-      if (i > 0) {
-        record.append(delim);
-      }
-      record.append(doEncode(columns[i], delim));
-    }
-    return record.toString();
-  }
-
-  /**
-   * @param columns values to be joined into one delimited string
-   * @return values joined by delimiters
-   */
-  public static String encode(Iterable<?> columns) {
-    return encode(columns, DELIMITER);
-  }
-
-  public static String encode(Iterable<?> columns, char delim) {
+  public static String encode(char delim, Iterable<?> columns) {
     StringBuilder record = new StringBuilder();
     boolean first = true;
     for (Object column : columns) {

@@ -348,7 +348,7 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
     Store store = Store.get();
     for (String prefix : store.list(convergenceSamplePrefix, true)) {
       for (CharSequence line : new FileLineIterable(store.readFrom(prefix))) {
-        String[] tokens = DelimitedDataUtils.decode(line);
+        String[] tokens = DelimitedDataUtils.decode(line, ',');
         long userID = Long.parseLong(tokens[0]);
         long itemID = Long.parseLong(tokens[1]);
         float estimate = Float.parseFloat(tokens[2]);

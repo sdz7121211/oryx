@@ -144,7 +144,7 @@ public final class LoadRunner implements Callable<Object> {
               client.removePreference(userID, itemID);
               removePreference.increment(System.currentTimeMillis() - stepStart);
             } else if (r < 0.12) {
-              Reader reader = new StringReader(DelimitedDataUtils.encode(userID, itemID, Float.toString(value)) + '\n');
+              Reader reader = new StringReader(DelimitedDataUtils.encode(',', userID, itemID, Float.toString(value)) + '\n');
               client.ingest(reader);
               ingest.increment(System.currentTimeMillis() - stepStart);
             } else if (r < 0.13) {

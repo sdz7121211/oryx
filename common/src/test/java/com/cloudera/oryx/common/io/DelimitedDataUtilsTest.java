@@ -30,19 +30,19 @@ public final class DelimitedDataUtilsTest extends OryxTest {
 
   @Test
   public void testEncode() {
-    assertEquals("", DelimitedDataUtils.encode());
-    assertEquals("foo", DelimitedDataUtils.encode("foo"));
-    assertEquals("foo,bar", DelimitedDataUtils.encode("foo", "bar"));
+    assertEquals("", DelimitedDataUtils.encode(','));
+    assertEquals("foo", DelimitedDataUtils.encode(',', "foo"));
+    assertEquals("foo,bar", DelimitedDataUtils.encode(',', "foo", "bar"));
   }
 
   @Test
   public void testEncodeDelimiters() {
-    assertEquals("\"foo,bing\",bar", DelimitedDataUtils.encode("foo,bing", "bar"));
+    assertEquals("\"foo,bing\",bar", DelimitedDataUtils.encode(',', "foo,bing", "bar"));
   }
 
   @Test
   public void testEncodeQuote() {
-    assertEquals("foo,\"bar\"\"bing\"", DelimitedDataUtils.encode("foo", "bar\"bing"));
+    assertEquals("foo,\"bar\"\"bing\"", DelimitedDataUtils.encode(',', "foo", "bar\"bing"));
   }
 
   @Test
@@ -72,12 +72,16 @@ public final class DelimitedDataUtilsTest extends OryxTest {
 
   @Test
   public void testVsIterable() {
-    assertEquals(DelimitedDataUtils.encode("foo", "bar"), DelimitedDataUtils.encode(Arrays.asList("foo", "bar")));
+    assertEquals(
+        DelimitedDataUtils.encode(',', "foo", "bar"),
+        DelimitedDataUtils.encode(',', Arrays.asList("foo", "bar")));
   }
 
   @Test
   public void testVsObject() {
-    assertEquals(DelimitedDataUtils.encode("3.0", "-2.0"), DelimitedDataUtils.encode(Arrays.asList(3.0, -2.0)));
+    assertEquals(
+        DelimitedDataUtils.encode(',', "3.0", "-2.0"),
+        DelimitedDataUtils.encode(',', Arrays.asList(3.0, -2.0)));
   }
 
 }
