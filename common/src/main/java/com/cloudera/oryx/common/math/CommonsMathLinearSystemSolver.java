@@ -16,8 +16,6 @@
 package com.cloudera.oryx.common.math;
 
 import org.apache.commons.math3.linear.DecompositionSolver;
-import org.apache.commons.math3.linear.QRDecomposition;
-import org.apache.commons.math3.linear.RRQRDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
