@@ -38,6 +38,29 @@ public final class StringLongMappingTest extends OryxTest {
   }
 
   @Test
+  public void testLeadingZero() {
+    // Shouldn't interpret "0123" as a number as it is likely to be meant as an identifier.
+    // Treating it as the number 123 would cause it to be returned in the API as "123" not "0123".
+    assertNotEquals(123L, StringLongMapping.toLong("0123"));
+    assertEquals(1230L, StringLongMapping.toLong("1230"));
+  }
+
+  @Test
+  public void testSmallValues() {
+    assertEquals(1L, StringLongMapping.toLong("1"));
+    assertEquals(-1L, StringLongMapping.toLong("-1"));
+  }
+
+  @Test
+  public void testLargeValues() {
+    assertEquals(999999999999999999L, StringLongMapping.toLong("999999999999999999"));
+    assertEquals(-999999999999999999L, StringLongMapping.toLong("-999999999999999999"));
+    // Larger values are hashed:
+    assertNotEquals(1000000000000000000L, StringLongMapping.toLong("1000000000000000000"));
+    assertNotEquals(-1000000000000000000L, StringLongMapping.toLong("-1000000000000000000"));
+  }
+
+  @Test
   public void testSpecialValue() {
     // not long min value
     assertEquals(-1448413612742796816L, StringLongMapping.toLong(Long.toString(Long.MIN_VALUE)));

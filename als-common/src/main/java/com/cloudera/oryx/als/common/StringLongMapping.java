@@ -33,15 +33,19 @@ import com.cloudera.oryx.common.random.RandomUtils;
  */
 public final class StringLongMapping {
 
-  // long min/max values are 19 digits. We're looking at only up to 18 digits here.
-  // Very big longs will be treated as strings and hashed. This is useful because
-  // Long.MIN_VALUE and Long.MAX_VALUE are special values in this system, and yet
-  // may appear as an ID in data, not infrequently, just becaue they are these special
-  // values. They'll be hashed to something else. Doing so, we can still use the
-  // numeric value of numeric strings directly in other cases, and retain that intuitive
-  // mapping. (We also save catching an exception in long parsing this way since any
-  // long matching this will definitely be parseable)
-  private static final Pattern MOST_LONGS_PATTERN = Pattern.compile("^-?\\d{1,18}$");
+  /**
+   * long min/max values are 19 digits. We're looking at only up to 18 digits here.
+   * Very big longs will be treated as strings and hashed. This is useful because
+   * Long.MIN_VALUE and Long.MAX_VALUE are special values in this system, and yet
+   * may appear as an ID in data, not infrequently, just becaue they are these special
+   * values. They'll be hashed to something else. Doing so, we can still use the
+   * numeric value of numeric strings directly in other cases, and retain that intuitive
+   * mapping. (We also save catching an exception in long parsing this way since any
+   * long matching this will definitely be parseable.) Note that we do not treat values
+   * with a leading 0 as if they are numeric, but negative values are fine.
+   */
+  private static final Pattern MOST_LONGS_PATTERN = Pattern.compile("(0|-?[1-9][0-9]{0,17})");
+  // Must start with a non-zero digit, then up to 17 more. (Of course, 0 by itself is allowed.)
 
   private final LongObjectMap<String> reverseMapping;
   private final ReadWriteLock lock;
