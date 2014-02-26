@@ -457,7 +457,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
-          <version>1.4</version>
+          <version>1.5</version>
           <executions>
             <execution>
               <id>sign-artifacts</id>
@@ -907,9 +907,10 @@
         </plugins>
       </build>
     </profile>
-    <!-- Separate profile for Hadoop 2.2.x because it requires a recompile, due to protobuf 2.4-to-2.5 difference -->
+    <!-- Separate profile for Hadoop 2.2.0 and later because it requires a recompile,
+         due to protobuf 2.4-to-2.5 difference -->
     <profile>
-      <id>hadoop22</id>
+      <id>hadoop220+</id>
       <properties>
         <hadoop.version>2.2.0</hadoop.version>
         <!--<crunch.version>0.9.0-hadoop2</crunch.version>-->
