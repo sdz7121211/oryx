@@ -105,7 +105,7 @@
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>          <strong class="jxr_keyword">for</strong> (LongFloatMap.MapEntry entry : row.getValue().entrySet()) {
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>            <strong class="jxr_keyword">long</strong> colID = entry.getKey();
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>            <strong class="jxr_keyword">float</strong> value = entry.getValue();
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>           out.write(DelimitedDataUtils.encode(Long.toString(rowID), Long.toString(colID), Float.toString(value)));
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>           out.write(DelimitedDataUtils.encode(',', Long.toString(rowID), Long.toString(colID), Float.toString(value)));
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>           out.write('\n');
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>         }
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>       }
@@ -131,7 +131,7 @@
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         <strong class="jxr_keyword">while</strong> (it.hasNext()) {
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>           keyStrings.add(Long.toString(it.nextLong()));
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>         }
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>         out.write(DelimitedDataUtils.encode(keyStrings));
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         out.write(DelimitedDataUtils.encode(',', keyStrings));
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>         out.write('\n');
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>       }
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>     } <strong class="jxr_keyword">finally</strong> {
@@ -155,7 +155,7 @@
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; floatStrings.length; i++) {
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>           floatStrings[i] = Float.toString(f[i]);
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>         }
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>         out.write(DelimitedDataUtils.encode(floatStrings));
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         out.write(DelimitedDataUtils.encode(',', floatStrings));
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>         out.write('\n');
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>       }
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>     } <strong class="jxr_keyword">finally</strong> {
@@ -172,7 +172,7 @@
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>       lock.lock();
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>       <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>         <strong class="jxr_keyword">for</strong> (LongObjectMap.MapEntry&lt;String&gt; entry : idMapping.getReverseMapping().entrySet()) {
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>           out.write(DelimitedDataUtils.encode(Long.toString(entry.getKey()), entry.getValue()));
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>           out.write(DelimitedDataUtils.encode(',', Long.toString(entry.getKey()), entry.getValue()));
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>           out.write('\n');
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         }
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>       } <strong class="jxr_keyword">finally</strong> {

@@ -75,7 +75,7 @@
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>    }
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../com/cloudera/oryx/kmeans/common/ClusterValidityStatistics.html">ClusterValidityStatistics</a> parse(String str) {
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>      String[] pieces = DelimitedDataUtils.decode(str);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      String[] pieces = DelimitedDataUtils.decode(str, ',');
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>      Preconditions.checkArgument(pieces.length == 6, <span class="jxr_string">"Invalid delimited string: "</span> + str);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../com/cloudera/oryx/kmeans/common/ClusterValidityStatistics.html">ClusterValidityStatistics</a>(
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          Integer.valueOf(pieces[0]),
@@ -98,7 +98,7 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>    @Override
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>    <strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">return</strong> DelimitedDataUtils.encode(k, replica, testCost, trainCost, varInfo, vanDongen);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">return</strong> DelimitedDataUtils.encode(',', k, replica, testCost, trainCost, varInfo, vanDongen);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>    }
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getK() {

@@ -356,7 +356,7 @@
 <a class="jxr_linenumber" name="L348" href="#L348">348</a>     <a href="../../../../../com/cloudera/oryx/common/servcomp/Store.html">Store</a> store = Store.get();
 <a class="jxr_linenumber" name="L349" href="#L349">349</a>     <strong class="jxr_keyword">for</strong> (String prefix : store.list(convergenceSamplePrefix, <strong class="jxr_keyword">true</strong>)) {
 <a class="jxr_linenumber" name="L350" href="#L350">350</a>       <strong class="jxr_keyword">for</strong> (CharSequence line : <strong class="jxr_keyword">new</strong> FileLineIterable(store.readFrom(prefix))) {
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         String[] tokens = DelimitedDataUtils.decode(line);
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         String[] tokens = DelimitedDataUtils.decode(line, ',');
 <a class="jxr_linenumber" name="L352" href="#L352">352</a>         <strong class="jxr_keyword">long</strong> userID = Long.parseLong(tokens[0]);
 <a class="jxr_linenumber" name="L353" href="#L353">353</a>         <strong class="jxr_keyword">long</strong> itemID = Long.parseLong(tokens[1]);
 <a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">float</strong> estimate = Float.parseFloat(tokens[2]);

@@ -279,7 +279,7 @@
 <a class="jxr_linenumber" name="L271" href="#L271">271</a>         <strong class="jxr_keyword">while</strong> ((categoryID = includedCategoryIDs.nextSetBit(categoryID + 1)) &gt;= 0) {
 <a class="jxr_linenumber" name="L272" href="#L272">272</a>           categoryNames.add(categoryIDToName.get(categoryID));
 <a class="jxr_linenumber" name="L273" href="#L273">273</a>         }
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>         Array categories = <strong class="jxr_keyword">new</strong> Array(DelimitedDataUtils.encode(categoryNames, ' '), Array.Type.STRING);
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>         Array categories = <strong class="jxr_keyword">new</strong> Array(DelimitedDataUtils.encode(' ', categoryNames), Array.Type.STRING);
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>         predicate = <strong class="jxr_keyword">new</strong> SimpleSetPredicate(categories, fieldName, SimpleSetPredicate.BooleanOperator.IS_IN);
 <a class="jxr_linenumber" name="L276" href="#L276">276</a> 
 <a class="jxr_linenumber" name="L277" href="#L277">277</a>       } <strong class="jxr_keyword">else</strong> {

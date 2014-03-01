@@ -152,7 +152,7 @@
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>               client.removePreference(userID, itemID);
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>               removePreference.increment(System.currentTimeMillis() - stepStart);
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (r &lt; 0.12) {
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>               Reader reader = <strong class="jxr_keyword">new</strong> StringReader(DelimitedDataUtils.encode(userID, itemID, Float.toString(value)) + '\n');
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>               Reader reader = <strong class="jxr_keyword">new</strong> StringReader(DelimitedDataUtils.encode(',', userID, itemID, Float.toString(value)) + '\n');
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>               client.ingest(reader);
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>               ingest.increment(System.currentTimeMillis() - stepStart);
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (r &lt; 0.13) {
