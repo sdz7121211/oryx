@@ -87,6 +87,10 @@ public final class StringLongMapping {
     }
   }
 
+  public int size() {
+    return reverseMapping.size();
+  }
+
   /**
    * @param numericID hash value to map back to a {@link String}
    * @return the {@link String} ID that hashed to the value, or if none exists, then simply
