@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Sat Mar 01 13:38:56 GMT 2014 -->
+<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Mon Mar 03 23:47:56 GMT 2014 -->
 
 <report>
   <stats>
     <packages value="11"/>
-    <classes value="78"/>
-    <methods value="479"/>
+    <classes value="77"/>
+    <methods value="478"/>
     <srcfiles value="46"/>
-    <srclines value="1515"/>
+    <srclines value="1513"/>
   </stats>
   <data>
     <all name="all classes">
-      <coverage type="class, %" value="9%   (7/78)"/>
-      <coverage type="method, %" value="5%   (24/479)"/>
-      <coverage type="block, %" value="8%   (544/7210)"/>
-      <coverage type="line, %" value="8%   (119.9/1515)"/>
+      <coverage type="class, %" value="9%   (7/77)"/>
+      <coverage type="method, %" value="5%   (24/478)"/>
+      <coverage type="block, %" value="8%   (544/7181)"/>
+      <coverage type="line, %" value="8%   (119.9/1513)"/>
 
       <package name="com.cloudera.oryx.computation.common.crossfold">
         <coverage type="class, %" value="0%   (0/2)"/>
@@ -2456,22 +2456,22 @@
         </srcfile>
       </package>
       <package name="com.cloudera.oryx.computation.common">
-        <coverage type="class, %" value="14%  (2/14)"/>
-        <coverage type="method, %" value="8%   (9/108)"/>
-        <coverage type="block, %" value="7%   (204/2759)"/>
-        <coverage type="line, %" value="9%   (53.9/601)"/>
+        <coverage type="class, %" value="15%  (2/13)"/>
+        <coverage type="method, %" value="8%   (9/107)"/>
+        <coverage type="block, %" value="7%   (204/2730)"/>
+        <coverage type="line, %" value="9%   (53.9/599)"/>
 
         <srcfile name="DistributedGenerationRunner.java">
           <coverage type="class, %" value="0%   (0/1)"/>
           <coverage type="method, %" value="0%   (0/10)"/>
-          <coverage type="block, %" value="0%   (0/298)"/>
-          <coverage type="line, %" value="0%   (0/73)"/>
+          <coverage type="block, %" value="0%   (0/281)"/>
+          <coverage type="line, %" value="0%   (0/67)"/>
 
           <class name="DistributedGenerationRunner">
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/10)"/>
-            <coverage type="block, %" value="0%   (0/298)"/>
-            <coverage type="line, %" value="0%   (0/73)"/>
+            <coverage type="block, %" value="0%   (0/281)"/>
+            <coverage type="line, %" value="0%   (0/67)"/>
 
             <method name="&lt;static initializer&gt;">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -2500,8 +2500,8 @@
             </method>
             <method name="find (String): Collection">
               <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/86)"/>
-              <coverage type="line, %" value="0%   (0/19)"/>
+              <coverage type="block, %" value="0%   (0/69)"/>
+              <coverage type="line, %" value="0%   (0/13)"/>
             </method>
             <method name="runOneIteration (int, List): void">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -2703,16 +2703,16 @@
           </class>
         </srcfile>
         <srcfile name="JobStep.java">
-          <coverage type="class, %" value="0%   (0/2)"/>
-          <coverage type="method, %" value="0%   (0/29)"/>
-          <coverage type="block, %" value="0%   (0/865)"/>
-          <coverage type="line, %" value="0%   (0/175)"/>
+          <coverage type="class, %" value="0%   (0/1)"/>
+          <coverage type="method, %" value="0%   (0/28)"/>
+          <coverage type="block, %" value="0%   (0/853)"/>
+          <coverage type="line, %" value="0%   (0/179)"/>
 
           <class name="JobStep">
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/28)"/>
-            <coverage type="block, %" value="0%   (0/825)"/>
-            <coverage type="line, %" value="0%   (0/175)"/>
+            <coverage type="block, %" value="0%   (0/853)"/>
+            <coverage type="line, %" value="0%   (0/179)"/>
 
             <method name="&lt;static initializer&gt;">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -2722,7 +2722,7 @@
             <method name="JobStep (): void">
               <coverage type="method, %" value="0%   (0/1)"/>
               <coverage type="block, %" value="0%   (0/3)"/>
-              <coverage type="line, %" value="0%   (0/2)"/>
+              <coverage type="line, %" value="0%   (0/1)"/>
             </method>
             <method name="avroInput (String, PType): Source">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -2756,13 +2756,13 @@
             </method>
             <method name="determineProgresses (): float []">
               <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/62)"/>
+              <coverage type="block, %" value="0%   (0/71)"/>
               <coverage type="line, %" value="0%   (0/11)"/>
             </method>
             <method name="determineStatus (): StepStatus">
               <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/91)"/>
-              <coverage type="line, %" value="0%   (0/19)"/>
+              <coverage type="block, %" value="0%   (0/110)"/>
+              <coverage type="line, %" value="0%   (0/23)"/>
             </method>
             <method name="getConfig (): JobStepConfig">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -2853,18 +2853,6 @@
               <coverage type="method, %" value="0%   (0/1)"/>
               <coverage type="block, %" value="0%   (0/64)"/>
               <coverage type="line, %" value="0%   (0/12)"/>
-            </method>
-          </class>
-          <class name="JobStep$1">
-            <coverage type="class, %" value="0%   (0/1)"/>
-            <coverage type="method, %" value="0%   (0/1)"/>
-            <coverage type="block, %" value="0%   (0/40)"/>
-            <coverage type="line, %" value="0%   (0/1)"/>
-
-            <method name="&lt;static initializer&gt;">
-              <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/40)"/>
-              <coverage type="line, %" value="0%   (0/1)"/>
             </method>
           </class>
         </srcfile>
