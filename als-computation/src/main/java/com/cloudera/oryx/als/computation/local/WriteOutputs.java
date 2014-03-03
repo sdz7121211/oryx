@@ -90,6 +90,7 @@ final class WriteOutputs implements Callable<Object> {
   private static void writeCombinedInput(LongObjectMap<LongFloatMap> RbyRow, File inputDir) throws IOException {
     File outFile = new File(inputDir, SINGLE_OUT_FILENAME);
     Files.createParentDirs(outFile);
+    log.info("Writing input of {} entries to {}", RbyRow.size(), outFile);
     Writer out = IOUtils.buildGZIPWriter(outFile);
     try {
       for (LongObjectMap.MapEntry<LongFloatMap> row : RbyRow.entrySet()) {
@@ -112,6 +113,7 @@ final class WriteOutputs implements Callable<Object> {
     }
     File outFile = new File(idIDsDir, SINGLE_OUT_FILENAME);
     Files.createParentDirs(outFile);
+    log.info("Writing ID-ID map of {} entries to {}", idIDs.size(), outFile);
     Writer out = IOUtils.buildGZIPWriter(outFile);
     try {
       for (LongObjectMap.MapEntry<LongSet> entry : idIDs.entrySet()) {
@@ -137,6 +139,7 @@ final class WriteOutputs implements Callable<Object> {
     }
     File outFile = new File(idFloatDir, SINGLE_OUT_FILENAME);
     Files.createParentDirs(outFile);
+    log.info("Writing ID-float map of {} entries to {}", idFloatMap.size(), outFile);
     Writer out = IOUtils.buildGZIPWriter(outFile);
     try {
       for (LongObjectMap.MapEntry<float[]> entry : idFloatMap.entrySet()) {
@@ -158,6 +161,7 @@ final class WriteOutputs implements Callable<Object> {
   private static void writeMapping(StringLongMapping idMapping, File idMappingDir) throws IOException {
     File outFile = new File(idMappingDir, SINGLE_OUT_FILENAME);
     Files.createParentDirs(outFile);
+    log.info("Writing mapping of {} entries to {}", idMapping.size(), outFile);
     Writer out = IOUtils.buildGZIPWriter(outFile);
     try {
       Lock lock = idMapping.getLock().readLock();
