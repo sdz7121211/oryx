@@ -580,7 +580,15 @@
               <configuration>
                 <target name="precompile-jspx">
                   <typedef resource="org/apache/catalina/ant/catalina.tasks" />
-                    <jasper webXmlFragment="target/generated_web.xml" failonerror="true" listerrors="true" trimspaces="true" uriroot="src/main/jspx" outputDir="src/gen/java" package="${module.jspx.package}" xpoweredBy="false" />
+                  <delete dir="src/gen"/>
+                  <jasper webXmlFragment="target/generated_web.xml"
+                          failonerror="true"
+                          listerrors="true"
+                          trimspaces="true"
+                          uriroot="src/main/jspx"
+                          outputDir="src/gen/java"
+                          package="${module.jspx.package}"
+                          xpoweredBy="false" />
                 </target>
               </configuration>
             </execution>
