@@ -29,7 +29,7 @@
 <html>
 <head>
 <title>Oryx Computation Layer</title>
-<link rel="stylesheet" type="text/css" href="/style.jspx"/>
+<link rel="stylesheet" type="text/css" href="style.jspx"/>
 <script type="text/javascript"><![CDATA[
 function confirmAndPost(formName) {
   if (confirm("Are you sure?")) {

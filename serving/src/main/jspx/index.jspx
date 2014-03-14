@@ -26,7 +26,7 @@
 <html>
 <head>
 <title>Oryx Serving Layer</title>
-<link rel="stylesheet" type="text/css" href="/style.jspx"/>
+<link rel="stylesheet" type="text/css" href="style.jspx"/>
 <script type="text/javascript"><![CDATA[
 function doQuery(endpoint, isGet, paramSuffixes, postBodyElement) {
 

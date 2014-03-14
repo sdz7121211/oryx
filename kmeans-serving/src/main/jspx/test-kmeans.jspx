@@ -20,7 +20,7 @@
 <jsp:text><![CDATA[<!DOCTYPE html>]]></jsp:text>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="/style.jspx"/>
+<link rel="stylesheet" type="text/css" href="style.jspx"/>
 </head>
 <body>
 
