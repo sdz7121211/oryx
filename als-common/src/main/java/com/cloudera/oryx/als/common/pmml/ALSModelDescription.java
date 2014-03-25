@@ -18,11 +18,12 @@ package com.cloudera.oryx.als.common.pmml;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.dmg.pmml.Extension;
-import org.dmg.pmml.IOUtil;
 import org.dmg.pmml.PMML;
-import org.xml.sax.SAXException;
+import org.jpmml.model.JAXBUtil;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -103,8 +104,6 @@ public final class ALSModelDescription {
       return read(in);
     } catch (JAXBException jaxbe) {
       throw new IOException(jaxbe);
-    } catch (SAXException saxe) {
-      throw new IOException(saxe);
     } finally {
       in.close();
     }
@@ -113,9 +112,9 @@ public final class ALSModelDescription {
   /**
    * Quite manually parse our fake model representation in PMML.
    */
-  private static ALSModelDescription read(InputStream in) throws JAXBException, SAXException {
+  private static ALSModelDescription read(InputStream in) throws JAXBException {
 
-    PMML pmml = IOUtil.unmarshal(in);
+    PMML pmml = JAXBUtil.unmarshalPMML(new StreamSource(in));
     List<Extension> extensions = pmml.getExtensions();
     Preconditions.checkNotNull(extensions);
     Preconditions.checkArgument(!extensions.isEmpty());
@@ -155,7 +154,7 @@ public final class ALSModelDescription {
       extension.setValue(entry.getValue());
       pmml.getExtensions().add(extension);
     }
-    IOUtil.marshal(pmml, out);
+    JAXBUtil.marshalPMML(pmml, new StreamResult(out));
   }
 
 }

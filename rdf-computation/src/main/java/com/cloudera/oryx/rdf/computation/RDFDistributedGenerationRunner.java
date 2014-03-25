@@ -17,17 +17,17 @@ package com.cloudera.oryx.rdf.computation;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.dmg.pmml.IOUtil;
 import org.dmg.pmml.MiningField;
 import org.dmg.pmml.MiningModel;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.PMML;
+import org.jpmml.model.JAXBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -98,9 +98,7 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
       for (String treePMMLAsLine : new FileLineIterable(store.readFrom(treePrefix))) {
         PMML treePMML;
         try {
-          treePMML = IOUtil.unmarshal(new InputSource(new StringReader(treePMMLAsLine)));
-        } catch (SAXException e) {
-          throw new IOException(e);
+          treePMML = JAXBUtil.unmarshalPMML(new StreamSource(new StringReader(treePMMLAsLine)));
         } catch (JAXBException e) {
           throw new IOException(e);
         }
@@ -133,7 +131,7 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     tempJoinedForestFile.deleteOnExit();
     OutputStream out = IOUtils.buildGZIPOutputStream(new FileOutputStream(tempJoinedForestFile));
     try {
-      IOUtil.marshal(joinedForest, out);
+      JAXBUtil.marshalPMML(joinedForest, new StreamResult(out));
     } catch (JAXBException e) {
       throw new IOException(e);
     } finally {

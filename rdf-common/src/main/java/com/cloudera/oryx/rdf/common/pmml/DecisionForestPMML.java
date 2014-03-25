@@ -23,7 +23,6 @@ import org.apache.commons.math3.util.Pair;
 import org.dmg.pmml.Array;
 import org.dmg.pmml.DataDictionary;
 import org.dmg.pmml.FieldName;
-import org.dmg.pmml.IOUtil;
 import org.dmg.pmml.MiningField;
 import org.dmg.pmml.MiningFunctionType;
 import org.dmg.pmml.MiningModel;
@@ -41,10 +40,11 @@ import org.dmg.pmml.SimplePredicate;
 import org.dmg.pmml.SimpleSetPredicate;
 import org.dmg.pmml.TreeModel;
 import org.dmg.pmml.True;
-import org.xml.sax.SAXException;
+import org.jpmml.model.JAXBUtil;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -146,7 +146,7 @@ public final class DecisionForestPMML {
     pmml.getModels().add(miningModel);
 
     try {
-      IOUtil.marshal(pmml, new StreamResult(pmmlOut));
+      JAXBUtil.marshalPMML(pmml, new StreamResult(pmmlOut));
     } catch (JAXBException jaxbe) {
       throw new IOException(jaxbe);
     }
@@ -296,9 +296,7 @@ public final class DecisionForestPMML {
     PMML pmml;
     InputStream in = IOUtils.openMaybeDecompressing(pmmlFile);
     try {
-      pmml = IOUtil.unmarshal(in);
-    } catch (SAXException e) {
-      throw new IOException(e);
+      pmml = JAXBUtil.unmarshalPMML(new StreamSource(in));
     } catch (JAXBException e) {
       throw new IOException(e);
     } finally {
