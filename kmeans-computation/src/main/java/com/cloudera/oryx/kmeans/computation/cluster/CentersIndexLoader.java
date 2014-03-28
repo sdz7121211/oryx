@@ -22,6 +22,7 @@ import org.apache.commons.math3.linear.RealVector;
 import org.dmg.pmml.ClusteringModel;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.PMML;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -59,6 +60,8 @@ public final class CentersIndexLoader implements Serializable {
       return index;
     } catch (JAXBException e) {
       throw new IOException("JAXB serialization error", e);
+    } catch (SAXException e) {
+      throw new IOException("SAX serialization error", e);
     }
   }
 

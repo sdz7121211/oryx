@@ -42,6 +42,7 @@ import org.dmg.pmml.Model;
 import org.dmg.pmml.PMML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -158,6 +159,8 @@ public final class ClusteringStep extends KMeansJobStep {
           }
         }
       } catch (JAXBException e) {
+        log.error("Serialization error", e);
+      } catch (SAXException e) {
         log.error("Serialization error", e);
       }
     }

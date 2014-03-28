@@ -26,11 +26,13 @@ import org.dmg.pmml.ClusteringModel;
 import org.dmg.pmml.DataDictionary;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.PMML;
+import org.jpmml.model.ImportFilter;
 import org.jpmml.model.JAXBUtil;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,13 +59,15 @@ public final class KMeansPMML {
       return read(in);
     } catch (JAXBException jaxbe) {
       throw new IOException(jaxbe);
+    } catch (SAXException saxe) {
+      throw new IOException(saxe);
     } finally {
       in.close();
     }
   }
 
-  public static PMML read(InputStream in) throws JAXBException {
-    return JAXBUtil.unmarshalPMML(new StreamSource(in));
+  public static PMML read(InputStream in) throws JAXBException, SAXException {
+    return JAXBUtil.unmarshalPMML(ImportFilter.apply(new InputSource(in)));
   }
 
   public static void write(File f, DataDictionary dictionary, List<? extends Model> models) throws IOException {
@@ -108,7 +112,7 @@ public final class KMeansPMML {
       OutputStream out,
       DataDictionary dictionary,
       List<? extends Model> models) throws JAXBException {
-    PMML pmml = new PMML(null, dictionary, "4.1");
+    PMML pmml = new PMML(null, dictionary, "4.2");
     pmml.getModels().addAll(models);
     JAXBUtil.marshalPMML(pmml, new StreamResult(out));
   }

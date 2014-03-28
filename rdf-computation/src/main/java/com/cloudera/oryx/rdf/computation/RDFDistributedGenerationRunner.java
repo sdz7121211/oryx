@@ -21,13 +21,15 @@ import org.dmg.pmml.MiningField;
 import org.dmg.pmml.MiningModel;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.PMML;
+import org.jpmml.model.ImportFilter;
 import org.jpmml.model.JAXBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -98,8 +100,11 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
       for (String treePMMLAsLine : new FileLineIterable(store.readFrom(treePrefix))) {
         PMML treePMML;
         try {
-          treePMML = JAXBUtil.unmarshalPMML(new StreamSource(new StringReader(treePMMLAsLine)));
+          treePMML = JAXBUtil.unmarshalPMML(
+              ImportFilter.apply(new InputSource(new StringReader(treePMMLAsLine))));
         } catch (JAXBException e) {
+          throw new IOException(e);
+        } catch (SAXException e) {
           throw new IOException(e);
         }
 

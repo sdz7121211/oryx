@@ -19,11 +19,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.dmg.pmml.Extension;
 import org.dmg.pmml.PMML;
+import org.jpmml.model.ImportFilter;
 import org.jpmml.model.JAXBUtil;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -104,6 +106,8 @@ public final class ALSModelDescription {
       return read(in);
     } catch (JAXBException jaxbe) {
       throw new IOException(jaxbe);
+    } catch (SAXException saxe) {
+      throw new IOException(saxe);
     } finally {
       in.close();
     }
@@ -112,9 +116,9 @@ public final class ALSModelDescription {
   /**
    * Quite manually parse our fake model representation in PMML.
    */
-  private static ALSModelDescription read(InputStream in) throws JAXBException {
+  private static ALSModelDescription read(InputStream in) throws JAXBException, SAXException {
 
-    PMML pmml = JAXBUtil.unmarshalPMML(new StreamSource(in));
+    PMML pmml = JAXBUtil.unmarshalPMML(ImportFilter.apply(new InputSource(in)));
     List<Extension> extensions = pmml.getExtensions();
     Preconditions.checkNotNull(extensions);
     Preconditions.checkArgument(!extensions.isEmpty());
@@ -147,7 +151,7 @@ public final class ALSModelDescription {
    * Quite manually write our fake model representation in PMML.
    */
   private static void write(OutputStream out, ALSModelDescription model) throws JAXBException {
-    PMML pmml = new PMML(null, null, "4.1");
+    PMML pmml = new PMML(null, null, "4.2");
     for (Map.Entry<String,String> entry : model.getPathByKey().entrySet()) {
       Extension extension = new Extension();
       extension.setName(entry.getKey());
