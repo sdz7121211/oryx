@@ -59,7 +59,7 @@ public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
         // No summary created, bail out.
         return;
       }
-      List<List<RealVector>> foldVecs = new Standarize(currentInboundDir, summary).call();
+      List<List<RealVector>> foldVecs = new Standardize(currentInboundDir, summary).call();
       List<List<WeightedRealVector>> weighted = new WeightedPointsByFold(foldVecs).call();
       List<KMeansEvaluationData> evalData = new ClusteringEvaluation(weighted).call();
       ClusteringModelBuilder b = new ClusteringModelBuilder(summary);
