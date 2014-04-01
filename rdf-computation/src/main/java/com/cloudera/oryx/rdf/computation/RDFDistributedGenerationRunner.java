@@ -15,12 +15,14 @@
 
 package com.cloudera.oryx.rdf.computation;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.dmg.pmml.MiningField;
 import org.dmg.pmml.MiningModel;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.PMML;
+import org.dmg.pmml.Segment;
 import org.jpmml.model.ImportFilter;
 import org.jpmml.model.JAXBUtil;
 import org.slf4j.Logger;
@@ -120,8 +122,18 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
       }
     }
 
+    Preconditions.checkNotNull(joinedForest, "No forests to join?");
+
+    MiningModel model = (MiningModel) joinedForest.getModels().get(0);
+
+    // Renumber segments with distinct IDs
+    List<Segment> segments = model.getSegmentation().getSegments();
+    for (int treeID = 0; treeID < segments.size(); treeID++) {
+      segments.get(treeID).setId(Integer.toString(treeID));
+    }
+
     // Stitch together feature importances
-    for (MiningField field : joinedForest.getModels().get(0).getMiningSchema().getMiningFields()) {
+    for (MiningField field : model.getMiningSchema().getMiningFields()) {
       String name = field.getName().getValue();
       Mean importance = columnNameToMeanImportance.get(name);
       if (importance == null) {
