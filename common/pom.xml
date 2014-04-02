@@ -52,7 +52,7 @@
     </dependency>
     <dependency>
       <groupId>org.jpmml</groupId>
-      <artifactId>pmml-manager</artifactId>
+      <artifactId>pmml-model</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

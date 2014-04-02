@@ -150,7 +150,7 @@ final class WriteOutputs implements Callable<Object> {
         for (int i = 0; i < floatStrings.length; i++) {
           floatStrings[i] = Float.toString(f[i]);
         }
-        out.write(DelimitedDataUtils.encode(',', floatStrings));
+        out.write(DelimitedDataUtils.encode(',', (Object[]) floatStrings));
         out.write('\n');
       }
     } finally {
