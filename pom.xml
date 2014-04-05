@@ -367,7 +367,7 @@
     <dependency.locations.enabled>false</dependency.locations.enabled>
     <dependency.details.enabled>false</dependency.details.enabled>
     <!-- Dependency versions -->
-    <slf4j.version>1.7.6</slf4j.version>
+    <slf4j.version>1.7.7</slf4j.version>
     <tomcat.version>7.0.53</tomcat.version>
     <!-- Don't update to 1.7.5+ until Hadoop uses Jackson 1.9+ -->
     <avro.version>1.7.4</avro.version>
