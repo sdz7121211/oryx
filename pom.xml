@@ -156,6 +156,10 @@
             <artifactId>jetty-util</artifactId>
           </exclusion>
           <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
           </exclusion>
@@ -367,7 +371,7 @@
     <dependency.locations.enabled>false</dependency.locations.enabled>
     <dependency.details.enabled>false</dependency.details.enabled>
     <!-- Dependency versions -->
-    <slf4j.version>1.7.6</slf4j.version>
+    <slf4j.version>1.7.7</slf4j.version>
     <tomcat.version>7.0.53</tomcat.version>
     <!-- Don't update to 1.7.5+ until Hadoop uses Jackson 1.9+ -->
     <avro.version>1.7.4</avro.version>
@@ -939,6 +943,14 @@
       <id>hadoop220+</id>
       <properties>
         <hadoop.version>2.2.0</hadoop.version>
+        <!--<crunch.version>0.9.0-hadoop2</crunch.version>-->
+      </properties>
+    </profile>
+    <!-- Separate profile for 2.3.0 because of thinks like enum difference in JobContext? -->
+    <profile>
+      <id>hadoop230+</id>
+      <properties>
+        <hadoop.version>2.3.0</hadoop.version>
         <!--<crunch.version>0.9.0-hadoop2</crunch.version>-->
       </properties>
     </profile>
