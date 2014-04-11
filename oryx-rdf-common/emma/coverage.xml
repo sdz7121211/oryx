@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Mon Mar 03 23:47:56 GMT 2014 -->
+<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Fri Apr 11 14:56:07 BST 2014 -->
 
 <report>
   <stats>
@@ -12,25 +12,25 @@
     <all name="all classes">
       <coverage type="class, %" value="59%  (19/32)"/>
       <coverage type="method, %" value="40%  (76/189)"/>
-      <coverage type="block, %" value="34%  (1648/4881)"/>
+      <coverage type="block, %" value="34%  (1648/4885)"/>
       <coverage type="line, %" value="36%  (360.6/1003)"/>
 
       <package name="com.cloudera.oryx.rdf.common.pmml">
         <coverage type="class, %" value="0%   (0/1)"/>
         <coverage type="method, %" value="0%   (0/7)"/>
-        <coverage type="block, %" value="0%   (0/888)"/>
+        <coverage type="block, %" value="0%   (0/892)"/>
         <coverage type="line, %" value="0%   (0/192)"/>
 
         <srcfile name="DecisionForestPMML.java">
           <coverage type="class, %" value="0%   (0/1)"/>
           <coverage type="method, %" value="0%   (0/7)"/>
-          <coverage type="block, %" value="0%   (0/888)"/>
+          <coverage type="block, %" value="0%   (0/892)"/>
           <coverage type="line, %" value="0%   (0/192)"/>
 
           <class name="DecisionForestPMML">
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/7)"/>
-            <coverage type="block, %" value="0%   (0/888)"/>
+            <coverage type="block, %" value="0%   (0/892)"/>
             <coverage type="line, %" value="0%   (0/192)"/>
 
             <method name="DecisionForestPMML (): void">
@@ -50,7 +50,7 @@
             </method>
             <method name="read (File): Pair">
               <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/167)"/>
+              <coverage type="block, %" value="0%   (0/171)"/>
               <coverage type="line, %" value="0%   (0/38)"/>
             </method>
             <method name="translateFromPMML (Node, Map, InboundSettings): TreeNode">

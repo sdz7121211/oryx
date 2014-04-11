@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Mon Mar 03 23:47:56 GMT 2014 -->
+<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Fri Apr 11 14:56:07 BST 2014 -->
 
 <report>
   <stats>
@@ -6,14 +6,14 @@
     <classes value="66"/>
     <methods value="530"/>
     <srcfiles value="48"/>
-    <srclines value="2224"/>
+    <srclines value="2223"/>
   </stats>
   <data>
     <all name="all classes">
       <coverage type="class, %" value="67%  (44/66)"/>
       <coverage type="method, %" value="44%  (235/530)"/>
-      <coverage type="block, %" value="44%  (4594/10473)"/>
-      <coverage type="line, %" value="44%  (979.7/2224)"/>
+      <coverage type="block, %" value="44%  (4589/10468)"/>
+      <coverage type="line, %" value="44%  (978.7/2223)"/>
 
       <package name="com.cloudera.oryx.common.pmml">
         <coverage type="class, %" value="0%   (0/1)"/>
@@ -3359,20 +3359,20 @@
       <package name="com.cloudera.oryx.common.io">
         <coverage type="class, %" value="100% (2/2)"/>
         <coverage type="method, %" value="57%  (12/21)"/>
-        <coverage type="block, %" value="67%  (364/544)"/>
-        <coverage type="line, %" value="75%  (93.2/125)"/>
+        <coverage type="block, %" value="67%  (359/539)"/>
+        <coverage type="line, %" value="74%  (92.2/124)"/>
 
         <srcfile name="IOUtils.java">
           <coverage type="class, %" value="100% (1/1)"/>
           <coverage type="method, %" value="43%  (6/14)"/>
-          <coverage type="block, %" value="42%  (110/263)"/>
-          <coverage type="line, %" value="59%  (31.3/53)"/>
+          <coverage type="block, %" value="41%  (105/258)"/>
+          <coverage type="line, %" value="58%  (30.3/52)"/>
 
           <class name="IOUtils">
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="43%  (6/14)"/>
-            <coverage type="block, %" value="42%  (110/263)"/>
-            <coverage type="line, %" value="59%  (31.3/53)"/>
+            <coverage type="block, %" value="41%  (105/258)"/>
+            <coverage type="line, %" value="58%  (30.3/52)"/>
 
             <method name="IOUtils (): void">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -3436,8 +3436,8 @@
             </method>
             <method name="&lt;static initializer&gt;">
               <coverage type="method, %" value="100% (1/1)"/>
-              <coverage type="block, %" value="100% (11/11)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="block, %" value="100% (6/6)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="deleteRecursively (File): void">
               <coverage type="method, %" value="100% (1/1)"/>

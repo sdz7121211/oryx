@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Mon Mar 03 23:47:56 GMT 2014 -->
+<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Fri Apr 11 14:56:07 BST 2014 -->
 
 <report>
   <stats>
     <packages value="11"/>
     <classes value="77"/>
-    <methods value="371"/>
+    <methods value="370"/>
     <srcfiles value="58"/>
-    <srclines value="1611"/>
+    <srclines value="1610"/>
   </stats>
   <data>
     <all name="all classes">
       <coverage type="class, %" value="29%  (22/77)"/>
-      <coverage type="method, %" value="15%  (55/371)"/>
-      <coverage type="block, %" value="13%  (1044/8147)"/>
-      <coverage type="line, %" value="13%  (203/1611)"/>
+      <coverage type="method, %" value="15%  (55/370)"/>
+      <coverage type="block, %" value="13%  (1044/8142)"/>
+      <coverage type="line, %" value="13%  (203/1610)"/>
 
       <package name="com.cloudera.oryx.kmeans.computation.evaluate">
         <coverage type="class, %" value="0%   (0/12)"/>
@@ -618,13 +618,13 @@
             </method>
           </class>
         </srcfile>
-        <srcfile name="Standarize.java">
+        <srcfile name="Standardize.java">
           <coverage type="class, %" value="0%   (0/1)"/>
           <coverage type="method, %" value="0%   (0/4)"/>
           <coverage type="block, %" value="0%   (0/301)"/>
           <coverage type="line, %" value="0%   (0/57)"/>
 
-          <class name="Standarize">
+          <class name="Standardize">
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/4)"/>
             <coverage type="block, %" value="0%   (0/301)"/>
@@ -635,7 +635,7 @@
               <coverage type="block, %" value="0%   (0/4)"/>
               <coverage type="line, %" value="0%   (0/1)"/>
             </method>
-            <method name="Standarize (File, Summary): void">
+            <method name="Standardize (File, Summary): void">
               <coverage type="method, %" value="0%   (0/1)"/>
               <coverage type="block, %" value="0%   (0/9)"/>
               <coverage type="line, %" value="0%   (0/4)"/>
@@ -808,19 +808,19 @@
       <package name="com.cloudera.oryx.kmeans.computation.pmml">
         <coverage type="class, %" value="0%   (0/1)"/>
         <coverage type="method, %" value="0%   (0/6)"/>
-        <coverage type="block, %" value="0%   (0/407)"/>
+        <coverage type="block, %" value="0%   (0/406)"/>
         <coverage type="line, %" value="0%   (0/72)"/>
 
         <srcfile name="ClusteringModelBuilder.java">
           <coverage type="class, %" value="0%   (0/1)"/>
           <coverage type="method, %" value="0%   (0/6)"/>
-          <coverage type="block, %" value="0%   (0/407)"/>
+          <coverage type="block, %" value="0%   (0/406)"/>
           <coverage type="line, %" value="0%   (0/72)"/>
 
           <class name="ClusteringModelBuilder">
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/6)"/>
-            <coverage type="block, %" value="0%   (0/407)"/>
+            <coverage type="block, %" value="0%   (0/406)"/>
             <coverage type="line, %" value="0%   (0/72)"/>
 
             <method name="ClusteringModelBuilder (Summary): void">
@@ -830,7 +830,7 @@
             </method>
             <method name="build (String, Centers): ClusteringModel">
               <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/54)"/>
+              <coverage type="block, %" value="0%   (0/53)"/>
               <coverage type="line, %" value="0%   (0/8)"/>
             </method>
             <method name="buildSummaryInfo (Summary, InboundSettings): void">
@@ -2255,27 +2255,22 @@
       </package>
       <package name="com.cloudera.oryx.kmeans.computation.cluster">
         <coverage type="class, %" value="36%  (4/11)"/>
-        <coverage type="method, %" value="22%  (12/55)"/>
-        <coverage type="block, %" value="29%  (395/1377)"/>
-        <coverage type="line, %" value="27%  (76/285)"/>
+        <coverage type="method, %" value="22%  (12/54)"/>
+        <coverage type="block, %" value="29%  (395/1373)"/>
+        <coverage type="line, %" value="27%  (76/284)"/>
 
         <srcfile name="CentersIndexLoader.java">
           <coverage type="class, %" value="0%   (0/1)"/>
-          <coverage type="method, %" value="0%   (0/5)"/>
-          <coverage type="block, %" value="0%   (0/102)"/>
-          <coverage type="line, %" value="0%   (0/23)"/>
+          <coverage type="method, %" value="0%   (0/4)"/>
+          <coverage type="block, %" value="0%   (0/98)"/>
+          <coverage type="line, %" value="0%   (0/22)"/>
 
           <class name="CentersIndexLoader">
             <coverage type="class, %" value="0%   (0/1)"/>
-            <coverage type="method, %" value="0%   (0/5)"/>
-            <coverage type="block, %" value="0%   (0/102)"/>
-            <coverage type="line, %" value="0%   (0/23)"/>
+            <coverage type="method, %" value="0%   (0/4)"/>
+            <coverage type="block, %" value="0%   (0/98)"/>
+            <coverage type="line, %" value="0%   (0/22)"/>
 
-            <method name="&lt;static initializer&gt;">
-              <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/4)"/>
-              <coverage type="line, %" value="0%   (0/1)"/>
-            </method>
             <method name="CentersIndexLoader (ClusterSettings): void">
               <coverage type="method, %" value="0%   (0/1)"/>
               <coverage type="block, %" value="0%   (0/6)"/>

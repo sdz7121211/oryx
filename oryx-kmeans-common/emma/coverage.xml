@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Mon Mar 03 23:47:56 GMT 2014 -->
+<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Fri Apr 11 14:56:07 BST 2014 -->
 
 <report>
   <stats>
@@ -12,25 +12,25 @@
     <all name="all classes">
       <coverage type="class, %" value="89%  (17/19)"/>
       <coverage type="method, %" value="70%  (61/87)"/>
-      <coverage type="block, %" value="76%  (1465/1931)"/>
+      <coverage type="block, %" value="76%  (1465/1938)"/>
       <coverage type="line, %" value="78%  (272.2/351)"/>
 
       <package name="com.cloudera.oryx.kmeans.common.pmml">
         <coverage type="class, %" value="0%   (0/1)"/>
         <coverage type="method, %" value="0%   (0/8)"/>
-        <coverage type="block, %" value="0%   (0/169)"/>
+        <coverage type="block, %" value="0%   (0/176)"/>
         <coverage type="line, %" value="0%   (0/40)"/>
 
         <srcfile name="KMeansPMML.java">
           <coverage type="class, %" value="0%   (0/1)"/>
           <coverage type="method, %" value="0%   (0/8)"/>
-          <coverage type="block, %" value="0%   (0/169)"/>
+          <coverage type="block, %" value="0%   (0/176)"/>
           <coverage type="line, %" value="0%   (0/40)"/>
 
           <class name="KMeansPMML">
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/8)"/>
-            <coverage type="block, %" value="0%   (0/169)"/>
+            <coverage type="block, %" value="0%   (0/176)"/>
             <coverage type="line, %" value="0%   (0/40)"/>
 
             <method name="&lt;static initializer&gt;">
@@ -55,7 +55,7 @@
             </method>
             <method name="read (InputStream): PMML">
               <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/3)"/>
+              <coverage type="block, %" value="0%   (0/7)"/>
               <coverage type="line, %" value="0%   (0/1)"/>
             </method>
             <method name="toCenters (ClusteringModel): Centers">
@@ -70,7 +70,7 @@
             </method>
             <method name="write (OutputStream, DataDictionary, List): void">
               <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/16)"/>
+              <coverage type="block, %" value="0%   (0/19)"/>
               <coverage type="line, %" value="0%   (0/4)"/>
             </method>
           </class>
