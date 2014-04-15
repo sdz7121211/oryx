@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Fri Apr 11 14:56:07 BST 2014 -->
+<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Mon Apr 14 17:55:33 BST 2014 -->
 
 <report>
   <stats>
@@ -12,25 +12,25 @@
     <all name="all classes">
       <coverage type="class, %" value="67%  (44/66)"/>
       <coverage type="method, %" value="44%  (235/530)"/>
-      <coverage type="block, %" value="44%  (4589/10468)"/>
+      <coverage type="block, %" value="44%  (4589/10464)"/>
       <coverage type="line, %" value="44%  (978.7/2223)"/>
 
       <package name="com.cloudera.oryx.common.pmml">
         <coverage type="class, %" value="0%   (0/1)"/>
         <coverage type="method, %" value="0%   (0/5)"/>
-        <coverage type="block, %" value="0%   (0/297)"/>
+        <coverage type="block, %" value="0%   (0/293)"/>
         <coverage type="line, %" value="0%   (0/60)"/>
 
         <srcfile name="PMMLUtils.java">
           <coverage type="class, %" value="0%   (0/1)"/>
           <coverage type="method, %" value="0%   (0/5)"/>
-          <coverage type="block, %" value="0%   (0/297)"/>
+          <coverage type="block, %" value="0%   (0/293)"/>
           <coverage type="line, %" value="0%   (0/60)"/>
 
           <class name="PMMLUtils">
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/5)"/>
-            <coverage type="block, %" value="0%   (0/297)"/>
+            <coverage type="block, %" value="0%   (0/293)"/>
             <coverage type="line, %" value="0%   (0/60)"/>
 
             <method name="PMMLUtils (): void">
@@ -55,7 +55,7 @@
             </method>
             <method name="buildMiningSchema (InboundSettings, double []): MiningSchema">
               <coverage type="method, %" value="0%   (0/1)"/>
-              <coverage type="block, %" value="0%   (0/112)"/>
+              <coverage type="block, %" value="0%   (0/108)"/>
               <coverage type="line, %" value="0%   (0/22)"/>
             </method>
           </class>

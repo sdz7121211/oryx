@@ -124,34 +124,35 @@
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> MiningSchema buildMiningSchema(<a href="../../../../../com/cloudera/oryx/common/settings/InboundSettings.html">InboundSettings</a> inboundSettings, <strong class="jxr_keyword">double</strong>[] importances) {
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>     List&lt;String&gt; columnNames = inboundSettings.getColumnNames();
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>     Integer targetColumn = inboundSettings.getTargetColumn();
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>     Collection&lt;MiningField&gt; miningFields = Lists.newArrayList();
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>     <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> categoricalColumn : inboundSettings.getCategoricalColumns()) {
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>       MiningField field = <strong class="jxr_keyword">new</strong> MiningField(<strong class="jxr_keyword">new</strong> FieldName(columnNames.get(categoricalColumn)));
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>       field.setOptype(OpType.CATEGORICAL);
-<a class="jxr_linenumber" name="L123" href="#L123">123</a>       <strong class="jxr_keyword">if</strong> (targetColumn != <strong class="jxr_keyword">null</strong> &amp;&amp; categoricalColumn == targetColumn) {
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>         field.setUsageType(FieldUsageType.PREDICTED);
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>       } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">if</strong> (importances != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>           field.setImportance(importances[categoricalColumn]);
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         }
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>       }
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>       miningFields.add(field);
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>     }
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> numericColumn : inboundSettings.getNumericColumns()) {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>       MiningField field = <strong class="jxr_keyword">new</strong> MiningField(<strong class="jxr_keyword">new</strong> FieldName(columnNames.get(numericColumn)));
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>       field.setOptype(OpType.CONTINUOUS);
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>       <strong class="jxr_keyword">if</strong> (targetColumn != <strong class="jxr_keyword">null</strong> &amp;&amp; numericColumn == targetColumn) {
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>         field.setUsageType(FieldUsageType.PREDICTED);
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>       } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         <strong class="jxr_keyword">if</strong> (importances != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>           field.setImportance(importances[numericColumn]);
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         }
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>       }
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>       miningFields.add(field);
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>     }
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> MiningSchema().withMiningFields(miningFields);
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>   }
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> }
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>     Collection&lt;Integer&gt; ignored = inboundSettings.getIgnoredColumns();
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>     Collection&lt;Integer&gt; ids = inboundSettings.getIdColumns();
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>     Collection&lt;Integer&gt; numeric = inboundSettings.getNumericColumns();
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>     Collection&lt;Integer&gt; categorical = inboundSettings.getCategoricalColumns();
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>     Collection&lt;MiningField&gt; miningFields = Lists.newArrayList();
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>     <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> col = 0; col &lt; columnNames.size(); col++) {
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>       <strong class="jxr_keyword">if</strong> (ignored.contains(col) || ids.contains(col)) {
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>       }
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>       MiningField field = <strong class="jxr_keyword">new</strong> MiningField(<strong class="jxr_keyword">new</strong> FieldName(columnNames.get(col)));
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>       <strong class="jxr_keyword">if</strong> (numeric.contains(col)) {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         field.setOptype(OpType.CONTINUOUS);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>       } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (categorical.contains(col)) {
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>         field.setOptype(OpType.CATEGORICAL);
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>       } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"No type for col "</span> + col);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>       }
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>       <strong class="jxr_keyword">if</strong> (targetColumn != <strong class="jxr_keyword">null</strong> &amp;&amp; col == targetColumn) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>         field.setUsageType(FieldUsageType.PREDICTED);
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>       } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>         <strong class="jxr_keyword">if</strong> (importances != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>           field.setImportance(importances[col]);
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         }
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>       }
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>       miningFields.add(field);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> MiningSchema().withMiningFields(miningFields);
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>   }
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2013&#x2013;2014. All rights reserved.</div>
