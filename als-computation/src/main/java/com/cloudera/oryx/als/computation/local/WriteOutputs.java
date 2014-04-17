@@ -108,7 +108,7 @@ final class WriteOutputs implements Callable<Object> {
   }
 
   private static void writeIDIDsMap(LongObjectMap<LongSet> idIDs, File idIDsDir) throws IOException {
-    if (idIDs.isEmpty()) {
+    if (idIDs == null || idIDs.isEmpty()) {
       return;
     }
     File outFile = new File(idIDsDir, SINGLE_OUT_FILENAME);
