@@ -27,9 +27,11 @@ import com.cloudera.oryx.als.common.NotReadyException;
 import com.cloudera.oryx.als.common.OryxRecommender;
 
 /**
- * <p>Responds to a GET request to {@code /because/[userID]/[itemID]?howMany=n}, and in turn calls
- * {@link OryxRecommender#recommendedBecause(String, String, int)}. If howMany is not specified, defaults to
-  * {@link AbstractALSServlet#DEFAULT_HOW_MANY}.</p>
+ * <p>Responds to a GET request to {@code /because/[userID]/[itemID](?howMany=n)(&offset=o)},
+ * and in turn calls {@link OryxRecommender#recommendedBecause(String, String, int)}.
+ * If {@code howMany} is not specified, defaults to {@link AbstractALSServlet#DEFAULT_HOW_MANY}.
+ * {@code offset} causes a number of output values to be skipped, if specified,
+ * as in for paging.</p>
  *
  * <p>Outputs item/score pairs like {@link RecommendServlet} does.</p>
  *

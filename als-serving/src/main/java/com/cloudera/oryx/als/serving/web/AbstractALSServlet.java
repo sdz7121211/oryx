@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.List;
 
 import com.cloudera.oryx.als.common.IDValue;
 import com.cloudera.oryx.als.common.OryxRecommender;
@@ -76,6 +78,16 @@ public abstract class AbstractALSServlet extends AbstractOryxServlet {
     return howMany;
   }
 
+  private static int getOutputOffset(ServletRequest request) {
+    String offsetString = request.getParameter("offset");
+    if (offsetString == null) {
+      return 0;
+    }
+    int offset = Integer.parseInt(offsetString);
+    Preconditions.checkArgument(offset >= 0, "offset must be nonnegative");
+    return offset;
+  }
+
   static String[] getRescorerParams(ServletRequest request) {
     String[] rescorerParams = request.getParameterValues("rescorerParams");
     return rescorerParams == null ? NO_PARAMS : rescorerParams;
@@ -89,7 +101,17 @@ public abstract class AbstractALSServlet extends AbstractOryxServlet {
    * <p>CSV output contains one recommendation per line, and each line is of the form {@code itemID,strength},
    * like {@code "ABC",0.53}. Strength is an opaque indicator of the relative quality of the recommendation.</p>
    */
-  final void output(HttpServletRequest request, ServletResponse response, Iterable<IDValue> items) throws IOException {
+  final void output(HttpServletRequest request, ServletResponse response, List<IDValue> items) throws IOException {
+
+    int offset = getOutputOffset(request);
+    if (offset > 0) {
+      if (offset < items.size()) {
+        items = items.subList(offset, items.size());
+      } else {
+        items = Collections.emptyList();
+      }
+    }
+
     Writer writer = response.getWriter();
     switch (determineResponseType(request)) {
       case JSON:

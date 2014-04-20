@@ -32,12 +32,13 @@ import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 
 /**
  * <p>Responds to a GET request to
- * {@code /recommendToMany/[userID1](/[userID2]/...)(?howMany=n)(&considerKnownItems=true|false)(&rescorerParams=...)}
+ * {@code /recommendToMany/[userID1](/[userID2]/...)(?howMany=n)(&offset=o)(&considerKnownItems=true|false)(&rescorerParams=...)}
  * and in turn calls
  * {@link OryxRecommender#recommendToMany(String[], int, boolean, Rescorer)}.
  * If {@code howMany} is not specified, defaults to
  * {@link AbstractALSServlet#DEFAULT_HOW_MANY}. If {@code considerKnownItems} is not specified,
- * it is considered {@code false}.</p>
+ * it is considered {@code false}. {@code offset} causes a number of output values
+ * to be skipped, if specified, as in for paging.</p>
  *
  * <p>Unknown user IDs are ignored, unless all are unknown, in which case a
  * {@link HttpServletResponse#SC_BAD_REQUEST} status is returned.</p>

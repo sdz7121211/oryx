@@ -29,11 +29,12 @@ import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 
 /**
  * <p>Responds to a GET request to
- * {@code /recommend/[userID](?howMany=n)(&considerKnownItems=true|false)(&rescorerParams=...)}
+ * {@code /recommend/[userID](?howMany=n)(&offset=o)(&considerKnownItems=true|false)(&rescorerParams=...)}
  * and in turn calls
  * {@link OryxRecommender#recommend(String, int)}. If {@code howMany} is not specified, defaults to
  * {@link AbstractALSServlet#DEFAULT_HOW_MANY}. If {@code considerKnownItems} is not specified,
- * it is considered {@code false}.</p>
+ * it is considered {@code false}. {@code offset} causes a number of output values to be skipped,
+ * if specified, as in for paging.</p>
  *
  * <p>CSV output contains one recommendation per line, and each line is of the form {@code itemID, strength},
  * like {@code 325, 0.53}. Strength is an opaque indicator of the relative quality of the recommendation.</p>

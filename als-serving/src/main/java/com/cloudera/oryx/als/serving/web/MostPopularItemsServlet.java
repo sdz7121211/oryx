@@ -25,10 +25,12 @@ import com.cloudera.oryx.als.common.OryxRecommender;
 import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 
 /**
- * <p>Responds to a GET request to {@code /mostPopularItems(?howMany=n)}
+ * <p>Responds to a GET request to {@code /mostPopularItems(?howMany=n)(&offset=o)}
  * and in turn calls
  * {@link OryxRecommender#mostPopularItems(int)}. If {@code howMany} is not specified, defaults to
  * {@link AbstractALSServlet#DEFAULT_HOW_MANY}.
+ * {@code offset} causes a number of output values to be skipped, if specified,
+ * as in for paging.</p>
  *
  * <p>Output is as in {@link RecommendServlet}.</p>
  *

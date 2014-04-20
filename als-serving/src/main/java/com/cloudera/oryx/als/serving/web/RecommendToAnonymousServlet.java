@@ -34,11 +34,12 @@ import com.cloudera.oryx.als.common.rescorer.RescorerProvider;
 
 /**
  * <p>Responds to a GET request to
- * {@code /recommendToAnonymous/[itemID1(=value1)](/[itemID2(=value2)]/...)?howMany=n[&rescorerParams=...]},
+ * {@code /recommendToAnonymous/[itemID1(=value1)](/[itemID2(=value2)]/...)(?howMany=n)(&offset=o)(&rescorerParams=...)},
  * and in turn calls {@link OryxRecommender#recommendToAnonymous(String[], float[], int, Rescorer)}
  * with the supplied values. That is, 1 or more item IDs are supplied, which may each optionally correspond to
  * a value or else default to 1. If howMany is not specified, defaults to
- * {@link AbstractALSServlet#DEFAULT_HOW_MANY}.</p>
+ * {@link AbstractALSServlet#DEFAULT_HOW_MANY}. {@code offset} causes a number of output values
+ * to be skipped, if specified, as in for paging.</p>
  *
  * <p>Unknown item IDs are ignored, unless all are unknown, in which case a
  * {@link HttpServletResponse#SC_BAD_REQUEST} status is returned.</p>
