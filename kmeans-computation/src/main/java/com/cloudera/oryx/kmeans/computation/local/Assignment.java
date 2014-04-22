@@ -1,20 +1,18 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Copyright (c) 2014, Cloudera, Inc. All Rights Reserved.
+ *
+ * Cloudera, Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"). You may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for
+ * the specific language governing permissions and limitations under the
+ * License.
  */
+
 package com.cloudera.oryx.kmeans.computation.local;
 
 import com.cloudera.oryx.common.math.NamedRealVector;
@@ -36,6 +34,7 @@ import java.util.concurrent.Callable;
 public class Assignment implements Callable<List<String>> {
 
   private static final Logger log = LoggerFactory.getLogger(Assignment.class);
+  private static final Joiner COMMA = Joiner.on(',');
 
   private final List<List<RealVector>> folds;
   private final List<KMeansEvaluationData> clusters;
@@ -60,7 +59,8 @@ public class Assignment implements Callable<List<String>> {
           NamedRealVector nvec = (NamedRealVector) vec;
           for (KMeansEvaluationData data : clusters) {
             Distance d = data.getBest().getDistance(nvec);
-            ret.add(Joiner.on(',').join(nvec.getName(), data.getK(), d.getClosestCenterId(), d.getSquaredDistance()));
+            ret.add(COMMA.join(
+                nvec.getName(), data.getK(), d.getClosestCenterId(), d.getSquaredDistance()));
           }
         }
       }
@@ -69,7 +69,7 @@ public class Assignment implements Callable<List<String>> {
     return ImmutableList.of();
   }
 
-  private boolean doOutlierComputation(Config config) {
+  private static boolean doOutlierComputation(Config config) {
     return config.hasPath("model.outliers") && config.getBoolean("model.outliers.compute");
   }
 }

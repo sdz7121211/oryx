@@ -40,7 +40,6 @@ import org.dmg.pmml.ClusteringModel;
 import org.dmg.pmml.DataDictionary;
 import org.dmg.pmml.Model;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -72,7 +71,7 @@ public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
       List<ClusterValidityStatistics> stats = Lists.transform(evalData,
           new Function<KMeansEvaluationData, ClusterValidityStatistics>() {
             @Override
-            public ClusterValidityStatistics apply(@Nullable KMeansEvaluationData input) {
+            public ClusterValidityStatistics apply(KMeansEvaluationData input) {
               return input.getClusterValidityStatistics();
             }
           });
@@ -106,7 +105,7 @@ public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
       List<String> assignments = new Assignment(foldVecs, evalData).call();
       if (!assignments.isEmpty()) {
         File outlierDir = new File(tempOutDir, "outliers");
-        outlierDir.mkdir();
+        IOUtils.mkdirs(outlierDir);
         Files.write(Joiner.on("\n").join(assignments) + '\n', new File(outlierDir, "data.csv"), Charsets.UTF_8);
       }
       store.uploadDirectory(generationPrefix, tempOutDir, false);
