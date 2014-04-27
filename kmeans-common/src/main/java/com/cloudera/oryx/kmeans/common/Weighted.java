@@ -15,15 +15,16 @@
 
 package com.cloudera.oryx.kmeans.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import com.cloudera.oryx.common.LangUtils;
@@ -40,7 +41,7 @@ public class Weighted<T> {
   private static final class WeightFunction<T> implements Function<T, Weighted<T>> {
     @Override
     public Weighted<T> apply(T input) {
-      return new Weighted<T>(input);
+      return new Weighted<>(input);
     }
   }
   
@@ -76,7 +77,7 @@ public class Weighted<T> {
     if (random == null) {
       random = RandomManager.getRandom();
     }
-    SortedMap<Double, T> sampled = Maps.newTreeMap();
+    SortedMap<Double, T> sampled = new TreeMap<>();
     for (T thing : things) {
       if (thing.weight() > 0) {
         double score = Math.log(random.nextDouble()) / thing.weight();
@@ -88,7 +89,7 @@ public class Weighted<T> {
         }
       }
     }
-    return Lists.newArrayList(sampled.values());
+    return new ArrayList<>(sampled.values());
   }
 
   /**

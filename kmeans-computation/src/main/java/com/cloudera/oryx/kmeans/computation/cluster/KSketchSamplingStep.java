@@ -61,12 +61,12 @@ public final class KSketchSamplingStep extends KMeansJobStep {
     UpdateIndexFn updateIndexFn;
     if (iteration == 1) { // Iteration 1 is the first real iteration; iteration 0 contains initial state
       KSketchIndex index = createInitialIndex(settings, in);
-      distanceToClosestFn = new DistanceToClosestFn<RealVector>(index);
+      distanceToClosestFn = new DistanceToClosestFn<>(index);
       updateIndexFn = new UpdateIndexFn(index);
     } else {
       // Get the index location from the previous iteration
       String previousIndexKey = prefix + String.format("sketch/%d/", iteration - 1);
-      distanceToClosestFn = new DistanceToClosestFn<RealVector>(previousIndexKey);
+      distanceToClosestFn = new DistanceToClosestFn<>(previousIndexKey);
       updateIndexFn = new UpdateIndexFn(previousIndexKey);
     }
 

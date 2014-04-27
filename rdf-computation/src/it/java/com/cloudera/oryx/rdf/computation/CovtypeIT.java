@@ -15,15 +15,15 @@
 
 package com.cloudera.oryx.rdf.computation;
 
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -50,7 +50,7 @@ public final class CovtypeIT extends AbstractComputationIT {
   private static final Logger log = LoggerFactory.getLogger(CovtypeIT.class);
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("covtype");
   }
 
@@ -78,14 +78,14 @@ public final class CovtypeIT extends AbstractComputationIT {
   @Test
   public void testPMMLOutput() throws Exception {
     new RDFLocalGenerationRunner().call();
-    File pmmlFile = new File(TEST_TEMP_BASE_DIR, "00000/model.pmml.gz");
+    Path pmmlFile = TEST_TEMP_BASE_DIR.resolve("00000").resolve("model.pmml.gz");
     DecisionForestPMML.read(pmmlFile);
   }
 
   private static List<Example> readCovtypeExamples() throws IOException {
-    List<Example> allExamples = Lists.newArrayList();
+    List<Example> allExamples = new ArrayList<>();
     Pattern delimiter = Pattern.compile(",");
-    File dataFile = new File(TEST_TEMP_INBOUND_DIR, "covtype.csv.gz");
+    Path dataFile = TEST_TEMP_INBOUND_DIR.resolve("covtype.csv.gz");
     for (CharSequence line : new FileLineIterable(dataFile)) {
       String[] tokens = delimiter.split(line);
       Feature[] features = new Feature[54];

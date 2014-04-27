@@ -18,8 +18,9 @@ package com.cloudera.oryx.als.computation.local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import com.cloudera.oryx.als.common.StringLongMapping;
@@ -31,21 +32,21 @@ final class ReadMapping implements Callable<Object> {
 
   private static final Logger log = LoggerFactory.getLogger(ReadMapping.class);
 
-  private final File mappingDir;
+  private final Path mappingDir;
   private final StringLongMapping idMapping;
 
-  ReadMapping(File mappingDir, StringLongMapping idMapping) {
+  ReadMapping(Path mappingDir, StringLongMapping idMapping) {
     this.mappingDir = mappingDir;
     this.idMapping = idMapping;
   }
 
   @Override
   public Void call() throws IOException {
-    File[] inputFiles = mappingDir.listFiles(IOUtils.NOT_HIDDEN);
-    if (inputFiles == null || inputFiles.length == 0) {
+    List<Path> inputFiles = IOUtils.listFiles(mappingDir);
+    if (inputFiles.isEmpty()) {
       return null;
     }
-    for (File inputFile : inputFiles) {
+    for (Path inputFile : inputFiles) {
       log.info("Reading {}", inputFile);
       for (CharSequence line : new FileLineIterable(inputFile)) {
         String[] columns = DelimitedDataUtils.decode(line, ',');

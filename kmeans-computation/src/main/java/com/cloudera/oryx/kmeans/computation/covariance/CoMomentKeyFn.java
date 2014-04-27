@@ -15,16 +15,16 @@
 package com.cloudera.oryx.kmeans.computation.covariance;
 
 import com.cloudera.oryx.computation.common.fn.OryxDoFn;
-import com.google.common.collect.Maps;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.crunch.Emitter;
 import org.apache.crunch.Pair;
 import org.apache.crunch.types.PType;
 
+import java.util.HashMap;
 import java.util.Map;
 
 final class CoMomentKeyFn<K> extends OryxDoFn<Pair<K, Pair<RealVector, Double>>, Pair<Pair<K, Index>, CoMoment>> {
-  private final Map<K, CoMomentTracker> trackers = Maps.newHashMap();
+  private final Map<K, CoMomentTracker> trackers = new HashMap<>();
   private final PType<K> keyType;
 
   CoMomentKeyFn(PType<K> keyType) {

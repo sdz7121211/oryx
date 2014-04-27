@@ -57,8 +57,8 @@ public final class ComputationDataUtils {
                                                   int numPartitions,
                                                   String prefix,
                                                   Configuration conf) throws IOException {
-    LongObjectMap<float[]> result = new LongObjectMap<float[]>();
-    AvroFileSource<MatrixRow> records = new AvroFileSource<MatrixRow>(
+    LongObjectMap<float[]> result = new LongObjectMap<>();
+    AvroFileSource<MatrixRow> records = new AvroFileSource<>(
         Namespaces.toPath(prefix),
         (AvroType<MatrixRow>) ALSTypes.DENSE_ROW_MATRIX);
     for (MatrixRow record : records.read(conf)) {
@@ -106,7 +106,7 @@ public final class ComputationDataUtils {
                                            Configuration conf) throws IOException {
     LongSet ids = new LongSet();
     long count = 0;
-    for (long id : new AvroFileSource<Long>(Namespaces.toPath(key), Avros.longs()).read(conf)) {
+    for (long id : new AvroFileSource<>(Namespaces.toPath(key), Avros.longs()).read(conf)) {
       ids.add(id);
       if (++count % 10000 == 0) {
         progressable.progress();

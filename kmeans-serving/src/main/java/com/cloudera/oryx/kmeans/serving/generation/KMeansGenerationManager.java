@@ -20,9 +20,10 @@ import org.dmg.pmml.PMML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.cloudera.oryx.common.io.IOUtils;
 import com.cloudera.oryx.common.servcomp.Namespaces;
@@ -38,7 +39,7 @@ public final class KMeansGenerationManager extends GenerationManager {
   private int modelGeneration;
   private Generation currentGeneration;
 
-  public KMeansGenerationManager(File appendTempDir) throws IOException {
+  public KMeansGenerationManager(Path appendTempDir) throws IOException {
     super(appendTempDir);
     modelGeneration = NO_GENERATION;
   }
@@ -62,9 +63,8 @@ public final class KMeansGenerationManager extends GenerationManager {
       log.info("Most recent generation {} is newer than current {}", mostRecentModelGeneration, modelGeneration);
     }
 
-    File modelPMMLFile = File.createTempFile("model-", ".pmml.gz");
-    modelPMMLFile.deleteOnExit();
-    IOUtils.delete(modelPMMLFile);
+    Path modelPMMLFile = IOUtils.createTempFile("model-", ".pmml.gz");
+    Files.delete(modelPMMLFile);
 
     String instanceDir = ConfigUtils.getDefaultConfig().getString("model.instance-dir");
 
@@ -74,7 +74,7 @@ public final class KMeansGenerationManager extends GenerationManager {
     log.info("Loading model description from {}", modelPMMLKey);
 
     PMML pmmlModel = KMeansPMML.read(modelPMMLFile);
-    IOUtils.delete(modelPMMLFile);
+    Files.delete(modelPMMLFile);
     log.info("Loaded model description");
 
     modelGeneration = mostRecentModelGeneration;

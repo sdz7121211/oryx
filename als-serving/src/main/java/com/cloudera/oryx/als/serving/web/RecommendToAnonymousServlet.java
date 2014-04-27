@@ -16,13 +16,13 @@
 package com.cloudera.oryx.als.serving.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 
 import com.cloudera.oryx.als.common.rescorer.Rescorer;
@@ -100,7 +100,7 @@ public final class RecommendToAnonymousServlet extends AbstractALSServlet {
   }
   
   static Pair<String[],float[]> parseItemValuePairs(Iterator<String> pathComponents) {
-    List<Pair<String,Float>> itemValuePairs = Lists.newArrayListWithCapacity(1);
+    List<Pair<String,Float>> itemValuePairs = new ArrayList<>(1);
     while (pathComponents.hasNext()) {
       itemValuePairs.add(parseItemValue(pathComponents.next()));
     }
@@ -115,15 +115,15 @@ public final class RecommendToAnonymousServlet extends AbstractALSServlet {
       values[i] = value == null ? 1.0f : value;
     }
     
-    return new Pair<String[],float[]>(itemIDs, values);
+    return new Pair<>(itemIDs, values);
   }
 
   private static Pair<String,Float> parseItemValue(String s) {
     int equals = s.indexOf('=');
     if (equals < 0) {
-      return new Pair<String,Float>(s, null);
+      return new Pair<>(s, null);
     }
-    return new Pair<String,Float>(s.substring(0, equals), LangUtils.parseFloat(s.substring(equals + 1)));
+    return new Pair<>(s.substring(0, equals), LangUtils.parseFloat(s.substring(equals + 1)));
   }
 
 }

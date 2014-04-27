@@ -16,8 +16,9 @@
 package com.cloudera.oryx.serving;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -45,7 +46,6 @@ import com.cloudera.oryx.serving.web.status_jspx;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
 import com.typesafe.config.Config;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -121,7 +121,7 @@ public final class Runner implements Callable<Object>, Closeable {
 
   private final Config config;
   private Tomcat tomcat;
-  private final File noSuchBaseDir;
+  private final Path noSuchBaseDir;
   private boolean closed;
 
   /**
@@ -129,23 +129,23 @@ public final class Runner implements Callable<Object>, Closeable {
    */
   public Runner() {
     this.config = ConfigUtils.getDefaultConfig();
-    this.noSuchBaseDir = Files.createTempDir();
-    this.noSuchBaseDir.deleteOnExit();
+    try {
+      this.noSuchBaseDir = IOUtils.createTempDirectory("noSuchBaseDir");
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   public static void main(String[] args) throws Exception {
-    final Runner runner = new Runner();
-    SignalManager.register(new Runnable() {
-      @Override
-      public void run() {
-        runner.close();
-      }
-    }, SignalType.INT, SignalType.TERM);
-    try {
+    try (Runner runner = new Runner()) {
+      SignalManager.register(new Runnable() {
+        @Override
+        public void run() {
+          runner.close();
+        }
+      }, SignalType.INT, SignalType.TERM);
       runner.call();
       runner.await();
-    } finally {
-      runner.close();
     }
   }
 
@@ -226,7 +226,7 @@ public final class Runner implements Callable<Object>, Closeable {
   }
 
   private void configureTomcat(Tomcat tomcat, Connector connector) {
-    tomcat.setBaseDir(noSuchBaseDir.getAbsolutePath());
+    tomcat.setBaseDir(noSuchBaseDir.toAbsolutePath().toString());
     tomcat.setConnector(connector);
     tomcat.getService().addConnector(connector);
   }
@@ -258,7 +258,7 @@ public final class Runner implements Callable<Object>, Closeable {
     Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
     APISettings apiSettings = APISettings.create(config.getConfig("serving-layer.api"));
 
-    File keystoreFile = apiSettings.getKeystoreFile();
+    Path keystoreFile = apiSettings.getKeystoreFile();
     String keystorePassword = apiSettings.getKeystorePassword();
     if (keystoreFile == null && keystorePassword == null) {
       // HTTP connector
@@ -278,7 +278,7 @@ public final class Runner implements Callable<Object>, Closeable {
         connector.setAttribute("sslProtocol", protocol);
       }
       if (keystoreFile != null) {
-        connector.setAttribute("keystoreFile", keystoreFile.getAbsoluteFile());
+        connector.setAttribute("keystoreFile", keystoreFile.toAbsolutePath().toString());
       }
       connector.setAttribute("keystorePass", keystorePassword);
     }
@@ -317,17 +317,17 @@ public final class Runner implements Callable<Object>, Closeable {
     return null;
   }
 
-  private Context makeContext(Tomcat tomcat, File noSuchBaseDir) throws IOException {
+  private Context makeContext(Tomcat tomcat, Path noSuchBaseDir) throws IOException {
 
-    File contextPath = new File(noSuchBaseDir, "context");
-    IOUtils.mkdirs(contextPath);
+    Path contextPath = noSuchBaseDir.resolve("context");
+    Files.createDirectories(contextPath);
 
     APISettings apiSettings = APISettings.create(config.getConfig("serving-layer.api"));
     String contextPathURIBase = config.getString("serving-layer.api.context-path");
     if (contextPathURIBase == null || contextPathURIBase.isEmpty() || "/".equals(contextPathURIBase)) {
       contextPathURIBase = "";
     }
-    Context context = tomcat.addContext(contextPathURIBase, contextPath.getAbsolutePath());
+    Context context = tomcat.addContext(contextPathURIBase, contextPath.toAbsolutePath().toString());
 
     context.setWebappVersion("3.0");
     context.addWelcomeFile("index.jspx");

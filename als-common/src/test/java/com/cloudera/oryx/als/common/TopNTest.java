@@ -15,13 +15,13 @@
 
 package com.cloudera.oryx.als.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import org.junit.Test;
 
 import com.cloudera.oryx.common.OryxTest;
@@ -78,7 +78,7 @@ public final class TopNTest extends OryxTest {
 
   @Test
   public void testTopOfManyIntoQueueMultithreaded() {
-    BlockingQueue<NumericIDValue> top3 = Queues.newLinkedBlockingQueue();
+    BlockingQueue<NumericIDValue> top3 = new LinkedBlockingQueue<>();
     float[] queueLeastValue = { Float.NEGATIVE_INFINITY };
     List<NumericIDValue> candidates = makeNCandidates(20);
     TopN.selectTopNIntoQueueMultithreaded(top3, queueLeastValue, candidates.iterator(), 3);
@@ -90,7 +90,7 @@ public final class TopNTest extends OryxTest {
 
 
   private static List<NumericIDValue> makeNCandidates(int n) {
-    List<NumericIDValue> candidates = Lists.newArrayListWithCapacity(n);
+    List<NumericIDValue> candidates = new ArrayList<>(n);
     for (int i = 1; i <= n; i++) {
       candidates.add(new NumericIDValue(i, i));
     }

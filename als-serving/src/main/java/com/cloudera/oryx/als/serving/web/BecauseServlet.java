@@ -72,16 +72,12 @@ public final class BecauseServlet extends AbstractALSServlet {
       output(request,
              response,
              recommender.recommendedBecause(userID, itemID, getNumResultsToFetch(request)));
-    } catch (NoSuchUserException nsue) {
+    } catch (NoSuchUserException | NoSuchItemException nsue) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, nsue.toString());
-    } catch (NoSuchItemException nsie) {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, nsie.toString());
     } catch (NotReadyException nre) {
       response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, nre.toString());
-    } catch (IllegalArgumentException iae) {
+    } catch (IllegalArgumentException | UnsupportedOperationException iae) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, iae.toString());
-    } catch (UnsupportedOperationException uoe) {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, uoe.toString());
     }
   }
 

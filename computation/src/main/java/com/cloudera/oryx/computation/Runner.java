@@ -16,8 +16,9 @@
 package com.cloudera.oryx.computation;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Callable;
 import javax.net.ssl.SSLContext;
@@ -29,7 +30,6 @@ import com.cloudera.oryx.common.servcomp.web.style_jspx;
 import com.cloudera.oryx.common.settings.APISettings;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 
-import com.google.common.io.Files;
 import com.typesafe.config.Config;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -90,7 +90,7 @@ public final class Runner implements Callable<Object>, Closeable {
 
   private final Config config;
   private Tomcat tomcat;
-  private File noSuchBaseDir;
+  private Path noSuchBaseDir;
   private boolean closed;
 
   public Runner() {
@@ -112,8 +112,7 @@ public final class Runner implements Callable<Object>, Closeable {
 
     System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
 
-    this.noSuchBaseDir = Files.createTempDir();
-    this.noSuchBaseDir.deleteOnExit();
+    this.noSuchBaseDir = Files.createTempDirectory("noSuchBaseDir");
 
     Tomcat tomcat = new Tomcat();
     Connector connector = makeConnector();
@@ -178,23 +177,20 @@ public final class Runner implements Callable<Object>, Closeable {
   }
 
   public static void main(String[] args) throws Exception {
-    final Runner runner = new Runner();
-    SignalManager.register(new Runnable() {
-      @Override
-      public void run() {
-        runner.close();
-      }
-    }, SignalType.INT, SignalType.TERM);
-    try {
+    try (Runner runner = new Runner()) {
+      SignalManager.register(new Runnable() {
+        @Override
+        public void run() {
+          runner.close();
+        }
+      }, SignalType.INT, SignalType.TERM);
       runner.call();
       runner.await();
-    } finally {
-      runner.close();
     }
   }
 
   private void configureTomcat(Tomcat tomcat, Connector connector) {
-    tomcat.setBaseDir(noSuchBaseDir.getAbsolutePath());
+    tomcat.setBaseDir(noSuchBaseDir.toAbsolutePath().toString());
     tomcat.setConnector(connector);
     tomcat.getService().addConnector(connector);
   }
@@ -225,7 +221,7 @@ public final class Runner implements Callable<Object>, Closeable {
   private Connector makeConnector() {
     Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
     APISettings apiSettings = APISettings.create(config.getConfig("computation-layer.api"));
-    File keystoreFile = apiSettings.getKeystoreFile();
+    Path keystoreFile = apiSettings.getKeystoreFile();
     if (keystoreFile == null) {
       // HTTP connector
       connector.setPort(apiSettings.getPort());
@@ -242,7 +238,7 @@ public final class Runner implements Callable<Object>, Closeable {
       if (protocol != null) {
         connector.setAttribute("sslProtocol", protocol);
       }
-      connector.setAttribute("keystoreFile", keystoreFile.getAbsoluteFile());
+      connector.setAttribute("keystoreFile", keystoreFile.toAbsolutePath().toString());
       connector.setAttribute("keystorePass", apiSettings.getKeystorePassword());
     }
 
@@ -265,12 +261,12 @@ public final class Runner implements Callable<Object>, Closeable {
     return null;
   }
 
-  private Context makeContext(Tomcat tomcat, File noSuchBaseDir) throws IOException {
+  private Context makeContext(Tomcat tomcat, Path noSuchBaseDir) throws IOException {
 
-    File contextPath = new File(noSuchBaseDir, "context");
-    IOUtils.mkdirs(contextPath);
+    Path contextPath = noSuchBaseDir.resolve("context");
+    Files.createDirectories(contextPath);
 
-    Context context = tomcat.addContext("", contextPath.getAbsolutePath());
+    Context context = tomcat.addContext("", contextPath.toAbsolutePath().toString());
     context.setWebappVersion("3.0");
     context.addWelcomeFile("index.jspx");
     addErrorPages(context);

@@ -15,9 +15,9 @@
 
 package com.cloudera.oryx.rdf.common.eval;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.cloudera.oryx.common.OryxTest;
@@ -34,7 +34,7 @@ public final class WeightedPredictionTest extends OryxTest {
 
   @Test
   public void testNumericVote() {
-    List<NumericPrediction> predictions = Lists.newArrayList(
+    List<NumericPrediction> predictions = Arrays.asList(
         new NumericPrediction(1.0f, 1),
         new NumericPrediction(3.0f, 2),
         new NumericPrediction(6.0f, 3)
@@ -47,7 +47,7 @@ public final class WeightedPredictionTest extends OryxTest {
 
   @Test
   public void testNumericVoteWeighted() {
-    List<NumericPrediction> predictions = Lists.newArrayList(
+    List<NumericPrediction> predictions = Arrays.asList(
         new NumericPrediction(1.0f, 1),
         new NumericPrediction(3.0f, 2),
         new NumericPrediction(6.0f, 3)
@@ -60,7 +60,7 @@ public final class WeightedPredictionTest extends OryxTest {
 
   @Test
   public void testCategoricalVote() {
-    List<CategoricalPrediction> predictions = Lists.newArrayList(
+    List<CategoricalPrediction> predictions = Arrays.asList(
         new CategoricalPrediction(new int[] {0, 1, 2}),
         new CategoricalPrediction(new int[] {6, 2, 0}),
         new CategoricalPrediction(new int[] {0, 2, 0})
@@ -73,10 +73,10 @@ public final class WeightedPredictionTest extends OryxTest {
 
   @Test
   public void testCategoricalVoteWeighted() {
-    List<CategoricalPrediction> predictions = Lists.newArrayList(
-        new CategoricalPrediction(new int[] {0, 1, 2}),
-        new CategoricalPrediction(new int[] {6, 2, 0}),
-        new CategoricalPrediction(new int[] {0, 2, 0})
+    List<CategoricalPrediction> predictions = Arrays.asList(
+        new CategoricalPrediction(new int[]{0, 1, 2}),
+        new CategoricalPrediction(new int[]{6, 2, 0}),
+        new CategoricalPrediction(new int[]{0, 2, 0})
     );
     double[] weights = {1.0, 10.0, 1.0};
     CategoricalPrediction vote = (CategoricalPrediction) WeightedPrediction.voteOnFeature(predictions, weights);

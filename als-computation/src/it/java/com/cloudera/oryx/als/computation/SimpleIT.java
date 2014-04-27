@@ -15,9 +15,9 @@
 
 package com.cloudera.oryx.als.computation;
 
-import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public final class SimpleIT extends AbstractComputationIT {
   private static final Logger log = LoggerFactory.getLogger(SimpleIT.class);
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("grouplens100K");
   }
 

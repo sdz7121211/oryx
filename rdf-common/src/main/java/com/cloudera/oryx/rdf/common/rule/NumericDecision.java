@@ -15,13 +15,13 @@
 
 package com.cloudera.oryx.rdf.common.rule;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultiset;
 import org.apache.commons.math3.stat.descriptive.StorelessUnivariateStatistic;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.util.FastMath;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -113,7 +113,7 @@ public final class NumericDecision extends Decision {
     }
 
     // Make decisions from split points that divide up input into roughly equal amounts of examples
-    List<Decision> decisions = Lists.newArrayListWithExpectedSize(suggestedMaxSplitCandidates);
+    List<Decision> decisions = new ArrayList<>(suggestedMaxSplitCandidates);
     int approxExamplesPerSplit = FastMath.max(1, numExamples / suggestedMaxSplitCandidates);
     int examplesInSplit = 0;
     float lastValue = Float.NaN;

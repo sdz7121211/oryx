@@ -427,12 +427,8 @@ public abstract class JobStep extends Configured implements Tool, HasState {
       if (result != 0) {
         throw new JobException(step + " hasd bad exit status: " + result);
       }
-    } catch (IOException ioe) {
-      throw ioe;
-    } catch (InterruptedException ie) {
-      throw ie;
-    } catch (JobException je) {
-      throw je;
+    } catch (IOException | JobException | InterruptedException e) {
+      throw e;
     } catch (Exception e) {
       throw new JobException(e);
     }

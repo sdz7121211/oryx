@@ -15,14 +15,16 @@
 
 package com.cloudera.oryx.computation.common.summary;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
+import com.google.common.collect.Sets;
 import org.apache.crunch.fn.Aggregators.SimpleAggregator;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public final class InternalStats {
 
@@ -81,7 +83,7 @@ public final class InternalStats {
   
   private Map<String, Entry> histogram() {
     if (histogram == null) {
-      histogram = Maps.newHashMap();
+      histogram = new HashMap<>();
     }
     return histogram;
   }
@@ -114,8 +116,8 @@ public final class InternalStats {
       internalNumeric().merge(other.internalNumeric);
     } else {
       Map<String, Entry> entries = histogram();
-      Map<String, Entry> merged = Maps.newTreeMap();
-      Set<String> keys = Sets.newTreeSet(
+      Map<String, Entry> merged = new TreeMap<>();
+      Set<String> keys = new TreeSet<>(
           Sets.union(entries.keySet(), other.histogram().keySet()));
       for (String key : keys) {
         Entry e = entries.get(key);

@@ -18,7 +18,6 @@ package com.cloudera.oryx.common.stats;
 import java.io.Serializable;
 
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Longs;
 import org.apache.commons.math3.stat.descriptive.AbstractStorelessUnivariateStatistic;
 
@@ -125,7 +124,7 @@ public final class IntegerWeightedMean extends AbstractStorelessUnivariateStatis
     IntegerWeightedMean other = (IntegerWeightedMean) o;
     return count == other.count &&
         totalWeight == other.totalWeight &&
-        Doubles.compare(mean, other.mean) == 0;
+        Double.compare(mean, other.mean) == 0;
   }
 
 }

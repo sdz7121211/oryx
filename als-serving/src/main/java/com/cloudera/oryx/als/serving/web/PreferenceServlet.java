@@ -100,11 +100,8 @@ public final class PreferenceServlet extends AbstractALSServlet {
 
   private static float readValue(ServletRequest request) throws IOException {
     String line;
-    BufferedReader reader = request.getReader();
-    try {
+    try (BufferedReader reader = request.getReader()) {
       line = reader.readLine();
-    } finally {
-      reader.close();
     }
     if (line == null || line.isEmpty()) {
       return 1.0f;

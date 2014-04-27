@@ -28,11 +28,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServlet;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Handler;
 
-import com.cloudera.oryx.common.io.IOUtils;
 import com.cloudera.oryx.common.log.MemoryHandler;
 import com.cloudera.oryx.common.servcomp.web.LogServlet;
 import com.cloudera.oryx.common.settings.APISettings;
@@ -49,7 +50,7 @@ public abstract class AbstractOryxServingInitListener implements ServletContextL
   public static final String READ_ONLY_KEY = "READ_ONLY";
   private static final String LOCAL_INPUT_DIR_KEY = "LOCAL_INPUT_DIR";
 
-  private File localInputDir;
+  private Path localInputDir;
 
   @Override
   public void contextInitialized(ServletContextEvent event) {
@@ -70,7 +71,7 @@ public abstract class AbstractOryxServingInitListener implements ServletContextL
     // No-op default
   }
 
-  protected final File getLocalInputDir() {
+  protected final Path getLocalInputDir() {
     return localInputDir;
   }
 
@@ -95,11 +96,12 @@ public abstract class AbstractOryxServingInitListener implements ServletContextL
    * This is a possible workaround for Tomcat on Windows, not creating the temp dir it allocates?
    */
   private static void configureTempDir(ServletContext context) {
-    File tempDir = (File) context.getAttribute(ServletContext.TEMPDIR);
-    Preconditions.checkNotNull(tempDir, "Servlet container didn't set %s", ServletContext.TEMPDIR);
-    Preconditions.checkArgument(!tempDir.isFile());
+    java.io.File tempDirFile = (java.io.File) context.getAttribute(ServletContext.TEMPDIR);
+    Preconditions.checkNotNull(tempDirFile, "Servlet container didn't set %s", ServletContext.TEMPDIR);
+    Path tempDir = tempDirFile.toPath();
+    Preconditions.checkArgument(Files.isDirectory(tempDir));
     try {
-      IOUtils.mkdirs(tempDir);
+      Files.createDirectories(tempDir);
     } catch (IOException e) {
       log.warn("Can't make {}", tempDir);
     }
@@ -108,9 +110,9 @@ public abstract class AbstractOryxServingInitListener implements ServletContextL
   private void configureLocalInputDir() {
     Config config = ConfigUtils.getDefaultConfig();
     String localInputDirName = config.getString("serving-layer.local-input-dir");
-    localInputDir = new File(localInputDirName);
+    localInputDir = Paths.get(localInputDirName);
     try {
-      IOUtils.mkdirs(localInputDir);
+      Files.createDirectories(localInputDir);
     } catch (IOException e) {
       log.warn("Can't make {}", localInputDir);
     }

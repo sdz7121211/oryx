@@ -15,13 +15,12 @@
 
 package com.cloudera.oryx.common.log;
 
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
-
-import com.google.common.collect.Lists;
 
 /**
  * Simple {@link Handler} that records recent log lines in memory.
@@ -36,7 +35,7 @@ public final class MemoryHandler extends Handler {
   private final Queue<String> logLines;
 
   public MemoryHandler() {
-    logLines = Lists.newLinkedList();
+    logLines = new LinkedList<>();
     setFormatter(new SimpleFormatter());
     setLevel(Level.FINE);
   }

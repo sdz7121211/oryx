@@ -14,14 +14,14 @@
  */
 package com.cloudera.oryx.kmeans.computation.covariance;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.math3.linear.RealVector;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 final class CoMomentTracker {
-  private final Map<Index, CoMoment> cache = Maps.newHashMap();
+  private final Map<Index, CoMoment> cache = new HashMap<>();
 
   public void reset() {
     cache.clear();

@@ -16,7 +16,6 @@
 package com.cloudera.oryx.rdf.common.tree;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.FastMath;
@@ -24,6 +23,7 @@ import org.apache.commons.math3.util.Pair;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -168,7 +168,7 @@ public final class DecisionTree implements TreeBasedClassifier {
                                                   int featuresToTry,
                                                   int numFeatures,
                                                   RandomGenerator random) {
-    Collection<Integer> features = Sets.newHashSetWithExpectedSize(featuresToTry);
+    Collection<Integer> features = new HashSet<>(featuresToTry);
     int max = FastMath.min(numFeatures, featuresToTry);
     int attempts = 0;
     while (features.size() < max && attempts < 2 * featuresToTry) {
@@ -242,8 +242,8 @@ public final class DecisionTree implements TreeBasedClassifier {
   public String toString() {
     StringBuilder result = new StringBuilder();
     if (root != null) {
-      Deque<Pair<TreeNode,TreePath>> toPrint = new LinkedList<Pair<TreeNode,TreePath>>();
-      toPrint.push(new Pair<TreeNode,TreePath>(root, TreePath.EMPTY));
+      Deque<Pair<TreeNode,TreePath>> toPrint = new LinkedList<>();
+      toPrint.push(new Pair<>(root, TreePath.EMPTY));
       while (!toPrint.isEmpty()) {
         Pair<TreeNode,TreePath> entry = toPrint.pop();
         TreeNode node = entry.getFirst();
@@ -259,8 +259,8 @@ public final class DecisionTree implements TreeBasedClassifier {
         result.append(node).append('\n');
         if (node != null && !node.isTerminal()) {
           DecisionNode decisionNode = (DecisionNode) node;
-          toPrint.push(new Pair<TreeNode,TreePath>(decisionNode.getRight(), path.extendRight()));
-          toPrint.push(new Pair<TreeNode,TreePath>(decisionNode.getLeft(), path.extendLeft()));
+          toPrint.push(new Pair<>(decisionNode.getRight(), path.extendRight()));
+          toPrint.push(new Pair<>(decisionNode.getLeft(), path.extendLeft()));
         }
       }
     }

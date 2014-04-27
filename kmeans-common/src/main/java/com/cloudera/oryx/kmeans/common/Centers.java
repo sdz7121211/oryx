@@ -16,12 +16,13 @@
 package com.cloudera.oryx.kmeans.common;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import org.apache.commons.math3.linear.RealVector;
 
 /**
@@ -52,7 +53,11 @@ public final class Centers implements Iterable<RealVector> {
    * @throws IllegalArgumentException if the input is empty
    */
   public Centers(Iterable<RealVector> points) {
-    this.centers = ImmutableList.copyOf(Sets.newLinkedHashSet(points));
+    Collection<RealVector> uniqueVectors = new HashSet<>();
+    for (RealVector point : points) {
+      uniqueVectors.add(point);
+    }
+    this.centers = ImmutableList.copyOf(uniqueVectors);
   }
   
   /**

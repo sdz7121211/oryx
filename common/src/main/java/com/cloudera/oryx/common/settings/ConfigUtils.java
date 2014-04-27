@@ -19,7 +19,8 @@ import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Utilities for retrieving {@code Config} instances.
@@ -50,10 +51,10 @@ public final class ConfigUtils {
     }
   }
 
-  public static synchronized void overlayConfigOnDefault(File configFile) {
-    if (configFile.exists()) {
-      Preconditions.checkArgument(!configFile.isDirectory(), "Cannot handle directories of config files %s", configFile);
-      DEFAULT_CONFIG = ConfigFactory.parseFileAnySyntax(configFile).resolve().withFallback(getDefaultConfig());
+  public static synchronized void overlayConfigOnDefault(Path configFile) {
+    if (Files.exists(configFile)) {
+      Preconditions.checkArgument(Files.isRegularFile(configFile), "Cannot handle directories of config files %s", configFile);
+      DEFAULT_CONFIG = ConfigFactory.parseFileAnySyntax(configFile.toFile()).resolve().withFallback(getDefaultConfig());
     }
   }
 

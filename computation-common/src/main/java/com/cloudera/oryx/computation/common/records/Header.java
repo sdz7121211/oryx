@@ -15,12 +15,11 @@
 
 package com.cloudera.oryx.computation.common.records;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 
@@ -37,7 +36,7 @@ public final class Header {
   
   public static final class Builder {
     
-    private final Map<String, Type> data = Maps.newLinkedHashMap();
+    private final Map<String, Type> data = new LinkedHashMap<>();
     
     public Builder addNumeric(String name) {
       data.put(name, Type.NUMERIC);
@@ -111,7 +110,7 @@ public final class Header {
   }
   
   private List<Integer> getColumns(Type... targets) {
-    List<Integer> ret = Lists.newArrayList();
+    List<Integer> ret = new ArrayList<>();
     int index = 0;
     for (Type t : data.values())  {
       for (Type target : targets) {

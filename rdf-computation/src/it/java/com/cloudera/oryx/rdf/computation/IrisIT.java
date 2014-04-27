@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public final class IrisIT extends AbstractComputationIT {
   private static final Logger log = LoggerFactory.getLogger(IrisIT.class);
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("iris");
   }
 
@@ -62,7 +62,7 @@ public final class IrisIT extends AbstractComputationIT {
   public void testPMMLOutput() throws Exception {
     // It's not clear this will actually be deterministic but it will probably be for our purposes
     new RDFLocalGenerationRunner().call();
-    File pmmlFile = new File(TEST_TEMP_BASE_DIR, "00000/model.pmml.gz");
+    Path pmmlFile = TEST_TEMP_BASE_DIR.resolve("00000").resolve("model.pmml.gz");
 
     log.info("PMML:\n{}", CharStreams.toString(IOUtils.openReaderMaybeDecompressing(pmmlFile)));
 

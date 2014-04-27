@@ -19,9 +19,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +42,7 @@ public final class SimpleNonnumericDataIT extends AbstractComputationIT {
   private static final Logger log = LoggerFactory.getLogger(SimpleNonnumericDataIT.class);
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("grouplens100K-ABC");
   }
 

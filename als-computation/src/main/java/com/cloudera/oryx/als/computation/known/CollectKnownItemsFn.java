@@ -20,9 +20,9 @@ import com.cloudera.oryx.common.iterator.LongPrimitiveIterator;
 import com.cloudera.oryx.common.io.DelimitedDataUtils;
 import com.cloudera.oryx.computation.common.fn.OryxMapFn;
 
-import com.google.common.collect.Lists;
 import org.apache.crunch.Pair;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public final class CollectKnownItemsFn extends OryxMapFn<Pair<Long, LongFloatMap>, String> {
@@ -33,7 +33,7 @@ public final class CollectKnownItemsFn extends OryxMapFn<Pair<Long, LongFloatMap
 
   private static String setToString(LongFloatMap map) {
     LongPrimitiveIterator it = map.keySetIterator();
-    Collection<String> keyStrings = Lists.newArrayListWithCapacity(map.size());
+    Collection<String> keyStrings = new ArrayList<>(map.size());
     while (it.hasNext()) {
       keyStrings.add(Long.toString(it.nextLong()));
     }

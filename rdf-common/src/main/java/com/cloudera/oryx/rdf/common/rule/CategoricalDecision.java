@@ -16,13 +16,13 @@
 package com.cloudera.oryx.rdf.common.rule;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.stat.descriptive.StorelessUnivariateStatistic;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.Pair;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -167,11 +167,11 @@ public final class CategoricalDecision extends Decision {
     }
     Preconditions.checkArgument(maxCategory >= 0);
     
-    List<Pair<Double,Integer>> byScore = Lists.newArrayListWithCapacity(averageTargetForCategory.length);
+    List<Pair<Double,Integer>> byScore = new ArrayList<>(averageTargetForCategory.length);
     for (int featureCategory = 0; featureCategory < averageTargetForCategory.length; featureCategory++) {
       StorelessUnivariateStatistic mean = averageTargetForCategory[featureCategory];
       if (mean != null) {
-        byScore.add(new Pair<Double,Integer>(mean.getResult(), featureCategory));
+        byScore.add(new Pair<>(mean.getResult(), featureCategory));
       }
     }
     return sortAndGetDecisionsOverSubset(featureNumber,
@@ -213,12 +213,12 @@ public final class CategoricalDecision extends Decision {
     }
     Preconditions.checkArgument(maxCategory >= 0);
 
-    List<Pair<Double,Integer>> byScore = Lists.newArrayListWithCapacity(targetCountsForFeature.length);
+    List<Pair<Double,Integer>> byScore = new ArrayList<>(targetCountsForFeature.length);
     for (int featureCategory = 0; featureCategory < targetCountsForFeature.length; featureCategory++) {
       int[] targetCategoryCounts = targetCountsForFeature[featureCategory];
       if (targetCategoryCounts != null) {
         double entropy = Information.entropy(targetCategoryCounts);
-        byScore.add(new Pair<Double,Integer>(entropy, featureCategory));
+        byScore.add(new Pair<>(entropy, featureCategory));
       }
     }
 
@@ -245,7 +245,7 @@ public final class CategoricalDecision extends Decision {
     // Going to take the decisions based on earlier splits, if we need to cut it down.
     // These are decisions that partition the data into a low-entropy subset, and everything else.
     // These are likely to be the best.
-    List<Decision> decisions = Lists.newArrayListWithCapacity(numDecisions - 1);
+    List<Decision> decisions = new ArrayList<>(numDecisions - 1);
     for (int i = 1; i < numDecisions; i++) {
       decisions.add(new CategoricalDecision(featureNumber, categoryCount, sorted, 0, i, maxCategory));
     }

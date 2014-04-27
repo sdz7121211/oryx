@@ -15,9 +15,9 @@
 
 package com.cloudera.oryx.als.serving.generation;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Path;
 
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public final class ALSGenerationManager extends GenerationManager {
   private final LongSet recentlyActiveItems;
   private final GenerationLoader loader;
 
-  public ALSGenerationManager(File appendTempDir) throws IOException {
+  public ALSGenerationManager(Path appendTempDir) throws IOException {
     super(appendTempDir);
     modelGeneration = NO_GENERATION;
     recentlyActiveUsers = new LongSet();

@@ -33,24 +33,12 @@ final class ByValueAscComparator implements Comparator<NumericIDValue>, Serializ
 
   @Override
   public int compare(NumericIDValue a, NumericIDValue b) {
-    float aValue = a.getValue();
-    float bValue = b.getValue();
-    if (aValue < bValue) {
-      return -1;
-    }
-    if (aValue > bValue) {
-      return 1;
+    int compare = Float.compare(a.getValue(), b.getValue());
+    if (compare != 0) {
+      return compare;
     }
     // Break ties by item ID, *de*scending. It's rare but at least gives predictable ordering.
-    long aItem = a.getID();
-    long bItem = b.getID();
-    if (aItem > bItem) {
-      return -1;
-    }
-    if (aItem < bItem) {
-      return 1;
-    }
-    return 0;
+    return Long.compare(b.getID(), a.getID());
   }
 
 }

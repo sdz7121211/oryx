@@ -57,8 +57,8 @@ public final class AlternatingLeastSquaresTest extends OryxTest {
 
   static RealMatrix buildTestXYTProduct() throws ExecutionException, InterruptedException {
 
-    LongObjectMap<LongFloatMap> byRow = new LongObjectMap<LongFloatMap>();
-    LongObjectMap<LongFloatMap> byCol = new LongObjectMap<LongFloatMap>();
+    LongObjectMap<LongFloatMap> byRow = new LongObjectMap<>();
+    LongObjectMap<LongFloatMap> byCol = new LongObjectMap<>();
     // Octave: R = [ 0 2 3 1 0 ; 0 0 4 5 0 ; 1 0 0 0 2 ; 3 0 1 0 5 ; 0 2 2 2 0 ]
     MatrixUtils.addTo(0, 1, 2.0f, byRow, byCol);
     MatrixUtils.addTo(0, 2,  3.0f, byRow, byCol);
@@ -75,7 +75,7 @@ public final class AlternatingLeastSquaresTest extends OryxTest {
     MatrixUtils.addTo(4, 3,  2.0f, byRow, byCol);
 
     // Octave: Y = [ 0.1 0.2 ; 0.2 0.5 ; 0.3 0.1 ; 0.2 0.2 ; 0.5 0.4 ];
-    LongObjectMap<float[]> previousY = new LongObjectMap<float[]>();
+    LongObjectMap<float[]> previousY = new LongObjectMap<>();
     previousY.put(0L, new float[] {0.1f, 0.2f});
     previousY.put(1L, new float[] {0.2f, 0.5f});
     previousY.put(2L, new float[] {0.3f, 0.1f});

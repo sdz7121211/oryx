@@ -15,15 +15,16 @@
 
 package com.cloudera.oryx.common.servcomp;
 
-import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Iterator;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
@@ -70,7 +71,7 @@ public final class OryxConfiguration {
       localComputation = config.getBoolean("model.local-computation");
     }
     if (!localComputation) {
-      File hadoopConfDir = findHadoopConfDir();
+      Path hadoopConfDir = findHadoopConfDir();
       addResource(hadoopConfDir, "core-site.xml", conf);
       addResource(hadoopConfDir, "hdfs-site.xml", conf);
       addResource(hadoopConfDir, "mapred-site.xml", conf);
@@ -86,27 +87,26 @@ public final class OryxConfiguration {
     }
   }
 
-  private static void addResource(File hadoopConfDir, String fileName, Configuration conf) {
-    File file = new File(hadoopConfDir, fileName);
-    if (!file.exists()) {
+  private static void addResource(Path hadoopConfDir, String fileName, Configuration conf) {
+    Path file = hadoopConfDir.resolve(fileName);
+    if (!Files.exists(file)) {
       log.info("Hadoop config file not found: {}", file);
       return;
     }
     try {
-      conf.addResource(file.toURI().toURL());
+      conf.addResource(file.toUri().toURL());
     } catch (MalformedURLException e) {
       throw new IllegalStateException(e);
     }
   }
 
-  private static File findHadoopConfDir() {
+  private static Path findHadoopConfDir() {
     String hadoopConfPath = System.getenv(HADOOP_CONF_DIR_KEY);
     if (hadoopConfPath == null) {
       hadoopConfPath = DEFAULT_HADOOP_CONF_DIR;
     }
-    File hadoopConfDir = new File(hadoopConfPath);
-    Preconditions.checkState(hadoopConfDir.exists() && hadoopConfDir.isDirectory(),
-                             "Not a directory: %s", hadoopConfDir);
+    Path hadoopConfDir = Paths.get(hadoopConfPath);
+    Preconditions.checkState(Files.isDirectory(hadoopConfDir), "Not a directory: %s", hadoopConfDir);
     return hadoopConfDir;
   }
 
@@ -118,10 +118,10 @@ public final class OryxConfiguration {
   private static void fixLzoCodecIssue(Configuration conf) {
     String codecsProperty = conf.get("io.compression.codecs");
     if (codecsProperty != null && codecsProperty.contains(".lzo.Lzo")) {
-      List<String> codecs = Lists.newArrayList(Splitter.on(',').split(codecsProperty));
-      for (Iterator<String> it = codecs.iterator(); it.hasNext(); ) {
-        if (it.next().contains(".lzo.Lzo")) {
-          it.remove();
+      Collection<String> codecs = new ArrayList<>();
+      for (String codec : Splitter.on(',').split(codecsProperty)) {
+        if (!codec.contains(".lzo.Lzo")) {
+          codecs.add(codec);
         }
       }
       conf.set("io.compression.codecs", Joiner.on(',').join(codecs));

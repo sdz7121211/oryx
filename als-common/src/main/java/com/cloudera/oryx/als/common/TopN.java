@@ -32,6 +32,7 @@
 
 package com.cloudera.oryx.als.common;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +40,6 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 /**
  * Utility methods for finding the top N things from a stream.
@@ -57,7 +57,7 @@ public final class TopN {
    * @return Initialized {@link Queue} suitable for use in this class
    */
   public static Queue<NumericIDValue> initialQueue(int n) {
-    return new PriorityQueue<NumericIDValue>(n + 2, ByValueAscComparator.INSTANCE);
+    return new PriorityQueue<>(n + 2, ByValueAscComparator.INSTANCE);
   }
 
   /**
@@ -145,7 +145,7 @@ public final class TopN {
       NumericIDValue removed = topN.poll();
       Preconditions.checkNotNull(removed);
     }
-    List<NumericIDValue> result = Lists.newArrayList(topN);
+    List<NumericIDValue> result = new ArrayList<>(topN);
     Collections.sort(result, Collections.reverseOrder(ByValueAscComparator.INSTANCE));
     return result;
   }

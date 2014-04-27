@@ -60,7 +60,7 @@ public final class DistributeRecommendWorkStep extends IterationStep {
     PTable<Long, float[]> userFeatures = p.read(input(iterationKey + "X/", ALSTypes.DENSE_ROW_MATRIX))
         .parallelDo("asPair", MatrixRow.AS_PAIR, Avros.tableOf(Avros.longs(), ALSTypes.FLOAT_ARRAY));
 
-    JoinStrategy<Long, float[], LongSet> joinStrategy = new DefaultJoinStrategy<Long, float[], LongSet>(
+    JoinStrategy<Long, float[], LongSet> joinStrategy = new DefaultJoinStrategy<>(
         getNumReducers());
     PTable<Long, Pair<float[], LongSet>> joined = joinStrategy.join(userFeatures, knownItems, JoinType.INNER_JOIN);
 

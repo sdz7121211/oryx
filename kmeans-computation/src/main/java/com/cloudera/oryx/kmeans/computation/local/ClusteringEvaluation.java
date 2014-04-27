@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -48,7 +49,7 @@ public final class ClusteringEvaluation implements Callable<List<KMeansEvaluatio
     List<KMeansEvaluationData> evalData;
     ExecutorService exec = ExecutorUtils.buildExecutor("KMEANS");
     try {
-      List<Future<KMeansEvaluationData>> futures = Lists.newArrayList();
+      List<Future<KMeansEvaluationData>> futures = new ArrayList<>();
       for (Integer nc : settings.getKValues()) {
         int loops = nc == 1 ? 1 : settings.getReplications();
         for (int i = 0; i < loops; i++) {

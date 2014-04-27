@@ -22,12 +22,12 @@ import com.cloudera.oryx.common.random.RandomUtils;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.computation.common.fn.OryxReduceMapFn;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.crunch.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class InitialYReduceFn extends OryxReduceMapFn<Long, float[], MatrixRow> {
@@ -45,7 +45,7 @@ public final class InitialYReduceFn extends OryxReduceMapFn<Long, float[], Matri
     Config config = ConfigUtils.getDefaultConfig();
     features = config.getInt("model.features");
     Preconditions.checkArgument(features > 0, "Number of features must be positive");
-    farFrom = Lists.newArrayList();
+    farFrom = new ArrayList<>();
   }
 
   @Override

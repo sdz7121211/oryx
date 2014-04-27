@@ -15,14 +15,14 @@
 
 package com.cloudera.oryx.computation.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ final class DependenciesScheduler<T> {
     log.info("Scheduling: {}", dependencies);
 
     // This will map steps to a collection of all steps that must come before
-    Map<T,Collection<T>> prerequisites = Maps.newHashMapWithExpectedSize(dependencies.size());
+    Map<T,Collection<T>> prerequisites = new HashMap<>(dependencies.size());
 
     for (DependsOn<T> dependency : dependencies) {
 
@@ -56,13 +56,13 @@ final class DependenciesScheduler<T> {
 
       // Just make sure it's noted
       if (!prerequisites.containsKey(first)) {
-        prerequisites.put(first, Lists.<T>newArrayList());
+        prerequisites.put(first, new ArrayList<T>());
       }
 
       if (next != null) {
         Collection<T> required = prerequisites.get(next);
         if (required == null) {
-          required = Lists.newArrayList();
+          required = new ArrayList<>();
           prerequisites.put(next, required);
         }
         required.add(first);
@@ -76,12 +76,12 @@ final class DependenciesScheduler<T> {
 
     // This will be a list of collections of steps; each collection can be executed in parallel
     // but everything in each collection must finish before the next collection
-    List<Collection<T>> steps = Lists.newArrayList();
-    Map<T,Collection<T>> clone = Maps.newHashMap(prerequisites);
+    List<Collection<T>> steps = new ArrayList<>();
+    Map<T,Collection<T>> clone = new HashMap<>(prerequisites);
     
     while (!clone.isEmpty()) {
       
-      Collection<T> currentStep = Lists.newArrayList();
+      Collection<T> currentStep = new ArrayList<>();
       
       Iterator<Map.Entry<T,Collection<T>>> it = clone.entrySet().iterator();
       while (it.hasNext()) {

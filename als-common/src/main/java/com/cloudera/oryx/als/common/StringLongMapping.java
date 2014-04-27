@@ -51,7 +51,7 @@ public final class StringLongMapping {
   private final ReadWriteLock lock;
 
   public StringLongMapping() {
-    reverseMapping = new LongObjectMap<String>();
+    reverseMapping = new LongObjectMap<>();
     lock = new ReentrantReadWriteLock();
   }
 

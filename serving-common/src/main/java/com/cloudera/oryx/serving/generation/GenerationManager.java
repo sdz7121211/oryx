@@ -22,9 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -55,13 +56,13 @@ public abstract class GenerationManager implements Closeable {
   private final ScheduledExecutorService executorService;
   private int writeGeneration;
   private Writer appender;
-  private final File appendTempDir;
-  private File appenderTempFile;
+  private final Path appendTempDir;
+  private Path appenderTempFile;
   private final long writesBetweenUpload;
   private long countdownToUpload;
   private final Semaphore refreshSemaphore;
 
-  protected GenerationManager(File appendTempDir) throws IOException {
+  protected GenerationManager(Path appendTempDir) throws IOException {
 
     Config config = ConfigUtils.getDefaultConfig();
 
@@ -121,7 +122,7 @@ public abstract class GenerationManager implements Closeable {
         log.warn("Unable to close {} ({}); aborting and deleting file", appenderTempFile, ioe.getMessage());
         appender = null;
         try {
-          IOUtils.delete(appenderTempFile);
+          Files.delete(appenderTempFile);
         } catch (IOException e) {
           log.warn("Failed to delete {}", appenderTempFile);
         }
@@ -131,16 +132,16 @@ public abstract class GenerationManager implements Closeable {
 
       appender = null;
 
-      final File fileToUpload = appenderTempFile;
+      final Path fileToUpload = appenderTempFile;
       appenderTempFile = null;
 
       boolean fileToUploadHasData;
       try {
-        fileToUploadHasData = fileToUpload.exists() && !IOUtils.isGZIPFileEmpty(fileToUpload);
+        fileToUploadHasData = Files.exists(fileToUpload) && !IOUtils.isGZIPFileEmpty(fileToUpload);
       } catch (IOException ioe) {
         log.warn("Unexpected error checking {} for data; deleting", fileToUpload, ioe);
         try {
-          IOUtils.delete(fileToUpload);
+          Files.delete(fileToUpload);
         } catch (IOException e) {
           log.warn("Failed to delete {}", fileToUpload);
         }
@@ -150,7 +151,7 @@ public abstract class GenerationManager implements Closeable {
       if (fileToUploadHasData) {
 
         final String appendKey =
-            Namespaces.getInstanceGenerationPrefix(instanceDir, writeGeneration) + "inbound/" + fileToUpload.getName();
+            Namespaces.getInstanceGenerationPrefix(instanceDir, writeGeneration) + "inbound/" + fileToUpload.getFileName();
 
         Callable<?> uploadCallable = new Callable<Object>() {
           @Override
@@ -168,7 +169,7 @@ public abstract class GenerationManager implements Closeable {
             } finally {
               try {
                 Store.get().delete(appendProgressKey);
-                IOUtils.delete(fileToUpload);
+                Files.delete(fileToUpload);
               } catch (IOException e) {
                 log.warn("Could not delete {}", appendProgressKey, e);
               }
@@ -192,7 +193,7 @@ public abstract class GenerationManager implements Closeable {
         // Just delete right away
         log.info("File appears to have no data, deleting: {}", fileToUpload);
         try {
-          IOUtils.delete(fileToUpload);
+          Files.delete(fileToUpload);
         } catch (IOException e) {
           log.warn("Failed to delete {}", appenderTempFile);
         }
@@ -216,7 +217,7 @@ public abstract class GenerationManager implements Closeable {
         writeGeneration = newMostRecentGeneration;
         closeAppender();
       }
-      appenderTempFile = File.createTempFile("oryx-append-", ".csv.gz", appendTempDir);
+      appenderTempFile = Files.createTempFile(appendTempDir, "oryx-append-", ".csv.gz");
       // A small buffer is needed here, but GZIPOutputStream already provides a substantial native buffer
       appender = IOUtils.buildGZIPWriter(appenderTempFile);
     }

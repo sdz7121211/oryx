@@ -16,13 +16,12 @@
 package com.cloudera.oryx.als.serving.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.common.collect.Lists;
 
 import com.cloudera.oryx.als.common.NoSuchItemException;
 import com.cloudera.oryx.als.common.NotReadyException;
@@ -51,7 +50,7 @@ public final class SimilarityToItemServlet extends AbstractALSServlet {
     }
     Iterator<String> pathComponents = SLASH.split(pathInfo).iterator();
     String toItemID;
-    List<String> itemIDsList = Lists.newArrayList();
+    List<String> itemIDsList = new ArrayList<>();
     try {
       toItemID = pathComponents.next();
       while (pathComponents.hasNext()) {

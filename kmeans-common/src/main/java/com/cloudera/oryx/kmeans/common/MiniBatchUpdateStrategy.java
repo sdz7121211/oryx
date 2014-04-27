@@ -15,11 +15,11 @@
 
 package com.cloudera.oryx.kmeans.common;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cloudera.oryx.common.random.RandomManager;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.random.RandomGenerator;
 
@@ -38,12 +38,12 @@ public final class MiniBatchUpdateStrategy implements KMeansUpdateStrategy {
   @Override
   public <W extends Weighted<RealVector>> Centers update(List<W> points, Centers centers) {
     int[] perCenterStepCounts = new int[centers.size()];
-    WeightedSampler<RealVector, W> sampler = new WeightedSampler<RealVector, W>(points, random);
+    WeightedSampler<RealVector, W> sampler = new WeightedSampler<>(points, random);
     for (int iter = 0; iter < numIterations; iter++) {
       // Compute closest cent for each mini-batch
-      List<List<RealVector>> centerAssignments = Lists.newArrayList();
+      List<List<RealVector>> centerAssignments = new ArrayList<>();
       for (int i = 0; i < centers.size(); i++) {
-        centerAssignments.add(Lists.<RealVector>newArrayList());
+        centerAssignments.add(new ArrayList<RealVector>());
       }
       for (int i = 0; i < miniBatchSize; i++) {
         RealVector sample = sampler.sample();
@@ -51,7 +51,7 @@ public final class MiniBatchUpdateStrategy implements KMeansUpdateStrategy {
         centerAssignments.get(closestId).add(sample);
       }
       // Apply the mini-batch
-      List<RealVector> nextCenters = Lists.newArrayList();
+      List<RealVector> nextCenters = new ArrayList<>();
       for (int i = 0; i < centerAssignments.size(); i++) {
         RealVector currentCenter = centers.get(i);
         for (int j = 0; j < centerAssignments.get(i).size(); j++) {

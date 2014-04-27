@@ -31,8 +31,7 @@
 
 package com.cloudera.oryx.common.io;
 
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cloudera.oryx.common.settings.ConfigUtils;
@@ -149,7 +148,7 @@ public final class DelimitedDataUtils {
       return NO_TOKENS;
     }
 
-    List<String> columns = Lists.newArrayList();
+    List<String> columns = new ArrayList<>();
     StringBuilder currentColumn = new StringBuilder();
 
     boolean inQuoteMode = false;

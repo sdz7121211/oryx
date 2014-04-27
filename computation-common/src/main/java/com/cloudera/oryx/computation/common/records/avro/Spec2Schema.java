@@ -15,13 +15,13 @@
 
 package com.cloudera.oryx.computation.common.records.avro;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cloudera.oryx.computation.common.records.Spec;
 import org.apache.avro.Schema;
 
 import com.cloudera.oryx.computation.common.records.FieldSpec;
-import com.google.common.collect.Lists;
 
 public final class Spec2Schema {
 
@@ -38,7 +38,7 @@ public final class Spec2Schema {
       case STRING:
         return Schema.create(Schema.Type.STRING);
       case RECORD:
-        List<Schema.Field> fields = Lists.newArrayList();
+        List<Schema.Field> fields = new ArrayList<>();
         for (int i = 0; i < spec.size(); i++) {
           FieldSpec f = spec.getField(i);
           fields.add(new Schema.Field(f.name(), create(f.spec()), "", null));

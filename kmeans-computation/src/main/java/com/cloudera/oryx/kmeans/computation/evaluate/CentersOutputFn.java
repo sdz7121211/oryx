@@ -22,8 +22,6 @@ import com.cloudera.oryx.computation.common.summary.Summary;
 import com.cloudera.oryx.kmeans.common.pmml.KMeansPMML;
 import com.cloudera.oryx.kmeans.computation.pmml.ClusteringModelBuilder;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
 import org.apache.crunch.CrunchRuntimeException;
 import org.apache.crunch.Emitter;
 import org.dmg.pmml.Model;
@@ -31,6 +29,8 @@ import org.dmg.pmml.Model;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class CentersOutputFn extends OryxDoFn<KMeansEvaluationData, String> {
@@ -63,7 +63,7 @@ public final class CentersOutputFn extends OryxDoFn<KMeansEvaluationData, String
     } catch (Exception e) {
       throw new CrunchRuntimeException(e);
     }
-    models = Lists.newArrayList();
+    models = new ArrayList<>();
     builder = new ClusteringModelBuilder(summary);
   }
 
@@ -85,6 +85,6 @@ public final class CentersOutputFn extends OryxDoFn<KMeansEvaluationData, String
     } catch (IOException e) {
       throw new IllegalStateException("Surprising IO error", e);
     }
-    emitter.emit(new String(os.toByteArray(), Charsets.UTF_8));
+    emitter.emit(new String(os.toByteArray(), StandardCharsets.UTF_8));
   }
 }

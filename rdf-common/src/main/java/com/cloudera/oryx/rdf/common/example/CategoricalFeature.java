@@ -16,9 +16,9 @@
 package com.cloudera.oryx.rdf.common.example;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a value of a categorical feature -- one that takes on discrete, unordered values like
@@ -31,7 +31,7 @@ public final class CategoricalFeature implements Feature {
 
   // Not obvious we can get away with a cache without weak entries, but there should be relatively
   // few distinct category values ever observed
-  private static final Map<Integer,CategoricalFeature> FEATURE_CACHE = Maps.newConcurrentMap();
+  private static final Map<Integer,CategoricalFeature> FEATURE_CACHE = new ConcurrentHashMap<>();
 
   private final int valueID;
 

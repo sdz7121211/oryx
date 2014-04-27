@@ -17,6 +17,7 @@ package com.cloudera.oryx.computation;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import com.cloudera.oryx.kmeans.computation.local.KMeansLocalGenerationRunner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
@@ -67,13 +67,13 @@ public final class PeriodicRunner implements Runnable, Closeable {
 
   private static final Map<String,List<Class<? extends GenerationRunner>>> RUNNERS;
   static {
-    List<Class<? extends GenerationRunner>> alsRunners = Lists.newArrayListWithCapacity(2);
+    List<Class<? extends GenerationRunner>> alsRunners = new ArrayList<>(2);
     alsRunners.add(ALSLocalGenerationRunner.class);
     alsRunners.add(ALSDistributedGenerationRunner.class);
-    List<Class<? extends GenerationRunner>> kmeansRunners = Lists.newArrayListWithCapacity(2);
+    List<Class<? extends GenerationRunner>> kmeansRunners = new ArrayList<>(2);
     kmeansRunners.add(KMeansLocalGenerationRunner.class);
     kmeansRunners.add(KMeansDistributedGenerationRunner.class);
-    List<Class<? extends GenerationRunner>> rdfRunners = Lists.newArrayListWithCapacity(2);
+    List<Class<? extends GenerationRunner>> rdfRunners = new ArrayList<>(2);
     rdfRunners.add(RDFLocalGenerationRunner.class);
     rdfRunners.add(RDFDistributedGenerationRunner.class);
     RUNNERS = ImmutableMap.of("als", alsRunners, "kmeans", kmeansRunners, "rdf", rdfRunners);
@@ -107,13 +107,13 @@ public final class PeriodicRunner implements Runnable, Closeable {
     running = false;
 
     //this.allGenerationRunners = Lists.newCopyOnWriteArrayList();
-    this.allGenerationRunners = new CopyOnWriteArrayList<GenerationRunner>();
+    this.allGenerationRunners = new CopyOnWriteArrayList<>();
 
     executor = Executors.newSingleThreadScheduledExecutor(
         new ThreadFactoryBuilder().setNameFormat("PeriodicRunner-%d").build());
     future = executor.scheduleWithFixedDelay(this, 0L, CHECK_INTERVAL_MINS, TimeUnit.MINUTES);
 
-    this.cachedState = new ReloadingReference<PeriodicRunnerState>(new Callable<PeriodicRunnerState>() {
+    this.cachedState = new ReloadingReference<>(new Callable<PeriodicRunnerState>() {
       @Override
       public PeriodicRunnerState call() throws IOException, InterruptedException {
         return doGetState();
@@ -127,7 +127,7 @@ public final class PeriodicRunner implements Runnable, Closeable {
 
   private PeriodicRunnerState doGetState() throws IOException, InterruptedException {
 
-    List<GenerationRunnerState> states = Lists.newArrayListWithCapacity(allGenerationRunners.size());
+    List<GenerationRunnerState> states = new ArrayList<>(allGenerationRunners.size());
     for (GenerationRunner runner : allGenerationRunners) {
       GenerationRunnerState runnerSate = runner.getState();
       if (runnerSate != null) {
@@ -223,10 +223,8 @@ public final class PeriodicRunner implements Runnable, Closeable {
 
     } catch (InterruptedException ignored) {
       log.warn("Interrupted");
-    } catch (IOException ioe) {
+    } catch (IOException | JobException ioe) {
       log.warn("Unexpected error in execution", ioe);
-    } catch (JobException je) {
-      log.warn("Unexpected error in execution", je);
     } catch (Throwable t) {
       log.error("Unexpected error in execution", t);
     } finally {

@@ -16,9 +16,9 @@
 package com.cloudera.oryx.rdf.common.example;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.FastMath;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -160,8 +160,8 @@ public final class ExampleSet implements Iterable<Example> {
   }
 
   public ExampleSet[] split(Decision decision) {
-    List<Example> positive = Lists.newArrayList();
-    List<Example> negative = Lists.newArrayList();
+    List<Example> positive = new ArrayList<>();
+    List<Example> negative = new ArrayList<>();
     for (Example example : examples) {
       if (decision.isPositive(example)) {
         positive.add(example);

@@ -17,11 +17,10 @@ package com.cloudera.oryx.common.servcomp.web;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.common.base.Charsets;
 
 import com.cloudera.oryx.common.log.MemoryHandler;
 
@@ -41,7 +40,7 @@ public final class LogServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     MemoryHandler logHandler = (MemoryHandler) getServletContext().getAttribute(LOG_HANDLER);
     response.setContentType(CONTENT_TYPE);
-    response.setCharacterEncoding(Charsets.UTF_8.name());
+    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
     Writer out = response.getWriter();
     Iterable<String> lines = logHandler.getLogLines();
     synchronized (lines) {

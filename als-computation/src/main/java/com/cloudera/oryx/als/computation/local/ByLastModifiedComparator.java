@@ -15,34 +15,32 @@
 
 package com.cloudera.oryx.als.computation.local;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Comparator;
 
 /**
- * Compares {@link File} objects by their last modified time. It orders by
+ * Compares {@link Path} objects by their last modified time. It orders by
  * time ascending.
  *
  * @author Sean Owen
  */
-final class ByLastModifiedComparator implements Comparator<File>, Serializable {
+final class ByLastModifiedComparator implements Comparator<Path>, Serializable {
 
-  static final Comparator<File> INSTANCE = new ByLastModifiedComparator();
+  static final Comparator<Path> INSTANCE = new ByLastModifiedComparator();
 
   private ByLastModifiedComparator() {
   }
 
   @Override
-  public int compare(File a, File b) {
-    long aModified = a.lastModified();
-    long bModified = b.lastModified();
-    if (aModified < bModified) {
-      return -1;
+  public int compare(Path a, Path b) {
+    try {
+      return Files.getLastModifiedTime(a).compareTo(Files.getLastModifiedTime(b));
+    } catch (IOException ioe) {
+      throw new IllegalStateException(ioe);
     }
-    if (aModified > bModified) {
-      return 1;
-    }
-    return 0;
   }
 
 }

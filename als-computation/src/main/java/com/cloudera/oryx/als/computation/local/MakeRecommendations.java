@@ -15,14 +15,15 @@
 
 package com.cloudera.oryx.als.computation.local;
 
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -44,13 +45,13 @@ final class MakeRecommendations implements Callable<Object> {
 
   private static final Logger log = LoggerFactory.getLogger(MakeRecommendations.class);
 
-  private final File modelDir;
+  private final Path modelDir;
   private final LongObjectMap<LongSet> knownItemIDs;
   private final LongObjectMap<float[]> X;
   private final LongObjectMap<float[]> Y;
   private final StringLongMapping idMapping;
 
-  MakeRecommendations(File modelDir,
+  MakeRecommendations(Path modelDir,
                       LongObjectMap<LongSet> knownItemIDs,
                       LongObjectMap<float[]> X,
                       LongObjectMap<float[]> Y,
@@ -72,11 +73,11 @@ final class MakeRecommendations implements Callable<Object> {
 
     final LongPrimitiveIterator it = X.keySetIterator();
 
-    final File recommendDir = new File(modelDir, "recommend");
-    IOUtils.mkdirs(recommendDir);
+    final Path recommendDir = modelDir.resolve("recommend");
+    Files.createDirectories(recommendDir);
 
     ExecutorService executor = ExecutorUtils.buildExecutor("Recommend");
-    Collection<Future<Object>> futures = Lists.newArrayList();
+    Collection<Future<Object>> futures = new ArrayList<>();
 
     try {
       int numThreads = ExecutorUtils.getParallelism();
@@ -85,8 +86,7 @@ final class MakeRecommendations implements Callable<Object> {
         futures.add(executor.submit(new Callable<Object>() {
           @Override
           public Void call() throws IOException {
-            Writer out = IOUtils.buildGZIPWriter(new File(recommendDir, workerNumber + ".csv.gz"));
-            try {
+            try (Writer out = IOUtils.buildGZIPWriter(recommendDir.resolve(workerNumber + ".csv.gz"))) {
               while (true) {
                 long userID;
                 synchronized (it) {
@@ -103,14 +103,12 @@ final class MakeRecommendations implements Callable<Object> {
                 String userIDString = idMapping.toString(userID);
                 for (NumericIDValue rec : recs) {
                   out.write(DelimitedDataUtils.encode(',',
-                                                      userIDString,
-                                                      idMapping.toString(rec.getID()),
-                                                      Float.toString(rec.getValue())));
+                      userIDString,
+                      idMapping.toString(rec.getID()),
+                      Float.toString(rec.getValue())));
                   out.write('\n');
                 }
               }
-            } finally {
-              out.close();
             }
           }
         }));

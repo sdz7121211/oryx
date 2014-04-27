@@ -24,13 +24,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import java.io.File;
-
 import com.cloudera.oryx.common.io.IOUtils;
 import com.cloudera.oryx.common.log.MemoryHandler;
 import com.cloudera.oryx.common.random.RandomManager;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -40,7 +43,7 @@ public abstract class OryxTest extends Assert {
 
   private static final float FLOAT_EPSILON = 1.0e-6f;
   private static final double DOUBLE_EPSILON = 1.0e-12;
-  protected static final File TEST_TEMP_BASE_DIR = new File("/tmp/OryxTest");
+  protected static final Path TEST_TEMP_BASE_DIR = Paths.get("/tmp", "OryxTest");
 
   private boolean resourceExists(String resourceBasename) {
     return getClass().getClassLoader().getResource(resourceBasename) != null;
@@ -49,24 +52,25 @@ public abstract class OryxTest extends Assert {
   /**
    * @return true iff the argument exists, is a directory, and contains at least one non-hidden file
    */
-  protected static boolean isDirectoryWithFiles(File dir) {
-    if (!dir.exists() || !dir.isDirectory()) {
+  protected static boolean isDirectoryWithFiles(Path dir) throws IOException {
+    if (!Files.isDirectory(dir)) {
       return false;
     }
-    File[] files = dir.listFiles(IOUtils.NOT_HIDDEN);
-    return files != null && files.length > 0;
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+      return stream.iterator().hasNext();
+    }
   }
 
-  protected final File getResourceAsFile(String resourceBasename) {
+  protected final Path getResourceAsFile(String resourceBasename) {
     if (resourceExists(resourceBasename)) {
       try {
-        return new File(Resources.getResource(resourceBasename).toURI());
+        return Paths.get(Resources.getResource(resourceBasename).toURI());
       } catch (URISyntaxException e) {
         throw new IllegalStateException("Invalid/non-existent resource: " + resourceBasename, e);
       }
     }
     // Fallback for local runs -- use file in file system
-    return new File("src/it/resources", resourceBasename);
+    return Paths.get("src", "it", "resources", resourceBasename);
   }
 
   /**
@@ -130,7 +134,7 @@ public abstract class OryxTest extends Assert {
   @Before
   public void setUp() throws Exception {
     IOUtils.deleteRecursively(TEST_TEMP_BASE_DIR);
-    IOUtils.mkdirs(TEST_TEMP_BASE_DIR);
+    Files.createDirectories(TEST_TEMP_BASE_DIR);
     RandomManager.useTestSeed();
     // simulate specifying -Dconfig.file=oryx-test.conf
     ConfigUtils.loadUserConfig(getTestConfigResource());

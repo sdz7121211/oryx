@@ -15,6 +15,7 @@
 
 package com.cloudera.oryx.computation.common.records.csv;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +24,6 @@ import com.cloudera.oryx.computation.common.records.BasicSpec;
 import com.cloudera.oryx.computation.common.records.DataType;
 import com.cloudera.oryx.computation.common.records.Record;
 import com.cloudera.oryx.computation.common.records.Spec;
-import com.google.common.collect.Lists;
 
 public final class CSVRecord implements Record {
 
@@ -50,7 +50,7 @@ public final class CSVRecord implements Record {
   @Override
   public Record copy(boolean deep) {
     if (deep) {
-      List<String> v = Lists.newArrayList(values);
+      List<String> v = new ArrayList<>(values);
       return new CSVRecord(v);
     } else {
       List<String> v = Arrays.asList(new String[values.size()]);

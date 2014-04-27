@@ -15,9 +15,8 @@
 
 package com.cloudera.oryx.als.common.rescorer;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import com.cloudera.oryx.common.ClassUtils;
 import com.cloudera.oryx.als.common.OryxRecommender;
@@ -73,7 +72,7 @@ public abstract class AbstractRescorerProvider implements RescorerProvider {
     if (classNames.length == 1) {
       return ClassUtils.loadInstanceOf(classNames[0], RescorerProvider.class);
     }
-    List<RescorerProvider> providers = Lists.newArrayListWithCapacity(classNames.length);
+    List<RescorerProvider> providers = new ArrayList<>(classNames.length);
     for (String className : classNames) {
       providers.add(ClassUtils.loadInstanceOf(className, RescorerProvider.class));
     }

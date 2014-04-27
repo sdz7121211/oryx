@@ -15,12 +15,11 @@
 
 package com.cloudera.oryx.common.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.cloudera.oryx.common.OryxTest;
-import com.google.common.io.Files;
 import org.junit.Test;
 
 /**
@@ -33,42 +32,27 @@ public final class IOUtilsTest extends OryxTest {
   private static final byte[] SOME_BYTES = { 0x01, 0x02, 0x03 };
 
   @Test
-  public void testCopyStream() throws IOException {
-    File tempDir = Files.createTempDir();
-    tempDir.deleteOnExit();
-    File subFile1 = new File(tempDir, "subFile1");
-    Files.write(SOME_BYTES, subFile1);
-    File subFile2 = new File(tempDir, "subFile2");
-    IOUtils.copyURLToFile(subFile1.toURI().toURL(), subFile2);
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    Files.copy(subFile2, baos);
-    assertArrayEquals(SOME_BYTES, baos.toByteArray());
-  }
-
-  @Test
   public void testDeleteRecursively() throws IOException {
-    File tempDir = Files.createTempDir();
-    tempDir.deleteOnExit();
-    assertTrue(tempDir.exists());
-    File subFile1 = new File(tempDir, "subFile1");
-    Files.write(SOME_BYTES, subFile1);
-    assertTrue(subFile1.exists());
-    File subDir1 = new File(tempDir, "subDir1");
-    IOUtils.mkdirs(subDir1);
-    File subFile2 = new File(subDir1, "subFile2");
-    Files.write(SOME_BYTES, subFile2);
-    assertTrue(subFile2.exists());
-    File subDir2 = new File(subDir1, "subDir2");
-    IOUtils.mkdirs(subDir2);
+    Path tempDir = IOUtils.createTempDirectory("temp");
+    assertTrue(Files.exists(tempDir));
+    Path subFile1 = tempDir.resolve("subFile1");
+    Files.write(subFile1, SOME_BYTES);
+    assertTrue(Files.exists(subFile1));
+    Path subDir1 = tempDir.resolve("subDir1");
+    Files.createDirectories(subDir1);
+    Path subFile2 = subDir1.resolve("subFile2");
+    Files.write(subFile2, SOME_BYTES);
+    assertTrue(Files.exists(subFile2));
+    Path subDir2 = subDir1.resolve("subDir2");
+    Files.createDirectories(subDir2);
 
     IOUtils.deleteRecursively(tempDir);
 
-    assertFalse(tempDir.exists());
-    assertFalse(subFile1.exists());
-    assertFalse(subDir1.exists());
-    assertFalse(subFile2.exists());
-    assertFalse(subDir2.exists());
-
+    assertTrue(Files.notExists(tempDir));
+    assertTrue(Files.notExists(subFile1));
+    assertTrue(Files.notExists(subDir1));
+    assertTrue(Files.notExists(subFile2));
+    assertTrue(Files.notExists(subDir2));
   }
 
 }

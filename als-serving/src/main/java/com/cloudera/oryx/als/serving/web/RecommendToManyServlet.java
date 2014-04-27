@@ -15,9 +15,8 @@
 
 package com.cloudera.oryx.als.serving.web;
 
-import com.google.common.collect.Sets;
-
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -61,7 +60,7 @@ public final class RecommendToManyServlet extends AbstractALSServlet {
       return;
     }
     Iterator<String> pathComponents = SLASH.split(pathInfo).iterator();
-    Set<String> userIDSet = Sets.newHashSet();
+    Set<String> userIDSet = new HashSet<>();
     try {
       while (pathComponents.hasNext()) {
         userIDSet.add(pathComponents.next());

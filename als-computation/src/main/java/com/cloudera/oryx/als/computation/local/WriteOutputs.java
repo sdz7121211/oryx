@@ -15,14 +15,14 @@
 
 package com.cloudera.oryx.als.computation.local;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
@@ -43,14 +43,14 @@ final class WriteOutputs implements Callable<Object> {
   private static final char KEY_VALUE_DELIMITER = '\t'; // Matches Hadoop TextOutputFormat
   private static final String SINGLE_OUT_FILENAME = "0.csv.gz";
 
-  private final File modelDir;
+  private final Path modelDir;
   private final LongObjectMap<LongFloatMap> RbyRow;
   private final LongObjectMap<LongSet> knownItemIDs;
   private final LongObjectMap<float[]> X;
   private final LongObjectMap<float[]> Y;
   private final StringLongMapping idMapping;
 
-  WriteOutputs(File modelDir,
+  WriteOutputs(Path modelDir,
                LongObjectMap<LongFloatMap> RbyRow,
                LongObjectMap<LongSet> knownItemIDs,
                LongObjectMap<float[]> X,
@@ -67,17 +67,17 @@ final class WriteOutputs implements Callable<Object> {
   @Override
   public Void call() throws IOException {
     log.info("Writing current input");
-    writeCombinedInput(RbyRow, new File(modelDir, "input"));
+    writeCombinedInput(RbyRow, modelDir.resolve("input"));
     log.info("Writing known items");
-    writeIDIDsMap(knownItemIDs, new File(modelDir, "knownItems"));
+    writeIDIDsMap(knownItemIDs, modelDir.resolve("knownItems"));
     log.info("Writing X");
-    writeIDFloatMap(X, new File(modelDir, "X"));
+    writeIDFloatMap(X, modelDir.resolve("X"));
     log.info("Writing Y");
-    writeIDFloatMap(Y, new File(modelDir, "Y"));
+    writeIDFloatMap(Y, modelDir.resolve("Y"));
     log.info("Writing ID mapping");
-    writeMapping(idMapping, new File(modelDir, "idMapping"));
+    writeMapping(idMapping, modelDir.resolve("idMapping"));
     log.info("Writing model");
-    File modelDescriptionFile = new File(modelDir, "model.pmml.gz");
+    Path modelDescriptionFile = modelDir.resolve("model.pmml.gz");
     ALSModelDescription modelDescription = new ALSModelDescription();
     modelDescription.setKnownItemsPath("knownItems");
     modelDescription.setXPath("X");
@@ -87,12 +87,11 @@ final class WriteOutputs implements Callable<Object> {
     return null;
   }
 
-  private static void writeCombinedInput(LongObjectMap<LongFloatMap> RbyRow, File inputDir) throws IOException {
-    File outFile = new File(inputDir, SINGLE_OUT_FILENAME);
-    Files.createParentDirs(outFile);
+  private static void writeCombinedInput(LongObjectMap<LongFloatMap> RbyRow, Path inputDir) throws IOException {
+    Path outFile = inputDir.resolve(SINGLE_OUT_FILENAME);
+    Files.createDirectories(inputDir);
     log.info("Writing input of {} entries to {}", RbyRow.size(), outFile);
-    Writer out = IOUtils.buildGZIPWriter(outFile);
-    try {
+    try (Writer out = IOUtils.buildGZIPWriter(outFile)) {
       for (LongObjectMap.MapEntry<LongFloatMap> row : RbyRow.entrySet()) {
         long rowID = row.getKey();
         for (LongFloatMap.MapEntry entry : row.getValue().entrySet()) {
@@ -102,46 +101,40 @@ final class WriteOutputs implements Callable<Object> {
           out.write('\n');
         }
       }
-    } finally {
-      out.close();
     }
   }
 
-  private static void writeIDIDsMap(LongObjectMap<LongSet> idIDs, File idIDsDir) throws IOException {
+  private static void writeIDIDsMap(LongObjectMap<LongSet> idIDs, Path idIDsDir) throws IOException {
     if (idIDs == null || idIDs.isEmpty()) {
       return;
     }
-    File outFile = new File(idIDsDir, SINGLE_OUT_FILENAME);
-    Files.createParentDirs(outFile);
+    Path outFile = idIDsDir.resolve(SINGLE_OUT_FILENAME);
+    Files.createDirectories(idIDsDir);
     log.info("Writing ID-ID map of {} entries to {}", idIDs.size(), outFile);
-    Writer out = IOUtils.buildGZIPWriter(outFile);
-    try {
+    try (Writer out = IOUtils.buildGZIPWriter(outFile)) {
       for (LongObjectMap.MapEntry<LongSet> entry : idIDs.entrySet()) {
         out.write(String.valueOf(entry.getKey()));
         out.write(KEY_VALUE_DELIMITER);
         LongSet ids = entry.getValue();
         LongPrimitiveIterator it = ids.iterator();
-        Collection<String> keyStrings = Lists.newArrayListWithCapacity(ids.size());
+        Collection<String> keyStrings = new ArrayList<>(ids.size());
         while (it.hasNext()) {
           keyStrings.add(Long.toString(it.nextLong()));
         }
         out.write(DelimitedDataUtils.encode(',', keyStrings));
         out.write('\n');
       }
-    } finally {
-      out.close();
     }
   }
 
-  private static void writeIDFloatMap(LongObjectMap<float[]> idFloatMap, File idFloatDir) throws IOException {
+  private static void writeIDFloatMap(LongObjectMap<float[]> idFloatMap, Path idFloatDir) throws IOException {
     if (idFloatMap.isEmpty()) {
       return;
     }
-    File outFile = new File(idFloatDir, SINGLE_OUT_FILENAME);
-    Files.createParentDirs(outFile);
+    Path outFile = idFloatDir.resolve(SINGLE_OUT_FILENAME);
+    Files.createDirectories(idFloatDir);
     log.info("Writing ID-float map of {} entries to {}", idFloatMap.size(), outFile);
-    Writer out = IOUtils.buildGZIPWriter(outFile);
-    try {
+    try (Writer out = IOUtils.buildGZIPWriter(outFile)) {
       for (LongObjectMap.MapEntry<float[]> entry : idFloatMap.entrySet()) {
         out.write(String.valueOf(entry.getKey()));
         out.write(KEY_VALUE_DELIMITER);
@@ -153,17 +146,14 @@ final class WriteOutputs implements Callable<Object> {
         out.write(DelimitedDataUtils.encode(',', (Object[]) floatStrings));
         out.write('\n');
       }
-    } finally {
-      out.close();
     }
   }
 
-  private static void writeMapping(StringLongMapping idMapping, File idMappingDir) throws IOException {
-    File outFile = new File(idMappingDir, SINGLE_OUT_FILENAME);
-    Files.createParentDirs(outFile);
+  private static void writeMapping(StringLongMapping idMapping, Path idMappingDir) throws IOException {
+    Path outFile = idMappingDir.resolve(SINGLE_OUT_FILENAME);
+    Files.createDirectories(idMappingDir);
     log.info("Writing mapping of {} entries to {}", idMapping.size(), outFile);
-    Writer out = IOUtils.buildGZIPWriter(outFile);
-    try {
+    try (Writer out = IOUtils.buildGZIPWriter(outFile)) {
       Lock lock = idMapping.getLock().readLock();
       lock.lock();
       try {
@@ -174,8 +164,6 @@ final class WriteOutputs implements Callable<Object> {
       } finally {
         lock.unlock();
       }
-    } finally {
-      out.close();
     }
   }
 

@@ -19,12 +19,12 @@ import com.cloudera.oryx.als.common.NumericIDValue;
 import com.cloudera.oryx.common.collection.LongFloatMap;
 import com.cloudera.oryx.common.collection.LongSet;
 
-import com.google.common.collect.Lists;
 import org.apache.crunch.Pair;
 import org.apache.crunch.MapFn;
 import org.apache.crunch.types.PType;
 import org.apache.crunch.types.avro.Avros;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public final class ALSTypes {
@@ -76,7 +76,7 @@ public final class ALSTypes {
       new MapFn<LongSet, Collection<Long>>() {
         @Override
         public Collection<Long> map(LongSet input) {
-          Collection<Long> collection = Lists.newArrayListWithCapacity(input.size());
+          Collection<Long> collection = new ArrayList<>(input.size());
           for (Long l : input) {
             collection.add(l);
           }
@@ -98,7 +98,7 @@ public final class ALSTypes {
       new MapFn<LongFloatMap, Collection<Pair<Long,Float>>>() {
         @Override
         public Collection<Pair<Long,Float>> map(LongFloatMap input) {
-          Collection<Pair<Long,Float>> collection = Lists.newArrayListWithCapacity(input.size());
+          Collection<Pair<Long,Float>> collection = new ArrayList<>(input.size());
           for (LongFloatMap.MapEntry entry : input.entrySet()) {
             collection.add(Pair.of(entry.getKey(), entry.getValue()));
           }

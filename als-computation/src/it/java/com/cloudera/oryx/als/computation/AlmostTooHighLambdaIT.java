@@ -15,7 +15,7 @@
 
 package com.cloudera.oryx.als.computation;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.junit.Test;
 
@@ -29,14 +29,14 @@ import com.cloudera.oryx.als.serving.ServerRecommender;
 public final class AlmostTooHighLambdaIT extends AbstractComputationIT {
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("highlambda");
   }
 
   @Test
   public void testWaitForBuild() throws Exception {
     ServerRecommender client = getRecommender();
-    client.ingest(new File(TEST_TEMP_INBOUND_DIR, "lambda.csv.gz"));
+    client.ingest(TEST_TEMP_INBOUND_DIR.resolve("lambda.csv.gz"));
   }
 
 }

@@ -16,9 +16,10 @@
 package com.cloudera.oryx.als.common.pmml;
 
 import com.cloudera.oryx.common.OryxTest;
+import com.cloudera.oryx.common.io.IOUtils;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Tests {@link ALSModelDescription}.
@@ -35,8 +36,7 @@ public final class ALSModelDescriptionTest extends OryxTest {
     amd.setXPath("xPath");
     amd.setYPath("yPath");
 
-    File tmp = File.createTempFile("als", ".pmml.gz");
-    tmp.deleteOnExit();
+    Path tmp = IOUtils.createTempFile("als", ".pmml.gz");
 
     ALSModelDescription.write(tmp, amd);
     ALSModelDescription ret = ALSModelDescription.read(tmp);

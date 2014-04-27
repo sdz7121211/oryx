@@ -15,9 +15,9 @@
 
 package com.cloudera.oryx.als.common;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Path;
 import java.util.List;
 
 import com.cloudera.oryx.als.common.rescorer.PairRescorer;
@@ -326,7 +326,7 @@ public interface OryxRecommender {
       throws NotReadyException, NoSuchItemException;
   
   /**
-   * Like {@link #ingest(File)}, but reads from a {@link Reader}.
+   * Like {@link #ingest(Path)}, but reads from a {@link Reader}.
    *
    * @param reader source of CSV data to ingest
    */
@@ -340,7 +340,7 @@ public interface OryxRecommender {
    *
    * @param file CSV file to ingest, possibly compressed.
    */
-  void ingest(File file) throws IOException;
+  void ingest(Path file) throws IOException;
 
   // Some overloads that make sense in the project's model:
 

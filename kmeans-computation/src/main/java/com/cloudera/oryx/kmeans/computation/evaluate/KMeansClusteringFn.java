@@ -17,7 +17,6 @@ package com.cloudera.oryx.kmeans.computation.evaluate;
 
 import com.cloudera.oryx.computation.common.fn.OryxDoFn;
 import com.cloudera.oryx.kmeans.common.WeightedRealVector;
-import com.google.common.collect.Lists;
 import org.apache.crunch.Emitter;
 import org.apache.crunch.Pair;
 
@@ -41,7 +40,7 @@ public final class KMeansClusteringFn extends OryxDoFn<
                       Emitter<KMeansEvaluationData> emitter) {
     int k = input.first().first();
     int replica = input.first().second();
-    List<List<WeightedRealVector>> foldSketches = Lists.newArrayList();
+    List<List<WeightedRealVector>> foldSketches = new ArrayList<>();
     for (int fold = 0; fold < folds; fold++) {
       foldSketches.add(new ArrayList<WeightedRealVector>());
     }

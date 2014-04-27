@@ -15,11 +15,12 @@
 
 package com.cloudera.oryx.als.computation;
 
-import com.google.common.io.Files;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.cloudera.oryx.als.computation.local.ALSLocalGenerationRunner;
 import com.cloudera.oryx.common.io.IOUtils;
@@ -34,7 +35,7 @@ import com.cloudera.oryx.computation.common.JobException;
 public final class MeanAveragePrecisionIT extends AbstractComputationIT {
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("highlambda");
   }
 
@@ -47,10 +48,10 @@ public final class MeanAveragePrecisionIT extends AbstractComputationIT {
   }
 
   private void copyDataAndRerun(int gen) throws InterruptedException, JobException, IOException {
-    File generationInboundDir =
-        new File(ConfigUtils.getDefaultConfig().getString("model.instance-dir"), "0000" + gen + "/inbound");
-    for (File file : getTestDataPath().listFiles(IOUtils.NOT_HIDDEN)) {
-      Files.copy(file, new File(generationInboundDir, file.getName()));
+    Path generationInboundDir =
+        Paths.get(ConfigUtils.getDefaultConfig().getString("model.instance-dir"), "0000" + gen, "inbound");
+    for (Path file : IOUtils.listFiles(getTestDataPath())) {
+      Files.copy(file, generationInboundDir.resolve(file.getFileName()));
     }
     new ALSLocalGenerationRunner().call();
   }

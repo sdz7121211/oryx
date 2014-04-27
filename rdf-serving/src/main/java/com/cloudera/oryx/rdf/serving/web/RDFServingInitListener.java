@@ -24,8 +24,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServlet;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.rdf.serving.generation.RDFGenerationManager;
@@ -42,7 +42,7 @@ public final class RDFServingInitListener extends AbstractOryxServingInitListene
   public void contextInitialized(ServletContextEvent event) {
     super.contextInitialized(event);
     ServletContext context = event.getServletContext();
-    File localInputDir = getLocalInputDir();
+    Path localInputDir = getLocalInputDir();
     RDFGenerationManager generationManager;
     try {
       generationManager = new RDFGenerationManager(localInputDir);

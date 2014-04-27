@@ -16,9 +16,10 @@
 package com.cloudera.oryx.als.serving;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,7 +32,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import org.apache.commons.math3.util.FastMath;
@@ -77,11 +77,11 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
   private final int numCores;
   private final ReloadingReference<ExecutorService> executor;
 
-  public ServerRecommender(File localInputDir) throws IOException {
+  public ServerRecommender(Path localInputDir) throws IOException {
     Preconditions.checkNotNull(localInputDir, "No local dir");
 
     numCores = ExecutorUtils.getParallelism();
-    executor = new ReloadingReference<ExecutorService>(new Callable<ExecutorService>() {
+    executor = new ReloadingReference<>(new Callable<ExecutorService>() {
       @Override
       public ExecutorService call() {
         return ExecutorUtils.buildExecutor("ServerRecommender", 2 * numCores);
@@ -98,7 +98,7 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
   }
 
   @Override
-  public void ingest(File file) throws IOException {
+  public void ingest(Path file) throws IOException {
     Reader reader = null;
     try {
       reader = IOUtils.openReaderMaybeDecompressing(file);
@@ -200,7 +200,7 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
     LongObjectMap<float[]> X = generation.getX();
 
     Lock xLock = generation.getXLock().readLock();
-    List<float[]> userFeatures = Lists.newArrayListWithCapacity(userIDs.length);
+    List<float[]> userFeatures = new ArrayList<>(userIDs.length);
     xLock.lock();
     try {
       for (String userID : userIDs) {
@@ -285,7 +285,7 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
       final Iterator<Iterator<LongObjectMap.MapEntry<float[]>>> candidateIteratorsIterator =
           candidateIterators.iterator();
 
-      Collection<Future<Object>> futures = Lists.newArrayList();
+      Collection<Future<Object>> futures = new ArrayList<>();
       for (int i = 0; i < numCores; i++) {
         futures.add(executorService.submit(new Callable<Object>() {
           @Override
@@ -332,7 +332,7 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
 
   private List<IDValue> translateToStringIDs(Collection<NumericIDValue> numericIDValues) throws NotReadyException {
     StringLongMapping mapping = getCurrentGeneration().getIDMapping();
-    List<IDValue> translated = Lists.newArrayListWithCapacity(numericIDValues.size());
+    List<IDValue> translated = new ArrayList<>(numericIDValues.size());
     for (NumericIDValue numericIDValue : numericIDValues) {
       translated.add(new IDValue(mapping.toString(numericIDValue.getID()), numericIDValue.getValue()));
     }
@@ -902,7 +902,7 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
     yLock.lock();
     try {
 
-      List<float[]> itemFeatures = Lists.newArrayListWithCapacity(itemIDs.length);
+      List<float[]> itemFeatures = new ArrayList<>(itemIDs.length);
       for (long longItemID : longItemIDs) {
         float[] features = Y.get(longItemID);
         if (features != null) {
@@ -1018,7 +1018,7 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
       }
       LongObjectMap<float[]> toFeatures;
       synchronized (userKnownItemIDs) {
-        toFeatures = new LongObjectMap<float[]>(userKnownItemIDs.size());
+        toFeatures = new LongObjectMap<>(userKnownItemIDs.size());
         LongPrimitiveIterator it = userKnownItemIDs.iterator();
         while (it.hasNext()) {
           long fromItemID = it.nextLong();

@@ -15,13 +15,13 @@
 
 package com.cloudera.oryx.serving.web;
 
-import com.google.common.base.Charsets;
 import com.typesafe.config.ConfigFactory;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A simple servlet that returns a JSON representation of the application's global configuration.
@@ -30,7 +30,7 @@ public final class ConfigServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
-    response.setCharacterEncoding(Charsets.UTF_8.name());
+    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
     response.getWriter().write(ConfigFactory.load().root().render());
   }
 }

@@ -15,8 +15,10 @@
 
 package com.cloudera.oryx.computation.common.sample;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.crunch.CombineFn;
@@ -29,8 +31,6 @@ import org.apache.crunch.Pair;
 import org.apache.crunch.types.PTableType;
 import org.apache.crunch.types.PType;
 import org.apache.crunch.types.PTypeFamily;
-
-import com.google.common.collect.Maps;
 
 import com.cloudera.oryx.common.random.RandomManager;
 
@@ -147,7 +147,7 @@ public final class ReservoirSampling {
     public void initialize() {
       ptype.initialize(getConfiguration());
       if (current == null) {
-        this.current = Maps.newHashMap();
+        this.current = new HashMap<>();
       } else {
         current.clear();
       }
@@ -166,7 +166,7 @@ public final class ReservoirSampling {
         double score = Math.log(random.nextDouble()) / weight;
         SortedMap<Double, T> reservoir = current.get(id);
         if (reservoir == null) {
-          reservoir = Maps.newTreeMap();
+          reservoir = new TreeMap<>();
           current.put(id, reservoir);
         }
         if (reservoir.size() < sampleSize) { 
@@ -215,7 +215,7 @@ public final class ReservoirSampling {
     @Override
     public void process(Pair<K, Iterable<Pair<Double, T>>> input,
         Emitter<Pair<K, Pair<Double, T>>> emitter) {
-      SortedMap<Double, T> reservoir = Maps.newTreeMap();
+      SortedMap<Double, T> reservoir = new TreeMap<>();
       for (Pair<Double, T> p : input.second()) {
         if (reservoir.size() < sampleSize) { 
           reservoir.put(p.first(), ptype.getDetachedValue(p.second()));        

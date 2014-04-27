@@ -20,10 +20,11 @@ import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Common settings that define how and where and API is available.
@@ -46,7 +47,7 @@ public final class APISettings {
   private final int securePort;
   private final String userName;
   private final String password;
-  private final File keystoreFile;
+  private final Path keystoreFile;
   private final String keystorePassword;
 
   /**
@@ -85,7 +86,7 @@ public final class APISettings {
     this.userName = config.hasPath(USER_NAME_STR_PARAM) ? config.getString(USER_NAME_STR_PARAM) : null;
     this.password = config.hasPath(PASSWORD_STR_PARAM) ? config.getString(PASSWORD_STR_PARAM) : null;
     if (config.hasPath(KEYSTORE_FILE_STR_PARAM)) {
-      this.keystoreFile = new File(config.getString(KEYSTORE_FILE_STR_PARAM));
+      this.keystoreFile = Paths.get(config.getString(KEYSTORE_FILE_STR_PARAM));
       this.keystorePassword = config.getString(KEYSTORE_PASSWORD_STR_PARAM);
     } else {
       this.keystoreFile = null;
@@ -125,7 +126,7 @@ public final class APISettings {
    * @return the keystore file containing the server's SSL keys. Only necessary when accessing a server with a
    *  temporary self-signed key, which is not by default trusted by the Java SSL implementation
    */
-  public File getKeystoreFile() {
+  public Path getKeystoreFile() {
     return keystoreFile;
   }
 

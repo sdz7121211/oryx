@@ -19,8 +19,6 @@ import com.cloudera.oryx.common.math.Vectors;
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.apache.commons.math3.linear.RealVector;
 import org.dmg.pmml.Apply;
@@ -38,6 +36,8 @@ import org.dmg.pmml.NormDiscrete;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,13 +54,13 @@ public final class VectorFactory {
       MiningSchema schema,
       LocalTransformations transforms,
       List<ClusteringField> fields) {
-    Map<FieldName, DerivedField> derived = Maps.newHashMapWithExpectedSize(transforms.getDerivedFields().size());
+    Map<FieldName, DerivedField> derived = new HashMap<>(transforms.getDerivedFields().size());
     for (DerivedField df : transforms.getDerivedFields()) {
       derived.put(df.getName(), df);
     }
 
     Multimap<FieldName, NumericUpdate> numeric = HashMultimap.create();
-    Map<FieldName, Map<String, Update>> categorical = Maps.newHashMap();
+    Map<FieldName, Map<String, Update>> categorical = new HashMap<>();
     for (int j = 0; j < fields.size(); j++) {
       ClusteringField cf = fields.get(j);
       FieldName fn = cf.getField();
@@ -71,7 +71,7 @@ public final class VectorFactory {
           NormDiscrete nd = (NormDiscrete) e;
           Map<String, Update> m = categorical.get(nd.getField());
           if (m == null) {
-            m = Maps.newHashMap();
+            m = new HashMap<>();
             categorical.put(nd.getField(), m);
           }
           m.put(nd.getValue(), new NumericUpdate(ONE, j, cf.getFieldWeight()));
@@ -100,7 +100,7 @@ public final class VectorFactory {
     }
 
     boolean sparse = 2 * schema.getMiningFields().size() <= fields.size();
-    List<Set<Update>> updates = Lists.newArrayListWithExpectedSize(schema.getMiningFields().size());
+    List<Set<Update>> updates = new ArrayList<>(schema.getMiningFields().size());
     for (MiningField mf : schema.getMiningFields()) {
       FieldName fn = mf.getName();
       if (numeric.containsKey(fn)) {

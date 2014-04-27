@@ -45,7 +45,7 @@ public final class ComputeUserAPFn extends OryxDoFn<Pair<Long, float[]>, Double>
   public void initialize() {
     super.initialize();
     Store store = Store.get();
-    testData = new LongObjectMap<LongSet>();
+    testData = new LongObjectMap<>();
     String prefix = getConfiguration().get(RowStep.MAP_KEY);
     try {
       for (String filePrefix : store.list(prefix, true)) {

@@ -16,10 +16,7 @@
 package com.cloudera.oryx.computation.common;
 
 import com.cloudera.oryx.computation.common.json.JacksonUtils;
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -29,8 +26,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -63,7 +63,7 @@ public abstract class GenerationRunner implements Callable<Object> {
     generationID = -1;
     lastGenerationID = -1;
     //stateSources = Lists.newCopyOnWriteArrayList();
-    stateSources = new CopyOnWriteArrayList<HasState>();
+    stateSources = new CopyOnWriteArrayList<>();
   }
 
   protected final String getInstanceDir() {
@@ -90,7 +90,7 @@ public abstract class GenerationRunner implements Callable<Object> {
     if (getGenerationID() < 0) {
       return null;
     }
-    List<StepState> stepStates = Lists.newArrayList();
+    List<StepState> stepStates = new ArrayList<>();
     for (HasState state : stateSources) {
       stepStates.addAll(state.getStepStates());
     }
@@ -245,17 +245,14 @@ public abstract class GenerationRunner implements Callable<Object> {
     private void storeConfig(Config config) throws IOException {
     String outputKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "computation.conf";
     String configString = config.root().render(ConfigRenderOptions.concise());
-    Writer writer = new OutputStreamWriter(Store.get().streamTo(outputKey), Charsets.UTF_8);
-    try {
-      writer.write(configString);
-    } finally {
-      writer.close();
-    }
+      try (Writer writer = new OutputStreamWriter(Store.get().streamTo(outputKey), StandardCharsets.UTF_8)) {
+        writer.write(configString);
+      }
   }
 
   private void dumpStats() throws IOException {
     // First compute the base stats for all GenerationRunners
-    Map<String, Object> stats = Maps.newHashMap();
+    Map<String, Object> stats = new HashMap<>();
     stats.put("preRunBytes", startSize);
     stats.put("postRunBytes", endSize);
 
@@ -269,11 +266,8 @@ public abstract class GenerationRunner implements Callable<Object> {
     ObjectMapper mapper = JacksonUtils.getObjectMapper();
     String statsString = mapper.writeValueAsString(stats);
     String outputKey = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID) + "stats.json";
-    Writer writer = new OutputStreamWriter(Store.get().streamTo(outputKey), Charsets.UTF_8);
-    try {
+    try (Writer writer = new OutputStreamWriter(Store.get().streamTo(outputKey), StandardCharsets.UTF_8)) {
       writer.write(statsString);
-    } finally {
-      writer.close();
     }
   }
 

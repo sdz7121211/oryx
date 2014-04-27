@@ -15,13 +15,12 @@
 
 package com.cloudera.oryx.kmeans.common;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.linear.RealVector;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public final class LloydsUpdateStrategy implements KMeansUpdateStrategy {
 
@@ -34,14 +33,14 @@ public final class LloydsUpdateStrategy implements KMeansUpdateStrategy {
   @Override
   public <W extends Weighted<RealVector>> Centers update(List<W> points, Centers centers) {
     for (int iter = 0; iter < numIterations; iter++) {
-      Map<Integer, List<W>> assignments = Maps.newHashMap();
+      Map<Integer, List<W>> assignments = new HashMap<>();
       for (int i = 0; i < centers.size(); i++) {
-        assignments.put(i, Lists.<W>newArrayList());
+        assignments.put(i, new ArrayList<W>());
       }
       for (W weightedVec : points) {
         assignments.get(centers.getDistance(weightedVec.thing()).getClosestCenterId()).add(weightedVec);
       }
-      List<RealVector> centroids = Lists.newArrayList();
+      List<RealVector> centroids = new ArrayList<>();
       for (Map.Entry<Integer, List<W>> e : assignments.entrySet()) {
         if (e.getValue().isEmpty()) {
           centroids.add(centers.get(e.getKey())); // fix the no-op center

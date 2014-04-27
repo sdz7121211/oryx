@@ -20,9 +20,9 @@ import com.cloudera.oryx.kmeans.common.Centers;
 import com.cloudera.oryx.kmeans.common.ClusterValidityStatistics;
 import com.cloudera.oryx.kmeans.common.KMeans;
 import com.cloudera.oryx.kmeans.common.WeightedRealVector;
-import com.google.common.collect.Lists;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class KMeansEvaluationData implements Serializable {
@@ -47,7 +47,7 @@ public final class KMeansEvaluationData implements Serializable {
 
   private void compute() {
     KMeans kmeans = new KMeans(settings.getInitStrategy(), settings.getUpdateStrategy());
-    List<Centers> centers = Lists.newArrayList();
+    List<Centers> centers = new ArrayList<>();
     for (List<WeightedRealVector> sketchPoint : sketchPoints) {
       centers.add(kmeans.compute(sketchPoint, k, RandomManager.getSeededRandom(replica + 31L * k)));
     }

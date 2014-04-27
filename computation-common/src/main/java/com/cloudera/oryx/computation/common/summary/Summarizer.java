@@ -16,8 +16,11 @@
 package com.cloudera.oryx.computation.common.summary;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,9 +39,6 @@ import org.apache.crunch.fn.Aggregators;
 import org.apache.crunch.materialize.pobject.PObjectImpl;
 import org.apache.crunch.types.avro.Avros;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +47,8 @@ public final class Summarizer {
   
   private static final Logger LOG = LoggerFactory.getLogger(Summarizer.class);
   
-  private final Set<Integer> ignoredColumns = Sets.newHashSet();
-  private final Set<Integer> categoricalColumns = Sets.newHashSet();
+  private final Set<Integer> ignoredColumns = new HashSet<>();
+  private final Set<Integer> categoricalColumns = new HashSet<>();
   private Spec spec = null;
 
   public Summarizer spec(Spec spec) {
@@ -97,7 +97,7 @@ public final class Summarizer {
   }
 
   private static Summary toSummary(Spec spec, Iterable<Pair<Integer, Pair<Long, InternalStats>>> iter) {
-    List<SummaryStats> ss = Lists.newArrayList();
+    List<SummaryStats> ss = new ArrayList<>();
     int fieldCount = 0;
     long recordCount = 0L;
     for (Pair<Integer, Pair<Long, InternalStats>> p : iter) {
@@ -151,7 +151,7 @@ public final class Summarizer {
 
     ToJsonFn(Spec spec) {
       this.spec = spec;
-      values = Lists.newArrayList();
+      values = new ArrayList<>();
     }
 
     @Override
@@ -181,7 +181,7 @@ public final class Summarizer {
                         Collection<Integer> categoricalColumns) {
       this.ignoredColumns = ignoreColumns;
       this.categoricalColumns = categoricalColumns;
-      this.stats = Maps.newHashMap();
+      this.stats = new HashMap<>();
       this.count = 0;
     }
     

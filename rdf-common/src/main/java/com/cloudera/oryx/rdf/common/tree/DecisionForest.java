@@ -24,6 +24,7 @@ import org.apache.commons.math3.util.FastMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -112,7 +113,7 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
 
     ExecutorService executor = Executors.newFixedThreadPool(determineParallelism(trees.length));
     try {
-      Collection<Future<Object>> futures = Lists.newArrayListWithCapacity(trees.length);
+      Collection<Future<Object>> futures = new ArrayList<>(trees.length);
       for (int i = 0; i < numTrees; i++) {
         final int treeID = i;
         futures.add(executor.submit(new Callable<Object>() {
@@ -122,8 +123,8 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
             int totalExamples = allExamples.size();
             int expectedTrainingSize = (int) (totalExamples * sampleRate);
             int expectedCVSize = totalExamples - expectedTrainingSize;
-            List<Example> trainingExamples = Lists.newArrayListWithExpectedSize(expectedTrainingSize);
-            List<Example> cvExamples = Lists.newArrayListWithExpectedSize(expectedCVSize);
+            List<Example> trainingExamples = new ArrayList<>(expectedTrainingSize);
+            List<Example> cvExamples = new ArrayList<>(expectedCVSize);
             for (Example example : allExamples) {
               if (IntMath.mod(IntMath.mod(example.hashCode(), numTrees) - treeID, numTrees) < folds) {
                 trainingExamples.add(example);

@@ -16,20 +16,21 @@
 package com.cloudera.oryx.common.servcomp;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -171,7 +172,7 @@ public final class Store {
    * @throws IOException if an error occurs, like the file doesn't exist
    */
   public BufferedReader readFrom(String key) throws IOException {
-    return new BufferedReader(new InputStreamReader(streamFrom(key), Charsets.UTF_8), 1 << 20); // ~1MB
+    return new BufferedReader(new InputStreamReader(streamFrom(key), StandardCharsets.UTF_8), 1 << 20); // ~1MB
   }
 
   private void makeParentDirs(Path path) throws IOException {
@@ -195,26 +196,26 @@ public final class Store {
 
   /**
    * @param key location of file to download from distibuted storage
-   * @param file local {@link File} to store data into -- can be directory or explicit file
+   * @param file local {@link java.nio.file.Path} to store data into -- can be directory or explicit file
    * @throws IOException if an error occurs while downloading
    */
-  public void download(String key, File file) throws IOException {
+  public void download(String key, java.nio.file.Path file) throws IOException {
     Preconditions.checkNotNull(key);
     Preconditions.checkNotNull(file);
     Path path = Namespaces.toPath(key);
-    Path filePath = new Path(file.getAbsolutePath());
+    Path filePath = new Path(file.toAbsolutePath().toString());
     fs.copyToLocalFile(false, path, filePath);
   }
 
   /**
    * @param dirKey location of directory whose contents will be downloaded
-   * @param dir local {@link File} to store files/directories under
+   * @param dir local {@link java.nio.file.Path} to store files/directories under
    * @throws IOException if an error occurs while downloading
    */
-  public void downloadDirectory(String dirKey, File dir) throws IOException {
+  public void downloadDirectory(String dirKey, java.nio.file.Path dir) throws IOException {
     Preconditions.checkNotNull(dirKey);
     Preconditions.checkNotNull(dir);
-    Preconditions.checkArgument(dir.exists() && dir.isDirectory(), "Not a directory: %s", dir);
+    Preconditions.checkArgument(Files.isDirectory(dir), "Not a directory: %s", dir);
 
     Path dirPath = Namespaces.toPath(dirKey);
     if (!fs.exists(dirPath)) {
@@ -227,14 +228,11 @@ public final class Store {
       for (FileStatus status : fs.listStatus(dirPath)) {
         String name = status.getPath().getName();
         String fromKey = dirKey + '/' + name;
-        File toLocal = new File(dir, name);
+        java.nio.file.Path toLocal = dir.resolve(name);
         if (status.isFile()) {
           download(fromKey, toLocal);
         } else {
-          boolean success = toLocal.mkdir();
-          if (!success && !toLocal.exists()) {
-            throw new IOException("Can't make " + toLocal);
-          }
+          Files.createDirectories(toLocal);
           downloadDirectory(fromKey, toLocal);
         }
       }
@@ -255,18 +253,18 @@ public final class Store {
    * @param overwrite if true, overwrite the existing file data if exists already
    * @throws IOException if the data can't be written, or file exists and overwrite is false
    */
-  public void upload(String key, File file, boolean overwrite) throws IOException {
+  public void upload(String key, java.nio.file.Path file, boolean overwrite) throws IOException {
     Preconditions.checkNotNull(key);
     Preconditions.checkNotNull(file);
-    Preconditions.checkArgument(file.exists(), "Doesn't exist: %s", file);
-    Preconditions.checkArgument(file.isFile(), "Not a file: %s", file);
+    Preconditions.checkArgument(Files.exists(file), "Doesn't exist: %s", file);
+    Preconditions.checkArgument(Files.isRegularFile(file), "Not a file: %s", file);
     if (!overwrite && exists(key, true)) {
       throw new IOException(key + " already exists");
     }
 
     Path path = Namespaces.toPath(key);
     makeParentDirs(path);
-    Path filePath = new Path(file.getAbsolutePath());
+    Path filePath = new Path(file.toAbsolutePath().toString());
     try {
       fs.copyFromLocalFile(false, overwrite, filePath, path);
     } catch (AccessControlException ace) {
@@ -286,28 +284,26 @@ public final class Store {
    * @param overwrite if true, overwrite existing files
    * @throws IOException if the data can't be written, or file exists and overwrite is false
    */
-  public void uploadDirectory(String dirKey, File dir, boolean overwrite) throws IOException {
+  public void uploadDirectory(String dirKey, java.nio.file.Path dir, boolean overwrite) throws IOException {
     Preconditions.checkNotNull(dirKey);
     Preconditions.checkNotNull(dir);
-    Preconditions.checkArgument(dir.exists() && dir.isDirectory(), "Not a directory: %s", dir);
-    File[] contents = dir.listFiles(IOUtils.NOT_HIDDEN);
-    if (contents != null) {
-      boolean complete = false;
-      try {
-        for (File content : contents) {
-          String toKey = dirKey + '/' + content.getName();
-          if (content.isFile()) {
-            upload(toKey, content, overwrite);
-          } else {
-            uploadDirectory(toKey, content, overwrite);
-          }
+    Preconditions.checkArgument(Files.isDirectory(dir), "Not a directory: %s", dir);
+
+    boolean complete = false;
+    try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(dir)) {
+      for (java.nio.file.Path fileOrDir : stream) {
+        String toKey = dirKey + '/' + fileOrDir.getFileName();
+        if (Files.isRegularFile(fileOrDir)) {
+          upload(toKey, fileOrDir, overwrite);
+        } else {
+          uploadDirectory(toKey, fileOrDir, overwrite);
         }
-        complete = true;
-      } finally {
-        if (!complete) {
-          log.warn("Failed to upload {} so deleting {}", dir, dirKey);
-          recursiveDelete(dirKey);
-        }
+      }
+      complete = true;
+    } finally {
+      if (!complete) {
+        log.warn("Failed to upload {} so deleting {}", dir, dirKey);
+        recursiveDelete(dirKey);
       }
     }
   }
@@ -429,7 +425,7 @@ public final class Store {
     FileStatus[] statuses = fs.listStatus(path, new FilesOrDirsPathFilter(fs, files));
     String prefixString = Namespaces.get().getPrefix();
 
-    List<String> result = Lists.newArrayListWithCapacity(statuses.length);
+    List<String> result = new ArrayList<>(statuses.length);
     for (FileStatus fileStatus : statuses) {
       String listPath = fileStatus.getPath().toString();
       Preconditions.checkState(listPath.startsWith(prefixString),

@@ -15,6 +15,7 @@
 
 package com.cloudera.oryx.als.common.candidate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +23,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public final class LocationSensitiveHashIT extends OryxTest {
 
     for (int iteration = 0; iteration < ITERATIONS; iteration++) {
 
-      LongObjectMap<float[]> Y = new LongObjectMap<float[]>();
+      LongObjectMap<float[]> Y = new LongObjectMap<>();
       for (int i = 0; i < NUM_ITEMS; i++) {
         Y.put(i, RandomUtils.randomUnitVector(NUM_FEATURES, random));
       }
@@ -129,12 +129,12 @@ public final class LocationSensitiveHashIT extends OryxTest {
   private static List<Long> findTopRecommendations(LongObjectMap<float[]> Y, float[] userVec) {
     // SortedMap<Double,Long> allScores = Maps.newTreeMap(Collections.reverseOrder());
     // Above triggers some weird OpenJDK 1.6.0_30 compiler bug. Use equivalent:
-    SortedMap<Double,Long> allScores = new TreeMap<Double,Long>(Collections.reverseOrder());
+    SortedMap<Double,Long> allScores = new TreeMap<>(Collections.reverseOrder());
     for (LongObjectMap.MapEntry<float[]> entry : Y.entrySet()) {
       double dot = SimpleVectorMath.dot(entry.getValue(), userVec);
       allScores.put(dot, entry.getKey());
     }
-    List<Long> topRecommendations = Lists.newArrayList();
+    List<Long> topRecommendations = new ArrayList<>();
     for (Map.Entry<Double,Long> entry : allScores.entrySet()) {
       topRecommendations.add(entry.getValue());
       if (topRecommendations.size() == NUM_RECS) {

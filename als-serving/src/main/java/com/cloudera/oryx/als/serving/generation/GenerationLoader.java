@@ -15,8 +15,10 @@
 
 package com.cloudera.oryx.als.serving.generation;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +26,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,9 +67,8 @@ final class GenerationLoader {
 
   void loadModel(int generationID, Generation currentGeneration) throws IOException {
 
-    File modelPMMLFile = File.createTempFile("oryx-model", ".pmml.gz");
-    modelPMMLFile.deleteOnExit();
-    IOUtils.delete(modelPMMLFile);
+    Path modelPMMLFile = IOUtils.createTempFile("oryx-model", ".pmml.gz");
+    Files.delete(modelPMMLFile);
 
     String generationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     String modelPMMLKey = generationPrefix + "model.pmml.gz";
@@ -76,9 +76,9 @@ final class GenerationLoader {
     log.info("Loading model description from {}", modelPMMLKey);
 
     ALSModelDescription modelDescription = ALSModelDescription.read(modelPMMLFile);
-    IOUtils.delete(modelPMMLFile);
+    Files.delete(modelPMMLFile);
 
-    Collection<Future<Object>> futures = Lists.newArrayList();
+    Collection<Future<Object>> futures = new ArrayList<>();
     // Limit this fairly sharply to 2 so as to not saturate the network link
     ExecutorService executor = ExecutorUtils.buildExecutor("LoadModel", 2);
 

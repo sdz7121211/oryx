@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import javax.servlet.ServletConfig;
@@ -30,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
 import com.google.common.net.HttpHeaders;
 
 import com.cloudera.oryx.common.LangUtils;
@@ -76,7 +77,7 @@ public abstract class AbstractOryxServlet extends HttpServlet {
       Map<String,ServletStats> temp = (Map<String,ServletStats>) context.getAttribute(TIMINGS_KEY);
       timings = temp;
       if (timings == null) {
-        timings = Maps.newTreeMap();
+        timings = new TreeMap<>();
         context.setAttribute(TIMINGS_KEY, timings);
       }
     }
@@ -89,7 +90,7 @@ public abstract class AbstractOryxServlet extends HttpServlet {
     }
     timing = theTiming;
 
-    responseTypeCache = Maps.newConcurrentMap();
+    responseTypeCache = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -217,7 +218,7 @@ public abstract class AbstractOryxServlet extends HttpServlet {
       return cached;
     }
 
-    SortedMap<Double,ResponseContentType> types = Maps.newTreeMap();
+    SortedMap<Double,ResponseContentType> types = new TreeMap<>();
     for (String accept : COMMA.split(acceptHeader)) {
       double preference;
       String type;

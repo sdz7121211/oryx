@@ -18,13 +18,13 @@ package com.cloudera.oryx.kmeans.computation.local;
 import com.cloudera.oryx.kmeans.common.Distance;
 import com.cloudera.oryx.kmeans.computation.cluster.KSketchIndex;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
 public final class SamplingRun implements Callable<Collection<RealVector>> {
@@ -46,7 +46,7 @@ public final class SamplingRun implements Callable<Collection<RealVector>> {
 
   @Override
   public Collection<RealVector> call() throws Exception {
-    SortedMap<Double, RealVector> reservoir = Maps.newTreeMap();
+    SortedMap<Double, RealVector> reservoir = new TreeMap<>();
     for (RealVector v : vecs) {
       Distance d = index.getDistance(v, foldId, true);
       if (d.getSquaredDistance() > 0.0) {

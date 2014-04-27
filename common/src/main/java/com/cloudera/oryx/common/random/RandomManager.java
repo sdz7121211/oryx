@@ -30,7 +30,7 @@ public final class RandomManager {
 
   private static final long TEST_SEED = 1234567890L;
 
-  private static final Map<RandomGenerator,Boolean> INSTANCES = new WeakHashMap<RandomGenerator,Boolean>();
+  private static final Map<RandomGenerator,Boolean> INSTANCES = new WeakHashMap<>();
   private static boolean useTestSeed = false;
 
   private RandomManager() {

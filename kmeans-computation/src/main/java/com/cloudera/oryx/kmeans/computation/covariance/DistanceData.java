@@ -24,6 +24,7 @@ import org.apache.commons.math3.linear.RealVector;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class DistanceData implements Serializable {
@@ -32,7 +33,7 @@ public final class DistanceData implements Serializable {
   private final RealMatrix covInv;
 
   public static Map<ClusterKey, DistanceData> load(String prefix, int n) throws IOException {
-    Map<ClusterKey, CovarianceDataBuilder> db = Maps.newHashMap();
+    Map<ClusterKey, CovarianceDataBuilder> db = new HashMap<>();
 
     Store store = Store.get();
     for (String file : store.list(prefix, true)) {

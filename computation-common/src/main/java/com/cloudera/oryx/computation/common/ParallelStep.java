@@ -16,6 +16,7 @@
 package com.cloudera.oryx.computation.common;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,7 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
@@ -48,7 +48,7 @@ public final class ParallelStep extends Configured implements Tool, HasState {
 
   public ParallelStep() {
     // steps = Lists.newCopyOnWriteArrayList();
-    steps = new CopyOnWriteArrayList<JobStep>();
+    steps = new CopyOnWriteArrayList<>();
   }
 
   /**
@@ -56,7 +56,7 @@ public final class ParallelStep extends Configured implements Tool, HasState {
    */
   @Override
   public Collection<StepState> getStepStates() throws IOException, InterruptedException {
-    Collection<StepState> states = Lists.newArrayList();
+    Collection<StepState> states = new ArrayList<>();
     for (JobStep step : steps) {
       states.addAll(step.getStepStates());
     }
@@ -73,7 +73,7 @@ public final class ParallelStep extends Configured implements Tool, HasState {
     // all but last arg are passed through
     String[] stepClassNames = args[args.length - 1].split(",");
 
-    Collection<Callable<Object>> runnables = Lists.newArrayList();
+    Collection<Callable<Object>> runnables = new ArrayList<>();
 
     for (String stepClassName : stepClassNames) {
       final JobStep step = ClassUtils.loadInstanceOf(stepClassName, JobStep.class);

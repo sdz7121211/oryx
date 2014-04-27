@@ -16,6 +16,8 @@
 package com.cloudera.oryx.computation.common.summary;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +26,10 @@ import com.cloudera.oryx.computation.common.records.RecordSpec;
 import com.cloudera.oryx.computation.common.records.Spec;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public final class Summary implements Serializable {
 
-  private List<SummaryStats> stats = Lists.newArrayList();
+  private List<SummaryStats> stats = new ArrayList<>();
   private long recordCount;
   private int fieldCount;
 
@@ -78,7 +78,7 @@ public final class Summary implements Serializable {
   }
 
   public Map<Integer, BiMap<String, Integer>> getCategoryLevelsMapping() {
-    Map<Integer, BiMap<String, Integer>> levelsMap = Maps.newHashMap();
+    Map<Integer, BiMap<String, Integer>> levelsMap = new HashMap<>();
     for (int i = 0; i < stats.size(); i++) {
       if (stats.get(i) != null && !stats.get(i).isNumeric()) {
         List<String> levels = stats.get(i).getLevels();

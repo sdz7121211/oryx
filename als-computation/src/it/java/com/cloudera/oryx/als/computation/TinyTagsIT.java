@@ -15,7 +15,7 @@
 
 package com.cloudera.oryx.als.computation;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.Test;
@@ -38,7 +38,7 @@ public final class TinyTagsIT extends AbstractComputationIT {
   private static final double BIG_EPSILON = 0.02;
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("tiny-tags");
   }
 

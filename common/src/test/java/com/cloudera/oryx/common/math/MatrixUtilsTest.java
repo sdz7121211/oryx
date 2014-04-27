@@ -45,11 +45,11 @@ public final class MatrixUtilsTest extends OryxTest {
 
   @Test
   public void testAddTo() {
-    LongObjectMap<LongFloatMap> byRow = new LongObjectMap<LongFloatMap>();
+    LongObjectMap<LongFloatMap> byRow = new LongObjectMap<>();
     assertNull(byRow.get(0L));
     assertNull(byRow.get(1L));
     assertNull(byRow.get(4L));
-    LongObjectMap<LongFloatMap> byCol = new LongObjectMap<LongFloatMap>();
+    LongObjectMap<LongFloatMap> byCol = new LongObjectMap<>();
     MatrixUtils.addTo(0L, 0L, -1.0f, byRow, byCol);
     MatrixUtils.addTo(4L, 1L, 2.0f, byRow, byCol);
     assertEquals(-1.0f, byRow.get(0L).get(0L));
@@ -62,8 +62,8 @@ public final class MatrixUtilsTest extends OryxTest {
 
   @Test
   public void testRemove() {
-    LongObjectMap<LongFloatMap> byRow = new LongObjectMap<LongFloatMap>();
-    LongObjectMap<LongFloatMap> byCol = new LongObjectMap<LongFloatMap>();
+    LongObjectMap<LongFloatMap> byRow = new LongObjectMap<>();
+    LongObjectMap<LongFloatMap> byCol = new LongObjectMap<>();
     MatrixUtils.addTo(0L, 0L, -1.0f, byRow, byCol);
     MatrixUtils.addTo(4L, 1L, 2.0f, byRow, byCol);
     MatrixUtils.remove(0L, 0L, byRow, byCol);
@@ -74,7 +74,7 @@ public final class MatrixUtilsTest extends OryxTest {
 
   @Test
   public void testTransposeTimesSelf() {
-    LongObjectMap<float[]> M = new LongObjectMap<float[]>();
+    LongObjectMap<float[]> M = new LongObjectMap<>();
     M.put(1L, new float[] {4.0f, -1.0f, -5.0f});
     M.put(2L, new float[] {2.0f, 0.0f, 3.0f});
     RealMatrix MTM = MatrixUtils.transposeTimesSelf(M);
@@ -85,10 +85,10 @@ public final class MatrixUtilsTest extends OryxTest {
 
   @Test
   public void testMultiplyXYT() {
-    LongObjectMap<float[]> X = new LongObjectMap<float[]>();
+    LongObjectMap<float[]> X = new LongObjectMap<>();
     X.put(0L, new float[] {2.0f, 3.5f});
     X.put(1L, new float[] {-1.0f, 0.0f});
-    LongObjectMap<float[]> Y = new LongObjectMap<float[]>();
+    LongObjectMap<float[]> Y = new LongObjectMap<>();
     Y.put(0L, new float[] {0.0f, -3.0f});
     Y.put(1L, new float[] {-0.5f, 1.5f});
     RealMatrix product = multiplyXYT(X, Y);

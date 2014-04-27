@@ -47,11 +47,8 @@ public final class CentersIndexLoader implements Serializable {
     Store store = Store.get();
     try {
       PMML pmml;
-      InputStream in = store.streamFrom(modelsFile);
-      try {
+      try (InputStream in = store.streamFrom(modelsFile)) {
         pmml = KMeansPMML.read(in);
-      } finally {
-        in.close();
       }
       List<Model> models = pmml.getModels();
       KSketchIndex index = new KSketchIndex(models.size(), getDimension(models),

@@ -121,7 +121,7 @@ final class NumericalInformation {
       }
     }
 
-    return bestDecision == null ? null : new Pair<Decision,Double>(bestDecision, bestGain);
+    return bestDecision == null ? null : new Pair<>(bestDecision, bestGain);
   }
 
 }

@@ -15,9 +15,12 @@
 
 package com.cloudera.oryx.als.computation;
 
+import com.cloudera.oryx.common.io.IOUtils;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.cloudera.oryx.common.settings.ConfigUtils;
 
@@ -29,26 +32,24 @@ import com.cloudera.oryx.common.settings.ConfigUtils;
 public final class RecsSimilarityIT extends AbstractComputationIT {
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("highlambda");
   }
 
   @Test
   public void testRecommendations() throws Exception {
-    File baseDir = new File(ConfigUtils.getDefaultConfig().getString("model.instance-dir"), "00000");
-    File recommendDir = new File(baseDir, "recommend");
-    assertTrue(recommendDir.exists());
-    assertTrue(recommendDir.isDirectory());
-    assertTrue(recommendDir.listFiles().length > 0);
+    Path baseDir = Paths.get(ConfigUtils.getDefaultConfig().getString("model.instance-dir"), "00000");
+    Path recommendDir = baseDir.resolve("recommend");
+    assertTrue(Files.isDirectory(recommendDir));
+    assertFalse(IOUtils.listFiles(recommendDir).isEmpty());
   }
 
   @Test
   public void testItemSimilarity() throws Exception {
-    File baseDir = new File(ConfigUtils.getDefaultConfig().getString("model.instance-dir"), "00000");
-    File similarityDir = new File(baseDir, "similarItems");
-    assertTrue(similarityDir.exists());
-    assertTrue(similarityDir.isDirectory());
-    assertTrue(similarityDir.listFiles().length > 0);
+    Path baseDir = Paths.get(ConfigUtils.getDefaultConfig().getString("model.instance-dir"), "00000");
+    Path similarityDir = baseDir.resolve("similarItems");
+    assertTrue(Files.isDirectory(similarityDir));
+    assertFalse(IOUtils.listFiles(similarityDir).isEmpty());
   }
 
 }

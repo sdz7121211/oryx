@@ -15,12 +15,12 @@
 
 package com.cloudera.oryx.rdf.common.information;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.Pair;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cloudera.oryx.common.OryxTest;
@@ -79,7 +79,7 @@ public final class NumericInformationTest extends OryxTest {
   }
 
   private static ExampleSet examplesForValuesForCategories(float[][] valuesForCategories) {
-    List<Example> examples = Lists.newArrayList();
+    List<Example> examples = new ArrayList<>();
     for (int category = 0; category < valuesForCategories.length; category++) {
       for (float value : valuesForCategories[category]) {
         examples.add(new Example(NumericFeature.forValue(value), CategoricalFeature.forValue(category)));
@@ -118,7 +118,7 @@ public final class NumericInformationTest extends OryxTest {
   }
 
   private static ExampleSet examplesForFeaturesValues(float[] features, float[] values) {
-    List<Example> examples = Lists.newArrayList();
+    List<Example> examples = new ArrayList<>();
     for (int i = 0; i < features.length; i++) {
       examples.add(new Example(NumericFeature.forValue(values[i]), NumericFeature.forValue(features[i])));
     }

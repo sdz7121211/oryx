@@ -15,10 +15,10 @@
 
 package com.cloudera.oryx.rdf.common.information;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cloudera.oryx.common.OryxTest;
@@ -65,7 +65,7 @@ public final class CategoricalInformationTest extends OryxTest {
   }
 
   private static ExampleSet examplesForCategoryCounts(int[][] categoryCountsByCatFeatureValue) {
-    List<Example> examples = Lists.newArrayList();
+    List<Example> examples = new ArrayList<>();
     for (int featureValue = 0; featureValue < categoryCountsByCatFeatureValue.length; featureValue++) {
       int[] categoryCounts = categoryCountsByCatFeatureValue[featureValue];
       for (int category = 0; category < categoryCounts.length; category++) {
@@ -100,7 +100,7 @@ public final class CategoricalInformationTest extends OryxTest {
   }
 
   private static ExampleSet examplesForNumericValues(float[][] valuesForCategoryValue) {
-    List<Example> examples = Lists.newArrayList();
+    List<Example> examples = new ArrayList<>();
     for (int category = 0; category < valuesForCategoryValue.length; category++) {
       for (float value : valuesForCategoryValue[category]) {
         examples.add(new Example(CategoricalFeature.forValue(category), NumericFeature.forValue(value)));

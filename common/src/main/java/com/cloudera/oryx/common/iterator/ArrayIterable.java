@@ -52,7 +52,7 @@ public final class ArrayIterable<T> implements Iterable<T> {
 
   @Override
   public Iterator<T> iterator() {
-    return new ArrayIterator<T>(values, from, to);
+    return new ArrayIterator<>(values, from, to);
   }
 
 }

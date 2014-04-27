@@ -15,12 +15,12 @@
 
 package com.cloudera.oryx.als.common.lsh;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.apache.commons.math3.util.FastMath;
@@ -113,7 +113,7 @@ public final class LocationSensitiveHash {
 
     meanVector = findMean(Y, features);
 
-    buckets = new LongObjectMap<long[]>();
+    buckets = new LongObjectMap<>();
     int count = 0;
     int maxBucketSize = 0;
     for (LongObjectMap.MapEntry<float[]> entry : Y.entrySet()) {
@@ -187,7 +187,7 @@ public final class LocationSensitiveHash {
     for (int i = 0; i < userVectors.length; i++) {
       bitSignatures[i] = toBitSignature(userVectors[i]);
     }
-    Collection<Iterator<LongObjectMap.MapEntry<float[]>>> inputs = Lists.newArrayList();
+    Collection<Iterator<LongObjectMap.MapEntry<float[]>>> inputs = new ArrayList<>();
     for (LongObjectMap.MapEntry<long[]> entry : buckets.entrySet()) {
       for (long bitSignature : bitSignatures) {
         if (Long.bitCount(bitSignature ^ entry.getKey()) <= maxBitsDiffering) { // # bits differing

@@ -20,8 +20,6 @@ import com.cloudera.oryx.common.settings.InboundSettings;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.dmg.pmml.DataDictionary;
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
@@ -33,7 +31,9 @@ import org.dmg.pmml.OpType;
 import org.dmg.pmml.TypeDefinitionField;
 import org.dmg.pmml.Value;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -90,7 +90,7 @@ public final class PMMLUtils {
     List<String> columnNames = settings.getColumnNames();
 
     Preconditions.checkNotNull(dictionary);
-    Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping = Maps.newHashMap();
+    Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping = new HashMap<>();
     for (TypeDefinitionField field : dictionary.getDataFields()) {
       Collection<Value> values = field.getValues();
       if (values != null && !values.isEmpty()) {
@@ -120,7 +120,7 @@ public final class PMMLUtils {
     Collection<Integer> ids = inboundSettings.getIdColumns();
     Collection<Integer> numeric = inboundSettings.getNumericColumns();
     Collection<Integer> categorical = inboundSettings.getCategoricalColumns();
-    Collection<MiningField> miningFields = Lists.newArrayList();
+    Collection<MiningField> miningFields = new ArrayList<>();
     for (int col = 0; col < columnNames.size(); col++) {
       if (ignored.contains(col) || ids.contains(col)) {
         continue;

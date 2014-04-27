@@ -21,9 +21,10 @@ import com.google.common.collect.HashBiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -42,11 +43,11 @@ final class ReadInputs implements Callable<Object> {
 
   private static final Logger log = LoggerFactory.getLogger(ReadInputs.class);
 
-  private final File inputDir;
+  private final Path inputDir;
   private final Collection<Example> examples;
   private final Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping;
 
-  ReadInputs(File inputDir,
+  ReadInputs(Path inputDir,
              Collection<Example> examples,
              Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping) {
     this.inputDir = inputDir;
@@ -56,8 +57,8 @@ final class ReadInputs implements Callable<Object> {
 
   @Override
   public Void call() throws IOException {
-    File[] inputFiles = inputDir.listFiles(IOUtils.NOT_HIDDEN);
-    if (inputFiles == null || inputFiles.length == 0) {
+    List<Path> inputFiles = IOUtils.listFiles(inputDir);
+    if (inputFiles.isEmpty()) {
       log.info("No input files in {}", inputDir);
       return null;
     }
@@ -67,7 +68,7 @@ final class ReadInputs implements Callable<Object> {
     Integer targetColumn = inboundSettings.getTargetColumn();
     Preconditions.checkNotNull(targetColumn, "No target-column specified");
 
-    for (File inputFile : inputFiles) {
+    for (Path inputFile : inputFiles) {
       log.info("Reading input from {}", inputFile);
       for (String line : new FileLineIterable(inputFile)) {
         if (line.isEmpty()) {

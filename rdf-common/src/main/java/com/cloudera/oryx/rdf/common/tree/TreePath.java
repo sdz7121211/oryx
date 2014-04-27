@@ -16,7 +16,6 @@
 package com.cloudera.oryx.rdf.common.tree;
 
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Longs;
 import org.apache.commons.math3.util.FastMath;
 
@@ -87,7 +86,7 @@ final class TreePath implements Comparable<TreePath> {
         if (i < o.pathLength) {
           boolean thatLeft = o.isLeftAt(i);
           if (thisLeft != thatLeft) {
-            return Booleans.compare(thatLeft, thisLeft);
+            return Boolean.compare(thatLeft, thisLeft);
           }
           // else continue
         } else {

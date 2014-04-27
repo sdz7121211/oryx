@@ -67,11 +67,11 @@ final class YState implements Serializable {
     String yKey = conf.get(RowStep.Y_KEY_KEY);
     log.info("Reading X or Y from {}", yKey);
 
-    Y = new LongObjectMap<float[]>();
+    Y = new LongObjectMap<>();
 
     Iterable<MatrixRow> in;
     try {
-      in = new AvroFileSource<MatrixRow>(Namespaces.toPath(yKey), (AvroType<MatrixRow>) ptype).read(conf);
+      in = new AvroFileSource<>(Namespaces.toPath(yKey), (AvroType<MatrixRow>) ptype).read(conf);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }

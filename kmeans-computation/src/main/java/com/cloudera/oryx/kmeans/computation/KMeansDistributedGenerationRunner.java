@@ -24,9 +24,9 @@ import com.cloudera.oryx.kmeans.computation.evaluate.VoronoiPartitionStep;
 import com.cloudera.oryx.kmeans.computation.normalize.NormalizeStep;
 import com.cloudera.oryx.kmeans.computation.outlier.OutlierStep;
 import com.cloudera.oryx.kmeans.computation.summary.SummaryStep;
-import com.google.common.collect.Lists;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cloudera.oryx.computation.common.DependsOn;
@@ -57,14 +57,14 @@ public final class KMeansDistributedGenerationRunner extends DistributedGenerati
 
   @Override
   protected List<DependsOn<Class<? extends JobStep>>> getPreDependencies() {
-    List<DependsOn<Class<? extends JobStep>>> preDeps = Lists.newArrayList();
+    List<DependsOn<Class<? extends JobStep>>> preDeps = new ArrayList<>();
     preDeps.add(DependsOn.<Class<? extends JobStep>>nextAfterFirst(NormalizeStep.class, SummaryStep.class));
     return preDeps;
   }
 
   @Override
   protected List<DependsOn<Class<? extends JobStep>>> getIterationDependencies() {
-    List<DependsOn<Class<? extends JobStep>>> iterationsDeps = Lists.newArrayList();
+    List<DependsOn<Class<? extends JobStep>>> iterationsDeps = new ArrayList<>();
     iterationsDeps.add(DependsOn.<Class<? extends JobStep>>first(KSketchSamplingStep.class));
     return iterationsDeps;
   }
@@ -72,7 +72,7 @@ public final class KMeansDistributedGenerationRunner extends DistributedGenerati
   @Override
   protected List<DependsOn<Class<? extends JobStep>>> getPostDependencies() {
     Config config = ConfigUtils.getDefaultConfig();
-    List<DependsOn<Class<? extends JobStep>>> postDeps = Lists.newArrayList();
+    List<DependsOn<Class<? extends JobStep>>> postDeps = new ArrayList<>();
     postDeps.add(DependsOn.<Class<? extends JobStep>>nextAfterFirst(ClusteringStep.class, VoronoiPartitionStep.class));
     if (doOutlierComputation(config)) {
       if (config.getBoolean("model.outliers.mahalanobis")) {

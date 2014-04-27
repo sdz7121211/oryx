@@ -23,7 +23,6 @@ import com.cloudera.oryx.kmeans.computation.MLAvros;
 import com.cloudera.oryx.kmeans.computation.cluster.ClusterSettings;
 import com.cloudera.oryx.kmeans.computation.types.KMeansTypes;
 import com.typesafe.config.Config;
-import org.apache.commons.math3.linear.RealVector;
 import org.apache.crunch.PCollection;
 import org.apache.crunch.impl.mr.MRPipeline;
 import org.apache.crunch.lib.PTables;
@@ -56,7 +55,7 @@ public final class VoronoiPartitionStep extends KMeansJobStep {
     // PCollection<ClosestSketchVectorData> weights = inputPairs(p, inputKey, MLAvros.vector())
     PCollection<ClosestSketchVectorData> weights = PTables.asPTable(inputPairs(p, inputKey, MLAvros.vector())
         .parallelDo("computingSketchVectorWeights",
-            new ClosestSketchVectorFn<RealVector>(indexKey, clusterSettings),
+            new ClosestSketchVectorFn<>(indexKey, clusterSettings),
             Avros.pairs(Avros.ints(), Avros.reflects(ClosestSketchVectorData.class))))
         .groupByKey(1)
         .combineValues(new ClosestSketchVectorAggregator(clusterSettings))

@@ -18,7 +18,6 @@ package com.cloudera.oryx.rdf.common.pmml;
 import com.cloudera.oryx.common.pmml.PMMLUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 import org.dmg.pmml.Array;
 import org.dmg.pmml.DataDictionary;
@@ -47,11 +46,12 @@ import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -89,18 +89,15 @@ public final class DecisionForestPMML {
   // Write PMML
 
   /**
-   * Writes to a {@link File} instead of {@link Writer}.
+   * Writes to a {@link Path} instead of {@link Writer}.
    *
    * @see #write(Writer, DecisionForest, Map)
    */
-  public static void write(File pmmlFile,
+  public static void write(Path pmmlFile,
                            DecisionForest forest,
                            Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping) throws IOException {
-    Writer pmmlOut = IOUtils.buildGZIPWriter(pmmlFile);
-    try {
+    try (Writer pmmlOut = IOUtils.buildGZIPWriter(pmmlFile)) {
       write(pmmlOut, forest, columnToCategoryNameToIDMapping);
-    } finally {
-      pmmlOut.close();
     }
   }
 
@@ -169,10 +166,10 @@ public final class DecisionForestPMML {
     root.setId("r");
 
     // Queue<Node> modelNodes = Queues.newArrayDeque();
-    Queue<Node> modelNodes = new ArrayDeque<Node>();
+    Queue<Node> modelNodes = new ArrayDeque<>();
     modelNodes.add(root);
 
-    Queue<Pair<TreeNode, Decision>> treeNodes = new ArrayDeque<Pair<TreeNode, Decision>>();
+    Queue<Pair<TreeNode, Decision>> treeNodes = new ArrayDeque<>();
     treeNodes.add(new Pair<TreeNode,Decision>(tree.getRoot(), null));
 
     while (!treeNodes.isEmpty()) {
@@ -233,8 +230,8 @@ public final class DecisionForestPMML {
             decision.getDefaultDecision() ? positiveModelNode.getId() : negativeModelNode.getId());
         modelNodes.add(positiveModelNode);
         modelNodes.add(negativeModelNode);
-        treeNodes.add(new Pair<TreeNode,Decision>(decisionNode.getRight(), decision));
-        treeNodes.add(new Pair<TreeNode,Decision>(decisionNode.getLeft(), null));
+        treeNodes.add(new Pair<>(decisionNode.getRight(), decision));
+        treeNodes.add(new Pair<>(decisionNode.getLeft(), (Decision) null));
 
       }
 
@@ -268,7 +265,7 @@ public final class DecisionForestPMML {
         CategoricalDecision categoricalDecision = (CategoricalDecision) decision;
         Map<Integer,String> categoryIDToName = columnToCategoryNameToIDMapping.get(columnNumber).inverse();
         BitSet includedCategoryIDs = categoricalDecision.getCategoryIDs();
-        List<String> categoryNames = Lists.newArrayList();
+        List<String> categoryNames = new ArrayList<>();
         int categoryID = -1;
         while ((categoryID = includedCategoryIDs.nextSetBit(categoryID + 1)) >= 0) {
           categoryNames.add(categoryIDToName.get(categoryID));
@@ -293,18 +290,13 @@ public final class DecisionForestPMML {
    * @param pmmlFile file to read PMML encoding from
    * @return a {@link DecisionForest} representation of the PMML encoded model
    */
-  public static Pair<DecisionForest, Map<Integer,BiMap<String,Integer>>> read(File pmmlFile) throws IOException {
+  public static Pair<DecisionForest, Map<Integer,BiMap<String,Integer>>> read(Path pmmlFile) throws IOException {
 
     PMML pmml;
-    InputStream in = IOUtils.openMaybeDecompressing(pmmlFile);
-    try {
+    try (InputStream in = IOUtils.openMaybeDecompressing(pmmlFile)) {
       pmml = JAXBUtil.unmarshalPMML(ImportFilter.apply(new InputSource(in)));
-    } catch (JAXBException e) {
+    } catch (JAXBException | SAXException e) {
       throw new IOException(e);
-    } catch (SAXException e) {
-      throw new IOException(e);
-    } finally {
-      in.close();
     }
 
     List<Model> models = pmml.getModels();
@@ -344,7 +336,7 @@ public final class DecisionForestPMML {
       }
     }
 
-    return new Pair<DecisionForest, Map<Integer, BiMap<String, Integer>>>(
+    return new Pair<>(
         new DecisionForest(trees, weights, featureImportances),
         columnToCategoryNameToIDMapping);
   }

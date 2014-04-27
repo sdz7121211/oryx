@@ -15,6 +15,7 @@
 
 package com.cloudera.oryx.als.common.factorizer.als;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -23,7 +24,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -176,7 +176,7 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
   @Override
   public Void call() throws ExecutionException, InterruptedException {
 
-    X = new LongObjectMap<float[]>(RbyRow.size());
+    X = new LongObjectMap<>(RbyRow.size());
 
     boolean randomY = previousY == null || previousY.isEmpty();
     Y = constructInitialY(previousY);
@@ -254,7 +254,7 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
     if (previousY == null || previousY.isEmpty()) {
       // Common case: have to start from scratch
       log.info("Starting from new, random Y matrix");      
-      randomY = new LongObjectMap<float[]>(RbyColumn.size());
+      randomY = new LongObjectMap<>(RbyColumn.size());
       
     } else {
       
@@ -262,7 +262,7 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
       if (oldFeatureCount > features) {
         // Fewer features, use some dimensions from prior larger number of features as-is
         log.info("Feature count has decreased to {}, projecting down previous generation's Y matrix", features);                
-        randomY = new LongObjectMap<float[]>(previousY.size());
+        randomY = new LongObjectMap<>(previousY.size());
         for (LongObjectMap.MapEntry<float[]> entry : previousY.entrySet()) {
           float[] oldLargerVector = entry.getValue();
           float[] newSmallerVector = new float[features];
@@ -273,7 +273,7 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
         
       } else if (oldFeatureCount < features) {
         log.info("Feature count has increased to {}, using previous generation's Y matrix as subspace", features);        
-        randomY = new LongObjectMap<float[]>(previousY.size());
+        randomY = new LongObjectMap<>(previousY.size());
         for (LongObjectMap.MapEntry<float[]> entry : previousY.entrySet()) {
           float[] oldSmallerVector = entry.getValue();
           float[] newLargerVector = new float[features];
@@ -293,7 +293,7 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
       }
     }
     
-    List<float[]> recentVectors = Lists.newArrayList();
+    List<float[]> recentVectors = new ArrayList<>();
     for (LongObjectMap.MapEntry<float[]> entry : randomY.entrySet()) {
       if (recentVectors.size() >= MAX_FAR_FROM_VECTORS) {
         break;
@@ -325,7 +325,7 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
   private void iterateXFromY(ExecutorService executor) throws ExecutionException, InterruptedException {
 
     RealMatrix YTY = MatrixUtils.transposeTimesSelf(Y);
-    Collection<Future<?>> futures = Lists.newArrayList();
+    Collection<Future<?>> futures = new ArrayList<>();
     addWorkers(RbyRow, Y, YTY, X, executor, futures);
 
     int count = 0;
@@ -352,7 +352,7 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
   private void iterateYFromX(ExecutorService executor) throws ExecutionException, InterruptedException {
 
     RealMatrix XTX = MatrixUtils.transposeTimesSelf(X);
-    Collection<Future<?>> futures = Lists.newArrayList();
+    Collection<Future<?>> futures = new ArrayList<>();
     addWorkers(RbyColumn, X, XTX, Y, executor, futures);
 
     int count = 0;
@@ -380,12 +380,12 @@ public final class AlternatingLeastSquares implements MatrixFactorizer {
                           ExecutorService executor,                          
                           Collection<Future<?>> futures) {
     if (R != null) {
-      List<Pair<Long, LongFloatMap>> workUnit = Lists.newArrayListWithCapacity(WORK_UNIT_SIZE);
+      List<Pair<Long, LongFloatMap>> workUnit = new ArrayList<>(WORK_UNIT_SIZE);
       for (LongObjectMap.MapEntry<LongFloatMap> entry : R.entrySet()) {
-        workUnit.add(new Pair<Long,LongFloatMap>(entry.getKey(), entry.getValue()));
+        workUnit.add(new Pair<>(entry.getKey(), entry.getValue()));
         if (workUnit.size() == WORK_UNIT_SIZE) {
           futures.add(executor.submit(new Worker(features, M, MTM, MTags, workUnit)));
-          workUnit = Lists.newArrayListWithCapacity(WORK_UNIT_SIZE);
+          workUnit = new ArrayList<>(WORK_UNIT_SIZE);
         }
       }
       if (!workUnit.isEmpty()) {

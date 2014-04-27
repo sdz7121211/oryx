@@ -18,7 +18,6 @@ package com.cloudera.oryx.kmeans.common.pmml;
 import com.cloudera.oryx.common.math.Vectors;
 import com.cloudera.oryx.kmeans.common.Centers;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.linear.RealVector;
 import org.dmg.pmml.Array;
 import org.dmg.pmml.Cluster;
@@ -33,11 +32,12 @@ import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cloudera.oryx.common.io.IOUtils;
@@ -53,16 +53,11 @@ public final class KMeansPMML {
   private KMeansPMML() {
   }
 
-  public static PMML read(File f) throws IOException {
-    InputStream in = IOUtils.openMaybeDecompressing(f);
-    try {
+  public static PMML read(Path path) throws IOException {
+    try (InputStream in = IOUtils.openMaybeDecompressing(path)) {
       return read(in);
-    } catch (JAXBException jaxbe) {
+    } catch (JAXBException | SAXException jaxbe) {
       throw new IOException(jaxbe);
-    } catch (SAXException saxe) {
-      throw new IOException(saxe);
-    } finally {
-      in.close();
     }
   }
 
@@ -70,21 +65,18 @@ public final class KMeansPMML {
     return JAXBUtil.unmarshalPMML(ImportFilter.apply(new InputSource(in)));
   }
 
-  public static void write(File f, DataDictionary dictionary, List<? extends Model> models) throws IOException {
-    OutputStream out = IOUtils.buildGZIPOutputStream(new FileOutputStream(f));
-    try {
+  public static void write(Path path, DataDictionary dictionary, List<? extends Model> models) throws IOException {
+    try (OutputStream out = IOUtils.buildGZIPOutputStream(Files.newOutputStream(path))) {
       write(out, dictionary, models);
     } catch (JAXBException jaxbe) {
       throw new IOException(jaxbe);
-    } finally {
-      out.close();
     }
   }
 
   public static Centers toCenters(ClusteringModel cm) {
     int dims = cm.getClusteringFields().size();
     boolean sparse = cm.getMiningSchema().getMiningFields().size() * 2 < dims;
-    List<RealVector> vecs = Lists.newArrayListWithExpectedSize(cm.getClusters().size());
+    List<RealVector> vecs = new ArrayList<>(cm.getClusters().size());
     for (Cluster c : cm.getClusters()) {
       vecs.add(createCenter(c.getArray(), sparse, dims));
     }

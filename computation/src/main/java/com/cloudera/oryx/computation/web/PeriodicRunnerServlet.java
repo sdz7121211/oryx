@@ -48,15 +48,18 @@ public final class PeriodicRunnerServlet extends HttpServlet {
     Preconditions.checkArgument(requestURI.startsWith(PREFIX), "Bad request URI: %s", requestURI);
     String command = requestURI.substring(PREFIX.length());
 
-    if ("forceRun".equals(command)) {
-      log.info("Forcing run of PeriodicRunner");
-      runner.forceRun();
-    } else if ("interrupt".equals(command)) {
-      log.info("Interrupting PeriodicRunner");
-      runner.interrupt();
-    } else {
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown command");
-      return;
+    switch (command) {
+      case "forceRun":
+        log.info("Forcing run of PeriodicRunner");
+        runner.forceRun();
+        break;
+      case "interrupt":
+        log.info("Interrupting PeriodicRunner");
+        runner.interrupt();
+        break;
+      default:
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown command");
+        return;
     }
 
     response.sendRedirect("/index.jspx");

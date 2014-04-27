@@ -20,7 +20,6 @@ import com.cloudera.oryx.computation.common.JobStepConfig;
 import com.cloudera.oryx.kmeans.computation.KMeansJobStep;
 import com.cloudera.oryx.kmeans.computation.MLAvros;
 import com.cloudera.oryx.kmeans.computation.cluster.KSketchIndex;
-import org.apache.commons.math3.linear.RealVector;
 import org.apache.crunch.impl.mr.MRPipeline;
 import org.apache.crunch.types.PType;
 import org.apache.crunch.types.avro.Avros;
@@ -52,11 +51,11 @@ public final class CovarianceStep extends KMeansJobStep {
     MRPipeline p = createBasicPipeline(CoMomentKeyFn.class);
     inputVectors(p, inputKey, MLAvros.vector()).parallelDo(
         "covAssign",
-        new AssignFn<RealVector>(index, settings.useApprox()),
+        new AssignFn<>(index, settings.useApprox()),
         Avros.tableOf(CKEY_PTYPE, Avros.pairs(MLAvros.vector(), Avros.doubles())))
         .parallelDo(
             "coMoment",
-            new CoMomentKeyFn<ClusterKey>(CKEY_PTYPE),
+            new CoMomentKeyFn<>(CKEY_PTYPE),
             Avros.tableOf(Avros.pairs(CKEY_PTYPE, INDEX_PTYPE), COMOMENT_PTYPE))
         .groupByKey()
         .combineValues(new CoMomentAggregator())

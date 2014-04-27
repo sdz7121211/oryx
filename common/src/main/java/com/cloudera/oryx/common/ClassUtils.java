@@ -95,14 +95,10 @@ public final class ClassUtils {
       Class<? extends T> configClass = doLoadClass(implClassName, superClass, classLoader);
       Constructor<? extends T> constructor = configClass.getConstructor(constructorTypes);
       return constructor.newInstance(constructorArgs);
-    } catch (NoSuchMethodException nsme) {
+    } catch (NoSuchMethodException | IllegalAccessException | InstantiationException nsme) {
       throw new IllegalStateException("No valid " + superClass + " binding exists", nsme);
     } catch (InvocationTargetException ite) {
       throw new IllegalStateException("Could not instantiate " + superClass + " due to exception", ite.getCause());
-    } catch (InstantiationException ie) {
-      throw new IllegalStateException("No valid " + superClass + " binding exists", ie);
-    } catch (IllegalAccessException iae) {
-      throw new IllegalStateException("No valid " + superClass + " binding exists", iae);
     }
   }
 

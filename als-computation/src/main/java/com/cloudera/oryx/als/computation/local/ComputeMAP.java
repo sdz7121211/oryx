@@ -19,8 +19,8 @@ import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
@@ -37,11 +37,11 @@ final class ComputeMAP implements Callable<Object> {
 
   private static final Logger log = LoggerFactory.getLogger(ComputeMAP.class);
 
-  private final File testDir;
+  private final Path testDir;
   private final LongObjectMap<float[]> X;
   private final LongObjectMap<float[]> Y;
 
-  ComputeMAP(File testDir, LongObjectMap<float[]> X, LongObjectMap<float[]> Y) {
+  ComputeMAP(Path testDir, LongObjectMap<float[]> X, LongObjectMap<float[]> Y) {
     this.testDir = testDir;
     this.X = X;
     this.Y = Y;
@@ -50,9 +50,9 @@ final class ComputeMAP implements Callable<Object> {
   @Override
   public Object call() throws IOException {
 
-    LongObjectMap<LongSet> testData = new LongObjectMap<LongSet>();
+    LongObjectMap<LongSet> testData = new LongObjectMap<>();
 
-    for (File file : testDir.listFiles(IOUtils.NOT_HIDDEN)) {
+    for (Path file : IOUtils.listFiles(testDir)) {
       for (CharSequence line : new FileLineIterable(file)) {
         String[] columns = DelimitedDataUtils.decode(line);
         long userID = StringLongMapping.toLong(columns[0]);

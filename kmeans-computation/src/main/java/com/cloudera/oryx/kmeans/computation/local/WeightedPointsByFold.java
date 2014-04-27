@@ -21,13 +21,13 @@ import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.kmeans.common.WeightedRealVector;
 import com.cloudera.oryx.kmeans.computation.cluster.ClusterSettings;
 import com.cloudera.oryx.kmeans.computation.cluster.KSketchIndex;
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -56,7 +56,7 @@ public final class WeightedPointsByFold implements Callable<List<List<WeightedRe
     try {
       for (int iter = 0; iter < cluster.getSketchIterations(); iter++) {
         log.info("Starting sketch iteration {}", iter + 1);
-        List<Future<Collection<RealVector>>> futures = Lists.newArrayList();
+        List<Future<Collection<RealVector>>> futures = new ArrayList<>();
         for (int foldId = 0; foldId < foldVecs.size(); foldId++) {
           futures.add(exec.submit(
               new SamplingRun(index, random, foldId, foldVecs.get(foldId), pointsPerIteration)));
@@ -71,7 +71,7 @@ public final class WeightedPointsByFold implements Callable<List<List<WeightedRe
         index.rebuildIndices();
       }
 
-      List<Future<List<WeightedRealVector>>> ret = Lists.newArrayList();
+      List<Future<List<WeightedRealVector>>> ret = new ArrayList<>();
       for (int foldId = 0; foldId < foldVecs.size(); foldId++) {
         ret.add(exec.submit(new AssignmentRun(index, foldId, foldVecs.get(foldId))));
       }

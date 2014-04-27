@@ -15,9 +15,9 @@
 
 package com.cloudera.oryx.common.iterator;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Path;
 import java.util.Iterator;
 
 import com.cloudera.oryx.common.io.IOUtils;
@@ -36,9 +36,9 @@ public final class FileLineIterable implements Iterable<String> {
   private final Reader reader;
 
   /** 
-   * Creates a {@code FileLineIterable} over a given {@link File}, assuming a UTF-8 encoding.
+   * Creates a {@code FileLineIterable} over a given {@link Path}, assuming a UTF-8 encoding.
    */
-  public FileLineIterable(File file) throws IOException {
+  public FileLineIterable(Path file) throws IOException {
     this.reader = IOUtils.openReaderMaybeDecompressing(file);
   }
 

@@ -28,19 +28,19 @@ import com.cloudera.oryx.kmeans.common.pmml.KMeansPMML;
 import com.cloudera.oryx.kmeans.computation.evaluate.EvaluationSettings;
 import com.cloudera.oryx.kmeans.computation.evaluate.KMeansEvaluationData;
 import com.cloudera.oryx.kmeans.computation.pmml.ClusteringModelBuilder;
-import com.google.common.base.Charsets;
 import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import org.apache.commons.math3.linear.RealVector;
 import org.dmg.pmml.ClusteringModel;
 import org.dmg.pmml.DataDictionary;
 import org.dmg.pmml.Model;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
@@ -50,10 +50,8 @@ public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
     int generationID = getGenerationID();
     String generationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
 
-    File currentInboundDir = Files.createTempDir();
-    currentInboundDir.deleteOnExit();
-    File tempOutDir = Files.createTempDir();
-    tempOutDir.deleteOnExit();
+    Path currentInboundDir = IOUtils.createTempDirectory("currentInbound");
+    Path tempOutDir = IOUtils.createTempDirectory("temp");
 
     try {
       Store store = Store.get();
@@ -72,7 +70,8 @@ public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
             public ClusterValidityStatistics apply(KMeansEvaluationData input) {
               return input.getClusterValidityStatistics();
             }
-          });
+          }
+      );
 
       KMeansEvalStrategy evalStrategy = EvaluationSettings.create(ConfigUtils.getDefaultConfig()).getEvalStrategy();
       if (evalStrategy != null) {
@@ -80,7 +79,7 @@ public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
       }
       ClusteringModelBuilder b = new ClusteringModelBuilder(summary);
       DataDictionary dictionary = b.getDictionary();
-      List<Model> models = Lists.newArrayList();
+      List<Model> models = new ArrayList<>();
       if (stats.size() == 1) {
         ClusterValidityStatistics best = stats.get(0);
         for (KMeansEvaluationData data : evalData) {
@@ -98,13 +97,19 @@ public final class KMeansLocalGenerationRunner extends LocalGenerationRunner {
         }
       }
 
-      Files.write(Joiner.on("\n").join(stats) + '\n', new File(tempOutDir, "cluster_stats.csv"), Charsets.UTF_8);
-      KMeansPMML.write(new File(tempOutDir, "model.pmml.gz"), dictionary, models);
+      List<String> statsStrings = Lists.transform(stats, new Function<ClusterValidityStatistics, String>() {
+        @Override
+        public String apply(ClusterValidityStatistics input) {
+          return input.toString();
+        }
+      });
+      Files.write(tempOutDir.resolve("cluster_stats.csv"), statsStrings, StandardCharsets.UTF_8);
+      KMeansPMML.write(tempOutDir.resolve("model.pmml.gz"), dictionary, models);
       List<String> assignments = new Assignment(foldVecs, evalData).call();
       if (!assignments.isEmpty()) {
-        File outlierDir = new File(tempOutDir, "outliers");
-        IOUtils.mkdirs(outlierDir);
-        Files.write(Joiner.on("\n").join(assignments) + '\n', new File(outlierDir, "data.csv"), Charsets.UTF_8);
+        Path outlierDir = tempOutDir.resolve("outliers");
+        Files.createDirectories(outlierDir);
+        Files.write(outlierDir.resolve("data.csv"), assignments, StandardCharsets.UTF_8);
       }
       store.uploadDirectory(generationPrefix, tempOutDir, false);
     } finally {

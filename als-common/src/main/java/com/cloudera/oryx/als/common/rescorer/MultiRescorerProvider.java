@@ -15,10 +15,10 @@
 
 package com.cloudera.oryx.als.common.rescorer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 import com.cloudera.oryx.als.common.OryxRecommender;
 
@@ -49,7 +49,7 @@ public final class MultiRescorerProvider extends AbstractRescorerProvider {
   
   @Override
   public Rescorer getRecommendRescorer(String[] userIDs, OryxRecommender recommender, String... args) {
-    List<Rescorer> rescorers = Lists.newArrayListWithCapacity(providers.length);
+    List<Rescorer> rescorers = new ArrayList<>(providers.length);
     for (RescorerProvider provider : providers) {
       Rescorer rescorer = provider.getRecommendRescorer(userIDs, recommender, args);
       if (rescorer != null) {
@@ -61,7 +61,7 @@ public final class MultiRescorerProvider extends AbstractRescorerProvider {
 
   @Override
   public Rescorer getRecommendToAnonymousRescorer(String[] itemIDs, OryxRecommender recommender, String... args) {
-    List<Rescorer> rescorers = Lists.newArrayListWithCapacity(providers.length);
+    List<Rescorer> rescorers = new ArrayList<>(providers.length);
     for (RescorerProvider provider : providers) {
       Rescorer rescorer = provider.getRecommendToAnonymousRescorer(itemIDs, recommender, args);
       if (rescorer != null) {
@@ -73,7 +73,7 @@ public final class MultiRescorerProvider extends AbstractRescorerProvider {
 
   @Override
   public Rescorer getMostPopularItemsRescorer(OryxRecommender recommender, String... args) {
-    List<Rescorer> rescorers = Lists.newArrayListWithCapacity(providers.length);
+    List<Rescorer> rescorers = new ArrayList<>(providers.length);
     for (RescorerProvider provider : providers) {
       Rescorer rescorer = provider.getMostPopularItemsRescorer(recommender, args);
       if (rescorer != null) {
@@ -96,7 +96,7 @@ public final class MultiRescorerProvider extends AbstractRescorerProvider {
 
   @Override
   public PairRescorer getMostSimilarItemsRescorer(OryxRecommender recommender, String... args) {
-    List<PairRescorer> rescorers = Lists.newArrayListWithCapacity(providers.length);
+    List<PairRescorer> rescorers = new ArrayList<>(providers.length);
     for (RescorerProvider provider : providers) {
       PairRescorer rescorer = provider.getMostSimilarItemsRescorer(recommender, args);
       if (rescorer != null) {

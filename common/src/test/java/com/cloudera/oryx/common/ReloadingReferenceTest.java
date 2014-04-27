@@ -37,7 +37,7 @@ public final class ReloadingReferenceTest extends OryxTest {
         return callCounts.incrementAndGet();
       }
     };
-    ReloadingReference<Number> reload = new ReloadingReference<Number>(callable);
+    ReloadingReference<Number> reload = new ReloadingReference<>(callable);
     assertNull(reload.maybeGet());
     assertEquals(1, reload.get());
     assertEquals(1, reload.get());
@@ -54,7 +54,7 @@ public final class ReloadingReferenceTest extends OryxTest {
         return callCounts.incrementAndGet();
       }
     };
-    ReloadingReference<Number> reload = new ReloadingReference<Number>(callable, 500, TimeUnit.MILLISECONDS);
+    ReloadingReference<Number> reload = new ReloadingReference<>(callable, 500, TimeUnit.MILLISECONDS);
     assertNull(reload.maybeGet());
     assertEquals(1, reload.get());
     assertEquals(1, reload.get());

@@ -15,9 +15,8 @@
 
 package com.cloudera.oryx.als.serving.web;
 
-import com.google.common.collect.Sets;
-
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -64,7 +63,7 @@ public final class SimilarityServlet extends AbstractALSServlet {
       return;
     }
     Iterator<String> pathComponents = SLASH.split(pathInfo).iterator();
-    Set<String> itemIDSet = Sets.newHashSet();
+    Set<String> itemIDSet = new HashSet<>();
     try {
       while (pathComponents.hasNext()) {
         itemIDSet.add(pathComponents.next());

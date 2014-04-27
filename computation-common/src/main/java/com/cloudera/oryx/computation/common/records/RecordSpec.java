@@ -15,6 +15,7 @@
 
 package com.cloudera.oryx.computation.common.records;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Function;
@@ -94,7 +95,7 @@ public final class RecordSpec implements Spec {
   }
   
   public static final class Builder {
-    private final List<FieldSpec> fields = Lists.newArrayList();
+    private final List<FieldSpec> fields = new ArrayList<>();
     
     public Builder() { }
 

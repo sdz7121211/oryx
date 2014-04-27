@@ -52,7 +52,7 @@ public final class RunningStatisticsPerTime implements Serializable {
     min = Double.NaN;
     max = Double.NaN;
     bucketTimeMS = TimeUnit.MILLISECONDS.convert(1, subTimeUnit);
-    subBuckets = new LinkedList<RunningStatistics>();
+    subBuckets = new LinkedList<>();
     for (int i = 0; i < numBuckets; i++) {
       subBuckets.add(new RunningStatistics());
     }

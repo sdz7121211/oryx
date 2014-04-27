@@ -19,12 +19,12 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -47,7 +47,7 @@ public final class InboundSettings implements Serializable {
       columnNames = inbound.getStringList("column-names");
     } else {
       int numColumns = inbound.getInt("num-columns");
-      columnNames = Lists.newArrayListWithCapacity(numColumns);
+      columnNames = new ArrayList<>(numColumns);
       for (int i = 0; i < numColumns; i++) {
         columnNames.add(String.valueOf(i));
       }
@@ -55,7 +55,7 @@ public final class InboundSettings implements Serializable {
 
     Function<Object,Integer> lookup = new LookupFunction(columnNames);
 
-    Iterable<Integer> allColumns = Collections2.transform(columnNames, lookup);
+    Collection<Integer> allColumns = Collections2.transform(columnNames, lookup);
 
     Collection<Integer> idColumns;
     if (inbound.hasPath("id-columns")) {
@@ -77,15 +77,15 @@ public final class InboundSettings implements Serializable {
     Collection<Integer> numericColumns;
     if (inbound.hasPath("categorical-columns")) {
       Preconditions.checkState(!inbound.hasPath("numeric-columns"));
-      categoricalColumns = Sets.newHashSet(
+      categoricalColumns = new HashSet<>(
           Collections2.transform(inbound.getAnyRefList("categorical-columns"), lookup));
-      numericColumns = Sets.newHashSet(allColumns);
+      numericColumns = new HashSet<>(allColumns);
       numericColumns.removeAll(categoricalColumns);
     } else if (inbound.hasPath("numeric-columns")) {
       Preconditions.checkState(!inbound.hasPath("categorical-columns"));
-      numericColumns = Sets.newHashSet(
+      numericColumns = new HashSet<>(
           Collections2.transform(inbound.getAnyRefList("numeric-columns"), lookup));
-      categoricalColumns = Sets.newHashSet(allColumns);
+      categoricalColumns = new HashSet<>(allColumns);
       categoricalColumns.removeAll(numericColumns);
     } else {
       throw new IllegalArgumentException("No categorical-columns or numeric-columns set");

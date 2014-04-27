@@ -23,12 +23,12 @@ import com.cloudera.oryx.common.settings.InboundSettings;
 import com.cloudera.oryx.computation.common.summary.InternalStats;
 import com.cloudera.oryx.computation.common.summary.Summary;
 import com.cloudera.oryx.computation.common.summary.SummaryStats;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -36,24 +36,23 @@ public final class Summarize implements Callable<Summary> {
 
   private static final Logger log = LoggerFactory.getLogger(Summarize.class);
 
-  private final File inputDir;
+  private final Path inputDir;
 
-  public Summarize(File inputDir) {
+  public Summarize(Path inputDir) {
     this.inputDir = inputDir;
   }
 
   @Override
   public Summary call() throws IOException {
-    File[] inputFiles = inputDir.listFiles(IOUtils.NOT_HIDDEN);
-    if (inputFiles == null || inputFiles.length == 0) {
+    List<Path> inputFiles = IOUtils.listFiles(inputDir);
+    if (inputFiles.isEmpty()) {
       log.warn("No input files found in input directory");
       return null;
     }
 
-
     InboundSettings inboundSettings = InboundSettings.create(ConfigUtils.getDefaultConfig());
     int numFeatures = inboundSettings.getColumnNames().size();
-    List<InternalStats> internalStats = Lists.newArrayListWithExpectedSize(numFeatures);
+    List<InternalStats> internalStats = new ArrayList<>(numFeatures);
     for (int col = 0; col < numFeatures; col++) {
       if (inboundSettings.isCategorical(col) || inboundSettings.isNumeric(col)) {
         internalStats.add(new InternalStats());
@@ -63,8 +62,8 @@ public final class Summarize implements Callable<Summary> {
     }
     int totalRecords = 0;
 
-    for (File inputFile : inputFiles) {
-      log.info("Summarizing input from {}", inputFile.getName());
+    for (Path inputFile : inputFiles) {
+      log.info("Summarizing input from {}", inputFile);
       for (String line : new FileLineIterable(inputFile)) {
         if (line.isEmpty()) {
           continue;
@@ -83,7 +82,7 @@ public final class Summarize implements Callable<Summary> {
       }
     }
 
-    List<SummaryStats> stats = Lists.newArrayListWithExpectedSize(numFeatures);
+    List<SummaryStats> stats = new ArrayList<>(numFeatures);
     for (int col = 0; col < numFeatures; col++) {
       InternalStats internal = internalStats.get(col);
       if (internal != null) {

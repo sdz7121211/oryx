@@ -21,9 +21,10 @@ import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import com.cloudera.oryx.common.io.IOUtils;
@@ -44,7 +45,7 @@ public final class RDFGenerationManager extends GenerationManager {
   private int modelGeneration;
   private Generation currentModel;
 
-  public RDFGenerationManager(File appendTempDir) throws IOException {
+  public RDFGenerationManager(Path appendTempDir) throws IOException {
     super(appendTempDir);
     modelGeneration = NO_GENERATION;
   }
@@ -73,9 +74,8 @@ public final class RDFGenerationManager extends GenerationManager {
                mostRecentModelGeneration, modelGeneration);
     }
 
-    File modelPMMLFile = File.createTempFile("model-", ".pmml.gz");
-    modelPMMLFile.deleteOnExit();
-    IOUtils.delete(modelPMMLFile);
+    Path modelPMMLFile = IOUtils.createTempFile("model-", ".pmml.gz");
+    Files.delete(modelPMMLFile);
 
     Config config = ConfigUtils.getDefaultConfig();
     String instanceDir = config.getString("model.instance-dir");
@@ -86,7 +86,7 @@ public final class RDFGenerationManager extends GenerationManager {
     log.info("Loading model description from {}", modelPMMLKey);
 
     Pair<DecisionForest,Map<Integer,BiMap<String,Integer>>> forestAndCatalog = DecisionForestPMML.read(modelPMMLFile);
-    IOUtils.delete(modelPMMLFile);
+    Files.delete(modelPMMLFile);
     log.info("Loaded model description");
 
     modelGeneration = mostRecentModelGeneration;

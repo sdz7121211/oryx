@@ -16,8 +16,8 @@
 package com.cloudera.oryx.als.serving.web;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -51,7 +51,7 @@ public final class ALSServingInitListener extends AbstractOryxServingInitListene
     super.contextInitialized(event);
     ServletContext context = event.getServletContext();
 
-    File localInputDir = getLocalInputDir();
+    Path localInputDir = getLocalInputDir();
     ServerRecommender recommender;
     try {
       recommender = new ServerRecommender(localInputDir);

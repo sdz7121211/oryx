@@ -16,7 +16,6 @@
 package com.cloudera.oryx.computation.common;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import org.apache.hadoop.mapreduce.Cluster;
 import org.apache.hadoop.mapreduce.JobStatus;
 import org.apache.hadoop.util.Tool;
@@ -24,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +52,7 @@ public abstract class DistributedGenerationRunner extends GenerationRunner {
   }
 
   private static Collection<String> find(String instanceDir) throws IOException, InterruptedException {
-    Collection<String> result = Lists.newArrayList();
+    Collection<String> result = new ArrayList<>();
     // This is where we will see Hadoop config problems first, so log extra info
     Cluster cluster;
     try {
@@ -87,7 +87,7 @@ public abstract class DistributedGenerationRunner extends GenerationRunner {
 
     doPre();
 
-    DependenciesScheduler<Class<? extends JobStep>> scheduler = new DependenciesScheduler<Class<? extends JobStep>>();
+    DependenciesScheduler<Class<? extends JobStep>> scheduler = new DependenciesScheduler<>();
 
     for (Collection<Class<? extends JobStep>> preStepClasses : scheduler.schedule(getPreDependencies())) {
       runSchedule(preStepClasses, buildConfig(0));
@@ -178,7 +178,7 @@ public abstract class DistributedGenerationRunner extends GenerationRunner {
 
     if (parallelStepClasses.size() > 1) {
 
-      Collection<String> stepClassNames = Lists.newArrayListWithCapacity(parallelStepClasses.size());
+      Collection<String> stepClassNames = new ArrayList<>(parallelStepClasses.size());
       for (Class<? extends Tool> stepClass : parallelStepClasses) {
         stepClassNames.add(stepClass.getName());
       }

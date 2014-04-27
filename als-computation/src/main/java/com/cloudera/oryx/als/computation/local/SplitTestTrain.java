@@ -15,15 +15,16 @@
 
 package com.cloudera.oryx.als.computation.local;
 
-import com.google.common.io.Files;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import com.cloudera.oryx.common.io.IOUtils;
@@ -35,11 +36,11 @@ final class SplitTestTrain implements Callable<Object> {
 
   private static final Logger log = LoggerFactory.getLogger(SplitTestTrain.class);
 
-  private final File inboundDir;
-  private final File trainDir;
-  private final File testDir;
+  private final Path inboundDir;
+  private final Path trainDir;
+  private final Path testDir;
 
-  SplitTestTrain(File inboundDir, File trainDir, File testDir) {
+  SplitTestTrain(Path inboundDir, Path trainDir, Path testDir) {
     this.inboundDir = inboundDir;
     this.trainDir = trainDir;
     this.testDir = testDir;
@@ -47,29 +48,28 @@ final class SplitTestTrain implements Callable<Object> {
 
   @Override
   public Void call() throws IOException {
-    File[] inputFiles = inboundDir.listFiles(IOUtils.NOT_HIDDEN);
-    if (inputFiles == null || inputFiles.length == 0) {
+    List<Path> inputFiles = IOUtils.listFiles(inboundDir);
+    if (inputFiles.isEmpty()) {
       log.info("No input files in {}", inboundDir);
       return null;
     }
-    Arrays.sort(inputFiles, ByLastModifiedComparator.INSTANCE);
+    Collections.sort(inputFiles, ByLastModifiedComparator.INSTANCE);
 
-    IOUtils.mkdirs(trainDir);
-    IOUtils.mkdirs(testDir);
+    Files.createDirectories(trainDir);
+    Files.createDirectories(testDir);
 
     double testSetFraction = ConfigUtils.getDefaultConfig().getDouble("model.test-set-fraction");
 
     if (testSetFraction == 0.0) {
-      for (File inputFile : inputFiles) {
+      for (Path inputFile : inputFiles) {
         log.info("Copying {} to {}", inputFile, trainDir);
-        Files.copy(inputFile, new File(trainDir, inputFile.getName()));
+        Files.copy(inputFile, trainDir.resolve(inputFile.getFileName()));
       }
     } else {
       RandomGenerator random = RandomManager.getRandom();
-      Writer trainOut = IOUtils.buildGZIPWriter(new File(trainDir, "train.csv.gz"));
-      Writer testOut = IOUtils.buildGZIPWriter(new File(testDir, "test.csv.gz"));
-      try {
-        for (File inputFile : inputFiles) {
+      try (Writer trainOut = IOUtils.buildGZIPWriter(trainDir.resolve("train.csv.gz"));
+           Writer testOut = IOUtils.buildGZIPWriter(testDir.resolve("test.csv.gz"))) {
+        for (Path inputFile : inputFiles) {
           log.info("Splitting {}", inputFile);
           for (CharSequence line : new FileLineIterable(inputFile)) {
             if (random.nextDouble() < testSetFraction) {
@@ -79,9 +79,6 @@ final class SplitTestTrain implements Callable<Object> {
             }
           }
         }
-      } finally {
-        testOut.close();
-        trainOut.close();
       }
     }
 

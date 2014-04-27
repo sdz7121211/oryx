@@ -24,8 +24,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServlet;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import com.cloudera.oryx.common.settings.ConfigUtils;
 import com.cloudera.oryx.kmeans.serving.generation.KMeansGenerationManager;
@@ -39,7 +39,7 @@ public final class KMeansServingInitListener extends AbstractOryxServingInitList
   public void contextInitialized(ServletContextEvent event) {
     super.contextInitialized(event);
     ServletContext context = event.getServletContext();
-    File localInputDir = getLocalInputDir();
+    Path localInputDir = getLocalInputDir();
     KMeansGenerationManager generationManager;
     try {
       generationManager = new KMeansGenerationManager(localInputDir);

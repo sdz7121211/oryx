@@ -34,9 +34,9 @@ package com.cloudera.oryx.common.servcomp.web;
 
 import java.security.Principal;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.catalina.realm.RealmBase;
 
@@ -56,7 +56,7 @@ public final class InMemoryRealm extends RealmBase {
   /**
    * The set of valid Principals for this Realm, keyed by user name.
    */
-  private final Map<String,GenericPrincipal> principals = Maps.newHashMap();
+  private final Map<String,GenericPrincipal> principals = new HashMap<>();
 
   @Override
   public Principal authenticate(String username, String credentials) {

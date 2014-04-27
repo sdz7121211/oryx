@@ -20,10 +20,11 @@ import org.apache.commons.math3.util.FastMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import com.cloudera.oryx.als.common.StringLongMapping;
@@ -41,14 +42,14 @@ final class ReadInputs implements Callable<Object> {
 
   private static final Logger log = LoggerFactory.getLogger(ReadInputs.class);
 
-  private final File inputDir;
+  private final Path inputDir;
   private final boolean isInbound;
   private final LongObjectMap<LongSet> knownItemIDs;
   private final LongObjectMap<LongFloatMap> RbyRow;
   private final LongObjectMap<LongFloatMap> RbyColumn;
   private final StringLongMapping idMapping;
 
-  ReadInputs(File inputDir,
+  ReadInputs(Path inputDir,
              boolean isInbound,
              LongObjectMap<LongSet> knownItemIDs,
              LongObjectMap<LongFloatMap> rbyRow,
@@ -78,14 +79,14 @@ final class ReadInputs implements Callable<Object> {
   }
 
   private void readInput() throws IOException {
-    File[] inputFiles = inputDir.listFiles(IOUtils.NOT_HIDDEN);
-    if (inputFiles == null || inputFiles.length == 0) {
+    List<Path> inputFiles = IOUtils.listFiles(inputDir);
+    if (inputFiles.isEmpty()) {
       log.info("No input files in {}", inputDir);
       return;
     }
-    Arrays.sort(inputFiles, ByLastModifiedComparator.INSTANCE);
+    Collections.sort(inputFiles, ByLastModifiedComparator.INSTANCE);
 
-    for (File inputFile : inputFiles) {
+    for (Path inputFile : inputFiles) {
       log.info("Reading {}", inputFile);
       for (CharSequence line : new FileLineIterable(inputFile)) {
 

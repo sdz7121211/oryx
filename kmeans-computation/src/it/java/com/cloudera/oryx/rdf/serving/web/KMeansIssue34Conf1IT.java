@@ -17,14 +17,14 @@ package com.cloudera.oryx.rdf.serving.web;
 
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import com.cloudera.oryx.kmeans.computation.local.KMeansLocalGenerationRunner;
 
 public final class KMeansIssue34Conf1IT extends AbstractComputationIT {
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("issue34Conf1");
   }
 

@@ -16,6 +16,7 @@
 package com.cloudera.oryx.computation.common.types;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,7 +37,6 @@ import org.apache.crunch.types.avro.AvroType;
 import org.apache.crunch.types.avro.Avros;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 public final class MLRecords {
 
@@ -183,7 +183,7 @@ public final class MLRecords {
     
     @Override
     public String map(Record r) {
-      Collection<String> entries = Lists.newArrayList();
+      Collection<String> entries = new ArrayList<>();
       for (int i = 0; i < r.getSpec().size(); i++) {
         entries.add(r.getAsString(i));
       }

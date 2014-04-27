@@ -15,14 +15,15 @@
 
 package com.cloudera.oryx.als.computation.iterate.row;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
 
 import com.cloudera.oryx.als.computation.types.ALSTypes;
 import com.cloudera.oryx.als.computation.types.MatrixRow;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.crunch.GroupingOptions;
 import org.apache.crunch.PCollection;
@@ -136,11 +137,11 @@ public final class RowStep extends IterationStep {
       for (double ap : aps.materialize()) {
         meanAveragePrecision.increment(ap);
       }
-      File tempMAPFile = File.createTempFile("MAP", ".txt");
-      tempMAPFile.deleteOnExit();
-      Files.write(Double.toString(meanAveragePrecision.getResult()), tempMAPFile, Charsets.UTF_8);
+      Path tempMAPFile = IOUtils.createTempFile("MAP", ".txt");
+      String mapString = Double.toString(meanAveragePrecision.getResult());
+      Files.write(tempMAPFile, Collections.singleton(mapString), StandardCharsets.UTF_8);
       store.upload(iterationKey + "MAP", tempMAPFile, false);
-      IOUtils.delete(tempMAPFile);
+      Files.delete(tempMAPFile);
     }
 
     return p;

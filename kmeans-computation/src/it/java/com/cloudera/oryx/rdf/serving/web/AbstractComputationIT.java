@@ -15,13 +15,13 @@
 
 package com.cloudera.oryx.rdf.serving.web;
 
-import com.google.common.io.Files;
 import org.junit.Assume;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.cloudera.oryx.common.OryxTest;
 import com.cloudera.oryx.common.io.IOUtils;
@@ -36,9 +36,9 @@ public abstract class AbstractComputationIT extends OryxTest {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractComputationIT.class);
 
-  static final File TEST_TEMP_INBOUND_DIR = new File(OryxTest.TEST_TEMP_BASE_DIR, "00000/inbound");
+  static final Path TEST_TEMP_INBOUND_DIR = OryxTest.TEST_TEMP_BASE_DIR.resolve("00000").resolve("inbound");
 
-  protected abstract File getTestDataPath();
+  protected abstract Path getTestDataPath();
 
   @Override
   protected String getTestConfigResource() {
@@ -50,20 +50,17 @@ public abstract class AbstractComputationIT extends OryxTest {
   public void setUp() throws Exception {
     super.setUp();
 
-    File testDataDir = getTestDataPath();
+    Path testDataDir = getTestDataPath();
     Assume.assumeTrue("Skipping test because data is not present", isDirectoryWithFiles(testDataDir));
 
-    IOUtils.mkdirs(TEST_TEMP_INBOUND_DIR);
+    Files.createDirectories(TEST_TEMP_INBOUND_DIR);
     log.info("Copying files to {}", TEST_TEMP_INBOUND_DIR);
 
-    File[] srcDataFiles = testDataDir.listFiles(IOUtils.NOT_HIDDEN);
-    for (File srcDataFile : srcDataFiles) {
-      File destFile = new File(TEST_TEMP_INBOUND_DIR, srcDataFile.getName());
-      Files.copy(srcDataFile, destFile);
+    for (Path srcDataFile : IOUtils.listFiles(testDataDir)) {
+      Files.copy(srcDataFile, TEST_TEMP_INBOUND_DIR.resolve(srcDataFile.getFileName()));
     }
 
     ConfigUtils.overlayConfigOnDefault(getResourceAsFile(getClass().getSimpleName() + ".conf"));
-
   }
 
 }

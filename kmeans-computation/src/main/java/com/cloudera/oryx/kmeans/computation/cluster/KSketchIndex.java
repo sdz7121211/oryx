@@ -21,15 +21,15 @@ import com.cloudera.oryx.kmeans.common.Centers;
 import com.cloudera.oryx.kmeans.common.Distance;
 import com.cloudera.oryx.kmeans.common.WeightedRealVector;
 import com.cloudera.oryx.kmeans.computation.evaluate.ClosestSketchVectorData;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * An internal data structure that manages the locations of the current centers during
@@ -50,12 +50,12 @@ public final class KSketchIndex implements Serializable {
   
   public KSketchIndex(int numFolds, int dimensions, int projectionBits, int projectionSamples, long seed) {
     this.pointsPerFold = new int[numFolds];
-    this.indices = Lists.newArrayList();
-    this.points = Lists.newArrayList();
-    this.lengthSquared = Lists.newArrayList();
+    this.indices = new ArrayList<>();
+    this.points = new ArrayList<>();
+    this.lengthSquared = new ArrayList<>();
     for (int i = 0; i < numFolds; i++) {
-      points.add(Lists.<RealVector>newArrayList());
-      lengthSquared.add(Lists.<Double>newArrayList());
+      points.add(new ArrayList<RealVector>());
+      lengthSquared.add(new ArrayList<Double>());
     }
     this.dimensions = dimensions;
     this.projectionBits = projectionBits;
@@ -94,7 +94,7 @@ public final class KSketchIndex implements Serializable {
     }
     indices.clear();
     for (List<RealVector> px : points) {
-      List<BitSet> indx = Lists.newArrayList();
+      List<BitSet> indx = new ArrayList<>();
       for (RealVector aPx : px) {
         indx.add(index(aPx));
       }
@@ -150,7 +150,7 @@ public final class KSketchIndex implements Serializable {
 
       BitSet q = index(vec);
       List<BitSet> index = indices.get(id);
-      SortedSet<Idx> lookup = Sets.newTreeSet();
+      SortedSet<Idx> lookup = new TreeSet<>();
       for (int j = 0; j < index.size(); j++) {
         Idx idx = new Idx(hammingDistance(q, index.get(j)), j);
         if (lookup.size() < projectionSamples) {
@@ -205,13 +205,7 @@ public final class KSketchIndex implements Serializable {
 
     @Override
     public int compareTo(Idx idx) {
-      if (distance < idx.distance) {
-        return -1;
-      }
-      if (distance > idx.distance) {
-        return 1;
-      }
-      return 0;
+      return Integer.compare(distance, idx.distance);
     }
     
     @Override
@@ -237,7 +231,7 @@ public final class KSketchIndex implements Serializable {
   }
 
   public List<WeightedRealVector> getWeightedVectorsForFold(int foldId, long[] weights) {
-    List<WeightedRealVector> ret = Lists.newArrayList();
+    List<WeightedRealVector> ret = new ArrayList<>();
     int i = 0;
     for (RealVector vec : points.get(foldId)) {
       ret.add(new WeightedRealVector(vec, weights[i]));
@@ -247,10 +241,10 @@ public final class KSketchIndex implements Serializable {
   }
 
   public List<List<WeightedRealVector>> getWeightedVectors(ClosestSketchVectorData data) {
-    List<List<WeightedRealVector>> ret = Lists.newArrayList();
+    List<List<WeightedRealVector>> ret = new ArrayList<>();
     for (int i = 0; i < data.getNumFolds(); i++) {
       List<RealVector> p = points.get(i);
-      List<WeightedRealVector> weighted = Lists.newArrayList();
+      List<WeightedRealVector> weighted = new ArrayList<>();
       for (int j = 0; j < p.size(); j++) { // TODO: Assume static? Or fold specific? Or something?
         weighted.add(new WeightedRealVector(p.get(j), data.get(i, j)));
       }

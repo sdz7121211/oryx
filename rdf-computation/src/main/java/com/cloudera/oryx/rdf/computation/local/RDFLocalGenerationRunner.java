@@ -16,12 +16,11 @@
 package com.cloudera.oryx.rdf.computation.local;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.io.Files;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,10 +48,8 @@ public final class RDFLocalGenerationRunner extends LocalGenerationRunner {
     String generationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     int lastGenerationID = getLastGenerationID();
 
-    File currentInputDir = Files.createTempDir();
-    currentInputDir.deleteOnExit();
-    File tempOutDir = Files.createTempDir();
-    tempOutDir.deleteOnExit();
+    Path currentInputDir = IOUtils.createTempDirectory("currentInput");
+    Path tempOutDir = IOUtils.createTempDirectory("temp");
 
     try {
 
@@ -63,13 +60,13 @@ public final class RDFLocalGenerationRunner extends LocalGenerationRunner {
                                 currentInputDir);
       }
 
-      List<Example> examples = Lists.newArrayList();
-      Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping = Maps.newHashMap();
+      List<Example> examples = new ArrayList<>();
+      Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping = new HashMap<>();
       new ReadInputs(currentInputDir, examples, columnToCategoryNameToIDMapping).call();
 
       DecisionForest forest = DecisionForest.fromExamplesWithDefault(examples);
 
-      DecisionForestPMML.write(new File(tempOutDir, "model.pmml.gz"), forest, columnToCategoryNameToIDMapping);
+      DecisionForestPMML.write(tempOutDir.resolve("model.pmml.gz"), forest, columnToCategoryNameToIDMapping);
 
       store.uploadDirectory(generationPrefix + "input/", currentInputDir, false);
       store.uploadDirectory(generationPrefix, tempOutDir, false);

@@ -59,9 +59,9 @@ public final class Generation {
 
   public Generation() {
     boolean noKnownItems = ConfigUtils.getDefaultConfig().getBoolean("model.no-known-items");
-    this.X = new LongObjectMap<float[]>();
+    this.X = new LongObjectMap<>();
     this.XTXsolver = null;
-    this.Y = new LongObjectMap<float[]>();
+    this.Y = new LongObjectMap<>();
     this.YTYsolver = null;
     this.idMapping = new StringLongMapping();
     this.knownItemIDs = noKnownItems ? null : new LongObjectMap<LongSet>();

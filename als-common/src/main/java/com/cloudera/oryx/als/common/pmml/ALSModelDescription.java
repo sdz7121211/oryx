@@ -16,7 +16,6 @@
 package com.cloudera.oryx.als.common.pmml;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import org.dmg.pmml.Extension;
 import org.dmg.pmml.PMML;
 import org.jpmml.model.ImportFilter;
@@ -26,11 +25,12 @@ import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ import com.cloudera.oryx.common.io.IOUtils;
  */
 public final class ALSModelDescription {
 
-  private final Map<String,String> pathByKey = Maps.newHashMap();
+  private final Map<String,String> pathByKey = new HashMap<>();
 
   private Map<String,String> getPathByKey() {
     return pathByKey;
@@ -100,16 +100,11 @@ public final class ALSModelDescription {
     return pathByKey.toString();
   }
 
-  public static ALSModelDescription read(File f) throws IOException {
-    InputStream in = IOUtils.openMaybeDecompressing(f);
-    try {
+  public static ALSModelDescription read(Path path) throws IOException {
+    try (InputStream in = IOUtils.openMaybeDecompressing(path)) {
       return read(in);
-    } catch (JAXBException jaxbe) {
+    } catch (JAXBException | SAXException jaxbe) {
       throw new IOException(jaxbe);
-    } catch (SAXException saxe) {
-      throw new IOException(saxe);
-    } finally {
-      in.close();
     }
   }
 
@@ -136,14 +131,11 @@ public final class ALSModelDescription {
     return model;
   }
 
-  public static void write(File f, ALSModelDescription model) throws IOException {
-    OutputStream out = IOUtils.buildGZIPOutputStream(new FileOutputStream(f));
-    try {
+  public static void write(Path path, ALSModelDescription model) throws IOException {
+    try (OutputStream out = IOUtils.buildGZIPOutputStream(Files.newOutputStream(path))) {
       write(out, model);
     } catch (JAXBException jaxbe) {
       throw new IOException(jaxbe);
-    } finally {
-      out.close();
     }
   }
 

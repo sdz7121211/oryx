@@ -15,18 +15,18 @@
 
 package com.cloudera.oryx.common.math;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 final class DummyVisitor extends AbstractRealVectorPreservingVisitor {
 
-  private final List<Pair<Integer,Double>> seenValues = Lists.newArrayList();
+  private final List<Pair<Integer,Double>> seenValues = new ArrayList<>();
 
   @Override
   public void visit(int index, double value) {
-    seenValues.add(new Pair<Integer, Double>(index, value));
+    seenValues.add(new Pair<>(index, value));
   }
 
   List<Pair<Integer,Double>> getSeenValues() {

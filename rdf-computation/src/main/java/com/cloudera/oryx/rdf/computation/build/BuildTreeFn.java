@@ -19,8 +19,6 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.util.FastMath;
@@ -31,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,8 +101,8 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
     Integer targetColumn = inboundSettings.getTargetColumn();
     Preconditions.checkNotNull(targetColumn, "No target-column specified");
 
-    List<Example> allExamples = Lists.newArrayList();
-    Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping = Maps.newHashMap();
+    List<Example> allExamples = new ArrayList<>();
+    Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping = new HashMap<>();
 
     log.info("Reading input");
     for (String line : input.second()) {
@@ -130,8 +130,8 @@ public final class BuildTreeFn extends OryxReduceDoFn<Integer, Iterable<String>,
     log.info("Read {} examples", allExamples.size());
 
     for (int treeID = 0; treeID < numLocalTrees; treeID++) {
-      List<Example> trainingExamples = Lists.newArrayList();
-      List<Example> cvExamples = Lists.newArrayList();
+      List<Example> trainingExamples = new ArrayList<>();
+      List<Example> cvExamples = new ArrayList<>();
       for (Example example : allExamples) {
         if (random.nextInt(0, numLocalTrees - 1) < trainingFoldsPerTree) {
           trainingExamples.add(example);

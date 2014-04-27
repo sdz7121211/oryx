@@ -19,11 +19,11 @@ import com.cloudera.oryx.common.settings.InboundSettings;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class NormalizeSettings implements Serializable {
@@ -39,13 +39,13 @@ public final class NormalizeSettings implements Serializable {
 
     Transform defaultTransform = Transform.forName(normalize.getString("default-transform"));
     Function<Object, Integer> lookup = InboundSettings.create(config).getLookupFunction();
-    Map<Integer, Transform> transforms = Maps.newHashMap();
+    Map<Integer, Transform> transforms = new HashMap<>();
     load(normalize, "z-transform", Transform.Z, lookup, transforms);
     load(normalize, "log-transform", Transform.LOG, lookup, transforms);
     load(normalize, "linear-transform", Transform.LINEAR, lookup, transforms);
     load(normalize, "no-transform", Transform.NONE, lookup, transforms);
 
-    Map<Integer, Double> scale = Maps.newHashMap();
+    Map<Integer, Double> scale = new HashMap<>();
     if (normalize.hasPath("scale")) {
       Config scaleConfig = normalize.getConfig("scale");
       for (Map.Entry<String, ConfigValue> e : scaleConfig.entrySet()) {

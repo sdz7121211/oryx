@@ -15,7 +15,7 @@
 
 package com.cloudera.oryx.als.computation;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
@@ -36,7 +36,7 @@ public final class LoadIT extends AbstractComputationIT {
   private static final Logger log = LoggerFactory.getLogger(LoadIT.class);
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("grouplens10M-ABC");
   }
 

@@ -38,17 +38,14 @@ public final class AvroUtils {
   public static <T extends Serializable> T readSerialized(String key, Configuration conf) throws IOException {
     String firstFileKey = Store.get().list(key, true).get(0);
     FsInput fsInput = new FsInput(Namespaces.toPath(firstFileKey), conf);
-    DatumReader<ByteBuffer> dr = new GenericDatumReader<ByteBuffer>(BYTES_SCHEMA);
-    DataFileReader<ByteBuffer> dfr = new DataFileReader<ByteBuffer>(fsInput, dr);
+    DatumReader<ByteBuffer> dr = new GenericDatumReader<>(BYTES_SCHEMA);
+    DataFileReader<ByteBuffer> dfr = new DataFileReader<>(fsInput, dr);
     ByteBuffer bytes = dfr.next();
     ByteArrayInputStream bais = new ByteArrayInputStream(bytes.array(), bytes.position(), bytes.limit());
-    ObjectInputStream ois = new ObjectInputStream(bais);
-    try {
+    try (ObjectInputStream ois = new ObjectInputStream(bais)) {
       return (T) ois.readObject();
     } catch (ClassNotFoundException cnfe) {
       throw new IllegalStateException(cnfe);
-    } finally {
-      ois.close();
     }
   }
 

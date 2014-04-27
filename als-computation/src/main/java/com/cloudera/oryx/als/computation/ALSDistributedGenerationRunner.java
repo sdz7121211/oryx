@@ -16,8 +16,9 @@
 package com.cloudera.oryx.als.computation;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,7 +34,6 @@ import com.cloudera.oryx.common.iterator.FileLineIterable;
 import com.cloudera.oryx.common.settings.ConfigUtils;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -199,7 +199,7 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
 
   @Override
   protected List<DependsOn<Class<? extends JobStep>>> getPreDependencies() {
-    List<DependsOn<Class<? extends JobStep>>> preDeps = Lists.newArrayList();
+    List<DependsOn<Class<? extends JobStep>>> preDeps = new ArrayList<>();
     preDeps.add(DependsOn.<Class<? extends JobStep>>first(MergeIDMappingStep.class));
     preDeps.add(DependsOn.<Class<? extends JobStep>>nextAfterFirst(MergeNewOldStep.class, SplitTestStep.class));
     preDeps.add(DependsOn.<Class<? extends JobStep>>nextAfterFirst(ToUserVectorsStep.class, MergeNewOldStep.class));
@@ -213,7 +213,7 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
 
   @Override
   protected List<DependsOn<Class<? extends JobStep>>> getIterationDependencies() {
-    List<DependsOn<Class<? extends JobStep>>> iterationsDeps = Lists.newArrayList();
+    List<DependsOn<Class<? extends JobStep>>> iterationsDeps = new ArrayList<>();
     iterationsDeps.add(DependsOn.<Class<? extends JobStep>>first(RowStep.class));
     return iterationsDeps;
   }
@@ -221,7 +221,7 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
   @Override
   protected List<DependsOn<Class<? extends JobStep>>> getPostDependencies() {
     Config config = ConfigUtils.getDefaultConfig();
-    List<DependsOn<Class<? extends JobStep>>> postDeps = Lists.newArrayList();
+    List<DependsOn<Class<? extends JobStep>>> postDeps = new ArrayList<>();
     postDeps.add(DependsOn.<Class<? extends JobStep>>first(PublishXStep.class));
     postDeps.add(DependsOn.<Class<? extends JobStep>>first(PublishYStep.class));
     if (config.getBoolean("model.recommend.compute")) {
@@ -269,11 +269,8 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
     String mapKey = iterationsPrefix + iterationNumber + "/MAP";
     if (store.exists(mapKey, true)) {
       double map;
-      BufferedReader in = store.readFrom(mapKey);
-      try {
+      try (BufferedReader in = store.readFrom(mapKey)) {
         map = Double.parseDouble(in.readLine());
-      } finally {
-        in.close();
       }
       log.info("Mean average precision estimate: {}", map);
     }
@@ -351,7 +348,7 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
   private static LongObjectMap<LongFloatMap> readUserItemEstimates(String convergenceSamplePrefix)
       throws IOException {
     log.info("Reading estimates from {}", convergenceSamplePrefix);
-    LongObjectMap<LongFloatMap> userItemEstimate = new LongObjectMap<LongFloatMap>();
+    LongObjectMap<LongFloatMap> userItemEstimate = new LongObjectMap<>();
     Store store = Store.get();
     for (String prefix : store.list(convergenceSamplePrefix, true)) {
       for (CharSequence line : new FileLineIterable(store.readFrom(prefix))) {
@@ -387,8 +384,7 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
       store.recursiveDelete(generationPrefix + "similarItems/");
     } else {
       log.info("X and Y have sufficient rank");
-      File tempModelDescriptionFile = File.createTempFile("model-", ".pmml.gz");
-      tempModelDescriptionFile.deleteOnExit();
+      Path tempModelDescriptionFile = IOUtils.createTempFile("model-", ".pmml.gz");
       ALSModelDescription modelDescription = new ALSModelDescription();
       modelDescription.setKnownItemsPath("knownItems");
       modelDescription.setXPath("X");

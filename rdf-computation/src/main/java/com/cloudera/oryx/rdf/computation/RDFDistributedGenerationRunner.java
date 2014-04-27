@@ -16,7 +16,6 @@
 package com.cloudera.oryx.rdf.computation;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.dmg.pmml.MiningField;
 import org.dmg.pmml.MiningModel;
@@ -32,12 +31,13 @@ import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +95,7 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     // TODO This is still loading all trees into memory, which can be quite large.
     // To do better we would have to manage XML output more directly.
 
-    Map<String,Mean> columnNameToMeanImportance = Maps.newHashMap();
+    Map<String,Mean> columnNameToMeanImportance = new HashMap<>();
 
     for (String treePrefix : store.list(outputPathKey, true)) {
       log.info("Reading trees from file {}", treePrefix);
@@ -104,9 +104,7 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
         try {
           treePMML = JAXBUtil.unmarshalPMML(
               ImportFilter.apply(new InputSource(new StringReader(treePMMLAsLine))));
-        } catch (JAXBException e) {
-          throw new IOException(e);
-        } catch (SAXException e) {
+        } catch (JAXBException | SAXException e) {
           throw new IOException(e);
         }
 
@@ -144,20 +142,16 @@ public final class RDFDistributedGenerationRunner extends DistributedGenerationR
     }
 
     log.info("Writing combined model file");
-    File tempJoinedForestFile = File.createTempFile("model-", ".pmml.gz");
-    tempJoinedForestFile.deleteOnExit();
-    OutputStream out = IOUtils.buildGZIPOutputStream(new FileOutputStream(tempJoinedForestFile));
-    try {
+    Path tempJoinedForestFile = IOUtils.createTempFile("model-", ".pmml.gz");
+    try (OutputStream out = IOUtils.buildGZIPOutputStream(Files.newOutputStream(tempJoinedForestFile))) {
       JAXBUtil.marshalPMML(joinedForest, new StreamResult(out));
     } catch (JAXBException e) {
       throw new IOException(e);
-    } finally {
-      out.close();
     }
 
     log.info("Uploading combined model file");
     store.upload(instanceGenerationPrefix + "model.pmml.gz", tempJoinedForestFile, false);
-    IOUtils.delete(tempJoinedForestFile);
+    Files.delete(tempJoinedForestFile);
   }
 
   private static void updateMeanImportances(Map<String,Mean> columnNameToMeanImportance, Model model) {

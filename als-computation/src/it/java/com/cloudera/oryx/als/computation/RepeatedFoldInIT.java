@@ -18,7 +18,7 @@ package com.cloudera.oryx.als.computation;
 import com.google.common.primitives.Floats;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import com.cloudera.oryx.als.serving.ServerRecommender;
 
@@ -33,7 +33,7 @@ import com.cloudera.oryx.als.serving.ServerRecommender;
 public final class RepeatedFoldInIT extends AbstractComputationIT {
 
   @Override
-  protected File getTestDataPath() {
+  protected Path getTestDataPath() {
     return getResourceAsFile("grouplens100K");
   }
 

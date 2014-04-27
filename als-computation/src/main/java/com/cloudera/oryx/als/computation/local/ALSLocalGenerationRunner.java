@@ -15,11 +15,10 @@
 
 package com.cloudera.oryx.als.computation.local;
 
-import com.google.common.io.Files;
 import com.typesafe.config.Config;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import com.cloudera.oryx.als.common.StringLongMapping;
 import com.cloudera.oryx.als.common.factorizer.MatrixFactorizer;
@@ -43,24 +42,18 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
     String generationPrefix = Namespaces.getInstanceGenerationPrefix(instanceDir, generationID);
     int lastGenerationID = getLastGenerationID();
 
-    File currentInboundDir = Files.createTempDir();
-    currentInboundDir.deleteOnExit();
-    File currentTrainDir = Files.createTempDir();
-    currentTrainDir.deleteOnExit();
-    File tempOutDir = Files.createTempDir();
-    tempOutDir.deleteOnExit();
-    File currentTestDir = new File(tempOutDir, "test");
+    Path currentInboundDir = IOUtils.createTempDirectory("currentInbound");
+    Path currentTrainDir = IOUtils.createTempDirectory("currentTrain");
+    Path tempOutDir = IOUtils.createTempDirectory("tempOut");
+    Path currentTestDir = tempOutDir.resolve("test");
 
-    File lastInputDir = null;
-    File lastMappingDir = null;
-    File lastTestDir = null;
+    Path lastInputDir = null;
+    Path lastMappingDir = null;
+    Path lastTestDir = null;
     if (lastGenerationID >= 0) {
-      lastInputDir = Files.createTempDir();
-      lastInputDir.deleteOnExit();
-      lastMappingDir = Files.createTempDir();
-      lastMappingDir.deleteOnExit();
-      lastTestDir = Files.createTempDir();
-      lastTestDir.deleteOnExit();
+      lastInputDir = IOUtils.createTempDirectory("lastInput");
+      lastMappingDir = IOUtils.createTempDirectory("lastMapping");
+      lastTestDir = IOUtils.createTempDirectory("lastTest");
     }
 
     try {
@@ -80,8 +73,8 @@ public final class ALSLocalGenerationRunner extends LocalGenerationRunner {
 
       boolean noKnownItems = config.getBoolean("model.no-known-items");
       LongObjectMap<LongSet> knownItemIDs = noKnownItems ? null : new LongObjectMap<LongSet>();
-      LongObjectMap<LongFloatMap> RbyRow = new LongObjectMap<LongFloatMap>();
-      LongObjectMap<LongFloatMap> RbyColumn = new LongObjectMap<LongFloatMap>();
+      LongObjectMap<LongFloatMap> RbyRow = new LongObjectMap<>();
+      LongObjectMap<LongFloatMap> RbyColumn = new LongObjectMap<>();
       StringLongMapping idMapping = new StringLongMapping();
 
       if (lastGenerationID >= 0) {

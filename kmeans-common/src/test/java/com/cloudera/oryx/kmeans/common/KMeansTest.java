@@ -38,7 +38,7 @@ public final class KMeansTest extends OryxTest {
   private final KMeansUpdateStrategy lloyds = new LloydsUpdateStrategy(10);
   
   private static Weighted<RealVector> wpoint(double... values) {
-    return new Weighted<RealVector>(Vectors.of(values));
+    return new Weighted<>(Vectors.of(values));
   }
 
   @Test

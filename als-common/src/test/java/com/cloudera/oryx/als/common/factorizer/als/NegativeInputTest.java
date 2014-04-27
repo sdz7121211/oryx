@@ -36,8 +36,8 @@ public final class NegativeInputTest extends OryxTest {
   @Test
   public void testALS() throws Exception {
 
-    LongObjectMap<LongFloatMap> byRow = new LongObjectMap<LongFloatMap>();
-    LongObjectMap<LongFloatMap> byCol = new LongObjectMap<LongFloatMap>();
+    LongObjectMap<LongFloatMap> byRow = new LongObjectMap<>();
+    LongObjectMap<LongFloatMap> byCol = new LongObjectMap<>();
 
     // Octave: R = [ 1 1 1 0 ; 0 -1 1 1 ; -1 0 0 1 ]
     MatrixUtils.addTo(0, 0,  1.0f, byRow, byCol);
@@ -50,7 +50,7 @@ public final class NegativeInputTest extends OryxTest {
     MatrixUtils.addTo(2, 3,  1.0f, byRow, byCol);
 
     // Octave: Y = [ 0.1 0.2 ; 0.2 0.5 ; 0.3 0.1 ; 0.2 0.2 ];
-    LongObjectMap<float[]> previousY = new LongObjectMap<float[]>();
+    LongObjectMap<float[]> previousY = new LongObjectMap<>();
     previousY.put(0L, new float[] {0.1f, 0.2f});
     previousY.put(1L, new float[] {0.2f, 0.5f});
     previousY.put(2L, new float[] {0.3f, 0.1f});

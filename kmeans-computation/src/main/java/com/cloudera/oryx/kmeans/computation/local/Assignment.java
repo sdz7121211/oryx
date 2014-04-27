@@ -22,12 +22,12 @@ import com.cloudera.oryx.kmeans.common.Distance;
 import com.cloudera.oryx.kmeans.computation.evaluate.KMeansEvaluationData;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import org.apache.commons.math3.linear.RealVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -47,7 +47,7 @@ public class Assignment implements Callable<List<String>> {
   @Override
   public List<String> call() {
     Config config = ConfigUtils.getDefaultConfig();
-    List<String> ret = Lists.newArrayList();
+    List<String> ret = new ArrayList<>();
     if (doOutlierComputation(config)) {
       InboundSettings inboundSettings = InboundSettings.create(config);
       if (inboundSettings.getIdColumns().isEmpty()) {

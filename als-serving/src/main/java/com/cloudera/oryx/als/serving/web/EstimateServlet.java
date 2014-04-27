@@ -16,13 +16,12 @@
 package com.cloudera.oryx.als.serving.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.common.collect.Lists;
 
 import com.cloudera.oryx.als.common.NotReadyException;
 import com.cloudera.oryx.als.common.OryxRecommender;
@@ -54,7 +53,7 @@ public final class EstimateServlet extends AbstractALSServlet {
     List<String> itemIDsList;
     try {
       userID = pathComponents.next();
-      itemIDsList = Lists.newArrayList();
+      itemIDsList = new ArrayList<>();
       while (pathComponents.hasNext()) {
         itemIDsList.add(pathComponents.next());
       }
