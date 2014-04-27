@@ -296,7 +296,7 @@ public abstract class GenerationRunner implements Callable<Object> {
 
     if (generationToRun == 0L) {
       // Special case: let generation 0 run immediately
-      log.info("Generation 0 may run immediately", generationToWaitFor);
+      log.info("Generation 0 may run immediately");
     } else {
       String nextGenerationPrefix =
           Namespaces.getInstanceGenerationPrefix(instanceDir, generationToWaitFor) + "inbound/";

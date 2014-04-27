@@ -85,7 +85,7 @@ public final class KMeansDistributedGenerationRunner extends DistributedGenerati
     return postDeps;
   }
 
-  private boolean doOutlierComputation(Config config) {
+  private static boolean doOutlierComputation(Config config) {
     return config.hasPath("model.outliers") && config.getBoolean("model.outliers.compute");
   }
 

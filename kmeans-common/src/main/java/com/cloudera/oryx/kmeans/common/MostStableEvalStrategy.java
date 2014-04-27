@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ public final class MostStableEvalStrategy implements KMeansEvalStrategy {
     return bestK;
   }
 
-  private static double getMean(List<Double> values) {
+  private static double getMean(Collection<Double> values) {
     double sum = 0.0;
     for (double d : values) {
       sum += d;
