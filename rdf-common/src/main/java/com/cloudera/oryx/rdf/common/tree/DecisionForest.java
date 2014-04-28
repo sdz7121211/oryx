@@ -153,7 +153,7 @@ public final class DecisionForest implements Iterable<DecisionTree>, TreeBasedCl
           }
         }));
       }
-      ExecutorUtils.checkExceptions(futures);
+      ExecutorUtils.getResults(futures);
     } finally {
       ExecutorUtils.shutdownNowAndAwait(executor);
     }

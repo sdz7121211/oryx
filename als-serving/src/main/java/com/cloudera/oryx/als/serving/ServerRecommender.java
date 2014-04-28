@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -35,7 +34,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.math3.util.FastMath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,9 +84,7 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
     executor = new ReloadingReference<ExecutorService>(new Callable<ExecutorService>() {
       @Override
       public ExecutorService call() {
-        return Executors.newFixedThreadPool(
-            2 * numCores,
-            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ServerRecommender-%d").build());
+        return ExecutorUtils.buildExecutor("ServerRecommender", 2 * numCores);
       }
     });
 
@@ -315,7 +311,7 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
           }
         }));
       }
-      ExecutorUtils.checkExceptions(futures);
+      ExecutorUtils.getResults(futures);
 
     } else {
 
