@@ -17,6 +17,8 @@ package com.cloudera.oryx.kmeans.common;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +31,8 @@ import java.util.Map;
  * (either Van Dongen or the Variation of Information.)
  */
 public final class MostStableEvalStrategy implements KMeansEvalStrategy {
+
+  private static final Logger log = LoggerFactory.getLogger(MostStableEvalStrategy.class);
 
   private final boolean useMedian;
   private final boolean useVariationOfInformation;
@@ -56,7 +60,15 @@ public final class MostStableEvalStrategy implements KMeansEvalStrategy {
         m.add(useVariationOfInformation ? stat.getVariationOfInformation() : stat.getVanDongen());
       }
     }
-    return ImmutableList.of(bestPerK.get(getBestK(metrics)));
+    int bestK = getBestK(metrics);
+    log.info("Best K = " + bestK);
+    ClusterValidityStatistics cvs = bestPerK.get(bestK);
+    if (cvs == null) {
+      log.warn("No ClusterValidityStatistics found for best k, returning");
+      return ImmutableList.of();
+    } else {
+      return ImmutableList.of(cvs);
+    }
   }
 
   private int getBestK(Map<Integer, List<Double>> metrics) {
