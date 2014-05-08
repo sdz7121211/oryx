@@ -15,6 +15,7 @@
 
 package com.cloudera.oryx.als.computation;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -267,7 +268,13 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
 
     String mapKey = iterationsPrefix + iterationNumber + "/MAP";
     if (store.exists(mapKey, true)) {
-      double map = Double.parseDouble(store.readFrom(mapKey).readLine());
+      double map;
+      BufferedReader in = store.readFrom(mapKey);
+      try {
+        map = Double.parseDouble(in.readLine());
+      } finally {
+        in.close();
+      }
       log.info("Mean average precision estimate: {}", map);
     }
 
