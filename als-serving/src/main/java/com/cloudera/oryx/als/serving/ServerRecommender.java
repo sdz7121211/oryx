@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
@@ -485,6 +486,32 @@ public final class ServerRecommender implements OryxRecommender, Closeable {
                                                      rescorer,
                                                      generation.getIDMapping()),
                         howMany));
+  }
+
+  @Override
+  public List<String> popularRepresentativeItems() throws NotReadyException {
+    Generation generation = getCurrentGeneration();
+    LongObjectMap<float[]> Y = generation.getY();
+    Lock yLock = generation.getYLock().readLock();
+    yLock.lock();
+    try {
+      int numFeatures = countFeatures(Y);
+      if (numFeatures == 0) {
+        return Collections.emptyList();
+      }
+      List<String> result = Lists.newArrayListWithCapacity(numFeatures);
+      float[] unitVector = new float[numFeatures];
+      float[][] unitVectorContainer = { unitVector };
+      for (int f = 0; f < numFeatures; f++) {
+        unitVector[f] = 1.0f;
+        List<IDValue> top = multithreadedTopN(unitVectorContainer, null, null, 1, generation.getCandidateFilter());
+        result.add(top == null || top.isEmpty() ? null : top.get(0).getID());
+        unitVector[f] = 0.0f;
+      }
+      return result;
+    } finally {
+      yLock.unlock();
+    }
   }
 
   /**
