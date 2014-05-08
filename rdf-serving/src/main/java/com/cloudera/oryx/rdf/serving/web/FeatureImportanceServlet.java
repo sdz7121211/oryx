@@ -74,7 +74,7 @@ public final class FeatureImportanceServlet extends AbstractRDFServlet {
         return;
       }
 
-      output(request, response, importances[featureNumber]);
+      output(request, response, new double[] { importances[featureNumber] });
     }
   }
 
