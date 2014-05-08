@@ -115,7 +115,9 @@ public abstract class AbstractALSServlet extends AbstractOryxServlet {
    * @param items raw list of results from the very first. Only a sublist will be output if
    *  {@code offset} has been specified
    */
-  final void output(HttpServletRequest request, ServletResponse response, List<IDValue> items) throws IOException {
+  final void outputALSResult(HttpServletRequest request,
+                             ServletResponse response,
+                             List<IDValue> items) throws IOException {
 
     int offset = getOutputOffset(request);
     if (offset > 0) {

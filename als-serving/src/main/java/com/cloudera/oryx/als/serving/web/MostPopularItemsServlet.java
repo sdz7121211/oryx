@@ -46,7 +46,7 @@ public final class MostPopularItemsServlet extends AbstractALSServlet {
     try {
       Rescorer rescorer = rescorerProvider == null ? null :
           rescorerProvider.getMostPopularItemsRescorer(recommender, getRescorerParams(request));
-      output(request, response, recommender.mostPopularItems(getNumResultsToFetch(request), rescorer));
+      outputALSResult(request, response, recommender.mostPopularItems(getNumResultsToFetch(request), rescorer));
     } catch (NotReadyException nre) {
       response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, nre.toString());
     } catch (IllegalArgumentException iae) {
