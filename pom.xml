@@ -377,7 +377,8 @@
     <tomcat.version>7.0.53</tomcat.version>
     <!-- Don't update to 1.7.5+ until Hadoop uses Jackson 1.9+ -->
     <avro.version>1.7.4</avro.version>
-    <hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
+    <hadoop.version>2.3.0</hadoop.version>
+    <!-- Avoid 0.9.0 / 0.8.2 due to compatibility issue: -->
     <crunch.version>0.8.1-hadoop2</crunch.version>
     <!-- our custom props -->
     <module.jspx.package>override-me</module.jspx.package>
@@ -932,21 +933,12 @@
         </plugins>
       </build>
     </profile>
-    <!-- Separate profile for Hadoop 2.2.0 and later because it requires a recompile,
-         due to protobuf 2.4-to-2.5 difference -->
+    <!-- Separate profile for older Hadoop because they require a recompile, due to protobuf 2.4-to-2.5
+      difference, among others. For example this configures for the latest Hadoop 2.0.x-based CDH 4.6: -->
     <profile>
-      <id>hadoop220+</id>
+      <id>hadoop200</id>
       <properties>
-        <hadoop.version>2.2.0</hadoop.version>
-        <!--<crunch.version>0.9.0-hadoop2</crunch.version>-->
-      </properties>
-    </profile>
-    <!-- Separate profile for 2.3.0 because of thinks like enum difference in JobContext? -->
-    <profile>
-      <id>hadoop230+</id>
-      <properties>
-        <hadoop.version>2.3.0</hadoop.version>
-        <!--<crunch.version>0.9.0-hadoop2</crunch.version>-->
+        <hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
       </properties>
     </profile>
   </profiles>
