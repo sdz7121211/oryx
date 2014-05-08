@@ -61,7 +61,7 @@ public final class MostStableEvalStrategy implements KMeansEvalStrategy {
       }
     }
     int bestK = getBestK(metrics);
-    log.info("Best K = " + bestK);
+    log.info("Best K = {}", bestK);
     ClusterValidityStatistics cvs = bestPerK.get(bestK);
     if (cvs == null) {
       log.warn("No ClusterValidityStatistics found for best k, returning");

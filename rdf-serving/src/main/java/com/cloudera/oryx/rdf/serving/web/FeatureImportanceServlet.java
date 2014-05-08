@@ -26,7 +26,7 @@ import com.cloudera.oryx.rdf.common.tree.DecisionForest;
 import com.cloudera.oryx.rdf.serving.generation.Generation;
 
 /**
- * <p>Responsds to a GET request to {@code /feature/importance} or {@code /feature/importance/[feature number]}.
+ * <p>Responds to a GET request to {@code /feature/importance} or {@code /feature/importance/[feature number]}.
  * In the first case, the results are feature importance values for all features in order as specified in
  * the configuration. In the second case, specified by number, the result is a single feature importance.</p>
  *

@@ -205,7 +205,7 @@ public class RRQRDecomposition extends QRDecomposition {
     private final DecompositionSolver upper;
 
     /** A permutation matrix for the pivots used in the QR decomposition */
-    private RealMatrix p;
+    private final RealMatrix p;
 
     /**
      * Build a solver from decomposed matrix.
@@ -218,25 +218,25 @@ public class RRQRDecomposition extends QRDecomposition {
       this.p     = p;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean isNonSingular() {
       return upper.isNonSingular();
     }
 
-    /** {@inheritDoc} */
+    @Override
     public RealVector solve(RealVector b) {
       return p.operate(upper.solve(b));
     }
 
-    /** {@inheritDoc} */
+    @Override
     public RealMatrix solve(RealMatrix b) {
       return p.multiply(upper.solve(b));
     }
 
     /**
-     * {@inheritDoc}
      * @throws SingularMatrixException if the decomposed matrix is singular.
      */
+    @Override
     public RealMatrix getInverse() {
       return solve(MatrixUtils.createRealIdentityMatrix(p.getRowDimension()));
     }

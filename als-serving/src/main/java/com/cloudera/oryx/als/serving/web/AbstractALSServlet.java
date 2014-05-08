@@ -36,7 +36,7 @@ import com.cloudera.oryx.common.io.DelimitedDataUtils;
 import com.cloudera.oryx.serving.web.AbstractOryxServlet;
 
 /**
- * Superclass of all servletes used in the ALS recommender API.
+ * Superclass of all servlets used in the ALS recommender API.
  *
  * @author Sean Owen
  */
