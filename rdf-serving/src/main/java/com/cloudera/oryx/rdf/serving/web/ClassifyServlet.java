@@ -67,8 +67,6 @@ public final class ClassifyServlet extends AbstractRDFServlet {
 
     Map<Integer,BiMap<String,Integer>> columnToCategoryNameToIDMapping =
         generation.getColumnToCategoryNameToIDMapping();
-    Map<Integer,String> targetIDToCategory =
-        columnToCategoryNameToIDMapping.get(inboundSettings.getTargetColumn()).inverse();
 
     int totalColumns = getTotalColumns();
 
@@ -97,6 +95,8 @@ public final class ClassifyServlet extends AbstractRDFServlet {
     Prediction prediction = forest.classify(example);
 
     if (prediction.getFeatureType() == FeatureType.CATEGORICAL) {
+      Map<Integer,String> targetIDToCategory =
+          columnToCategoryNameToIDMapping.get(inboundSettings.getTargetColumn()).inverse();
       int categoryID = ((CategoricalPrediction) prediction).getMostProbableCategoryID();
       out.write(targetIDToCategory.get(categoryID));
     } else {
