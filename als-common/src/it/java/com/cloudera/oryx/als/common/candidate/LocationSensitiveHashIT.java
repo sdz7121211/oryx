@@ -38,7 +38,7 @@ import com.cloudera.oryx.common.random.RandomManager;
 import com.cloudera.oryx.common.random.RandomUtils;
 
 /**
- * A long-runnign integration test for {@link LocationSensitiveHash}.
+ * A long-running integration test for {@link LocationSensitiveHash}.
  *
  * @author Sean Owen
  */

@@ -66,9 +66,9 @@ public class QRDecomposition {
    * matrix R, and the rows ABOVE the diagonal are the Householder reflector vectors
    * from which an explicit form of Q can be recomputed if desired.</p>
    */
-  private double[][] qrt;
+  private final double[][] qrt;
   /** The diagonal elements of R. */
-  private double[] rDiag;
+  private final double[] rDiag;
   /** Cached value of Q. */
   private RealMatrix cachedQ;
   /** Cached value of QT. */
@@ -337,7 +337,7 @@ public class QRDecomposition {
       this.threshold = threshold;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public boolean isNonSingular() {
       for (double diag : rDiag) {
         if (FastMath.abs(diag) <= threshold) {
@@ -347,7 +347,7 @@ public class QRDecomposition {
       return true;
     }
 
-    /** {@inheritDoc} */
+    @Override
     public RealVector solve(RealVector b) {
       final int n = qrt.length;
       final int m = qrt[0].length;
@@ -390,7 +390,7 @@ public class QRDecomposition {
       return new ArrayRealVector(x, false);
     }
 
-    /** {@inheritDoc} */
+    @Override
     public RealMatrix solve(RealMatrix b) {
       final int n = qrt.length;
       final int m = qrt[0].length;
@@ -470,9 +470,9 @@ public class QRDecomposition {
     }
 
     /**
-     * {@inheritDoc}
      * @throws SingularMatrixException if the decomposed matrix is singular.
      */
+    @Override
     public RealMatrix getInverse() {
       return solve(MatrixUtils.createRealIdentityMatrix(qrt[0].length));
     }

@@ -259,7 +259,7 @@ public abstract class GenerationRunner implements Callable<Object> {
     stats.put("preRunBytes", startSize);
     stats.put("postRunBytes", endSize);
 
-    // Now compute some subclass-specific stats if impelmented
+    // Now compute some subclass-specific stats if implemented
     Map<String, ?> moreStats = collectStats();
     if (moreStats != null) {
       stats.putAll(moreStats);

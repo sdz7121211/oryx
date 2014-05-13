@@ -312,7 +312,7 @@ public final class ALSDistributedGenerationRunner extends DistributedGenerationR
       LongFloatMap itemEstimates = entry.getValue();
       LongFloatMap previousItemEstimates = previousEstimates.get(userID);
       Preconditions.checkState(itemEstimates.size() == previousItemEstimates.size(),
-                               "Number of estaimtes doesn't match previous: {} vs {}",
+                               "Number of estimates doesn't match previous: {} vs {}",
                                itemEstimates.size(), previousItemEstimates.size());
       for (LongFloatMap.MapEntry entry2 : itemEstimates.entrySet()) {
         long itemID = entry2.getKey();
